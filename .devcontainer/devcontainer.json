@@ -1,0 +1,74 @@
+{
+  "name": "Claude Flow Development Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:enterprise}"
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true,
+      "username": "node",
+      "userUid": "1000",
+      "userGid": "1000"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": false
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20",
+      "nodeGypDependencies": true
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "streetsidesoftware.code-spell-checker",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontFamily": "MesloLGS NF",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+        "security.workspace.trust.enabled": true,
+        "security.workspace.trust.untrustedFiles": "open"
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+  "postStartCommand": "bash .devcontainer/init-security.sh",
+  "runArgs": [
+    "--cap-add=NET_ADMIN",
+    "--cap-add=NET_RAW",
+    "--security-opt", "seccomp=unconfined",
+    "--security-opt", "no-new-privileges:${localEnv:NO_NEW_PRIVILEGES:true}",
+    "--memory", "${localEnv:CONTAINER_MEMORY:8g}",
+    "--cpus", "${localEnv:CONTAINER_CPUS:4}"
+  ],
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached${localEnv:READONLY_WORKSPACE:}",
+    "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume",
+    "source=/dev/null,target=/etc/hosts,type=bind,readonly",
+    "source=/dev/null,target=/etc/resolv.conf,type=bind,readonly"
+  ],
+  "remoteUser": "node",
+  "containerEnv": {
+    "DEVCONTAINER": "true",
+    "SHELL": "/bin/zsh",
+    "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:enterprise}",
+    "CUSTOM_ALLOWED_DOMAINS": "${localEnv:CUSTOM_ALLOWED_DOMAINS:}",
+    "NODE_ENV": "development"
+  },
+  "overrideCommand": false,
+  "shutdownAction": "stopContainer"
+}

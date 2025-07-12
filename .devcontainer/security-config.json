@@ -1,0 +1,101 @@
+{
+  "presets": {
+    "paranoid": {
+      "name": "Paranoid (Maximum Security)",
+      "description": "For handling untrusted code or enterprise environments",
+      "filesystem": {
+        "readonly_paths": ["/", "/etc", "/usr", "/var", "/opt", "/home"],
+        "writable_paths": ["/workspace", "/tmp"],
+        "no_access_paths": ["/host", "/proc/sys", "/sys/firmware"],
+        "workspace_only": true
+      },
+      "network": {
+        "allowed_domains": [
+          "api.anthropic.com",
+          "console.anthropic.com",
+          "github.com",
+          "api.github.com",
+          "registry.npmjs.org",
+          "registry.yarnpkg.com"
+        ],
+        "block_all_others": true,
+        "dns_servers": ["1.1.1.1", "8.8.8.8"],
+        "log_blocked_attempts": true
+      },
+      "process": {
+        "disable_ptrace": true,
+        "no_new_privileges": true,
+        "drop_capabilities": ["ALL"],
+        "readonly_root_filesystem": false,
+        "memory_limit": "4G",
+        "cpu_limit": "2"
+      }
+    },
+    "enterprise": {
+      "name": "Enterprise (Balanced Security)",
+      "description": "For corporate environments with specific allowed services",
+      "filesystem": {
+        "readonly_paths": ["/etc", "/usr", "/var/log"],
+        "writable_paths": ["/workspace", "/tmp", "/home/node"],
+        "workspace_only": false
+      },
+      "network": {
+        "allowed_domains": [
+          "api.anthropic.com",
+          "console.anthropic.com",
+          "github.com",
+          "api.github.com",
+          "*.githubusercontent.com",
+          "registry.npmjs.org",
+          "registry.yarnpkg.com",
+          "pypi.org",
+          "files.pythonhosted.org",
+          "deb.debian.org",
+          "security.debian.org"
+        ],
+        "custom_allowed_domains": [],
+        "block_all_others": true,
+        "dns_servers": ["1.1.1.1", "8.8.8.8"]
+      },
+      "process": {
+        "no_new_privileges": true,
+        "drop_capabilities": ["NET_RAW", "SYS_ADMIN"],
+        "memory_limit": "8G",
+        "cpu_limit": "4"
+      }
+    },
+    "development": {
+      "name": "Development (Relaxed Security)",
+      "description": "For local development with more flexibility",
+      "filesystem": {
+        "readonly_paths": ["/etc/passwd", "/etc/shadow"],
+        "writable_paths": ["/workspace", "/tmp", "/home/node", "/opt"],
+        "workspace_only": false
+      },
+      "network": {
+        "allowed_domains": [
+          "*"
+        ],
+        "blocked_domains": [
+          "malware.com",
+          "phishing.com"
+        ],
+        "block_all_others": false,
+        "warn_on_suspicious": true
+      },
+      "process": {
+        "no_new_privileges": false,
+        "memory_limit": "16G",
+        "cpu_limit": "8"
+      }
+    },
+    "custom": {
+      "name": "Custom Configuration",
+      "description": "User-defined security settings",
+      "filesystem": {},
+      "network": {},
+      "process": {}
+    }
+  },
+  "default_preset": "development"
+}
