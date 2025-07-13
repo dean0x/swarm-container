@@ -2,6 +2,7 @@
   "name": "Claude Flow Development Container",
   "build": {
     "dockerfile": "Dockerfile",
+    "context": "..",
     "args": {
       "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:enterprise}"
     }
@@ -45,8 +46,7 @@
       }
     }
   },
-  "postCreateCommand": "bash .devcontainer/postCreate.sh",
-  "postStartCommand": "bash .devcontainer/init-security.sh",
+  "postCreateCommand": "bash .devcontainer/postCreate.sh || true",
   "runArgs": [
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",
@@ -56,10 +56,7 @@
     "--cpus", "${localEnv:CONTAINER_CPUS:4}"
   ],
   "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached${localEnv:READONLY_WORKSPACE:}",
-    "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume",
-    "source=/dev/null,target=/etc/hosts,type=bind,readonly",
-    "source=/dev/null,target=/etc/resolv.conf,type=bind,readonly"
+    "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume"
   ],
   "remoteUser": "node",
   "containerEnv": {
@@ -69,6 +66,8 @@
     "CUSTOM_ALLOWED_DOMAINS": "${localEnv:CUSTOM_ALLOWED_DOMAINS:}",
     "NODE_ENV": "development"
   },
-  "overrideCommand": false,
-  "shutdownAction": "stopContainer"
+  "overrideCommand": true,
+  "shutdownAction": "stopContainer",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
 }

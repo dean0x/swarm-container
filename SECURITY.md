@@ -155,6 +155,14 @@ HTTPS_PROXY=http://proxy.company.com:8080
 NO_PROXY=localhost,127.0.0.1,.company.com
 ```
 
+## Claude Flow Source Installation
+
+This container installs Claude Flow directly from the GitHub repository source code, providing:
+- Latest development version with all updates
+- Ability to modify and customize Claude Flow
+- Full source code visibility at `/opt/claude-flow`
+- Protection against supply chain attacks through source verification
+
 ## Security Best Practices
 
 1. **Always use the appropriate security preset** for your use case

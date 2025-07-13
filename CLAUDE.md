@@ -16,6 +16,12 @@ This repository provides a VS Code development container for running claude-flow
 - `.devcontainer/security-config.json` - Security preset definitions
 - `.devcontainer/security-monitor.sh` - Runtime security monitoring
 
+### Claude Flow Installation
+- Installed from source via GitHub repository
+- Cloned to `/opt/claude-flow` for development
+- Globally linked via `npm link` for system-wide access
+- Fallback to npm installation if source build fails
+
 ### Security Architecture
 - **Presets**: Paranoid, Enterprise, Development modes
 - **Network**: Dynamic firewall with domain allowlisting/blocklisting

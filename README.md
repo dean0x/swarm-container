@@ -19,7 +19,7 @@ A secure, isolated development container for running Claude Flow swarms with VS 
 # For maximum security (untrusted code)
 cp .env.paranoid .env
 
-# For corporate environments (default)
+# For corporate environments
 cp .env.enterprise .env
 
 # For local development
@@ -61,7 +61,8 @@ claude-flow hive-mind wizard
 ## What's Included
 
 - **Node.js 20** development environment
-- **Claude Code** and **Claude Flow** pre-installed
+- **Claude Code** pre-installed from npm
+- **Claude Flow** installed from source (GitHub repository)
 - **Security features**:
   - Network isolation with firewall rules
   - Default-deny outbound connections
@@ -100,34 +101,80 @@ This devcontainer provides comprehensive protection:
    - Process isolation prevents malware installation
 
 2. **Network Protection**
-   - Configurable firewall with domain allowlisting
-   - Blocks unauthorized outbound connections
+   - **Container-level firewall rules** (not affecting host)
+   - Configurable security presets (never skipped)
+   - Domain allowlisting/blocklisting
    - Prevents data exfiltration
    - Protects against supply chain attacks
 
 ### 🎚️ Security Presets
 
-- **Paranoid**: Maximum isolation for untrusted code
-- **Enterprise**: Balanced security with corporate service access  
-- **Development**: Flexible settings for local development
+Security is **always applied** but with different levels of strictness:
+
+- **Paranoid**: Maximum isolation - explicit allowlist only
+- **Enterprise**: Balanced security - common dev services allowed  
+- **Development**: Permissive - blocklist for known malicious sites (default)
+
+The firewall runs at container startup with root privileges, ensuring rules cannot be bypassed.
 
 See [SECURITY.md](SECURITY.md) for detailed configuration options.
 
 ## Troubleshooting
 
-### "Permission denied" errors
-The container runs as the `node` user. Ensure files are owned by the correct user:
+### Container Build Issues
+If the container fails to build:
 ```bash
-sudo chown -R node:node /workspace
+# Clean rebuild without cache
+docker system prune -a
+# Then reopen in VS Code
 ```
 
+### "iptables: Permission denied" 
+This is expected behavior - the container shows this message but continues without network isolation. The security rules are applied at container startup when running with proper privileges. This does not affect functionality.
+
+### "chown: Operation not permitted" on node_modules
+This is normal - node_modules is a Docker volume and ownership is managed by Docker. This warning can be ignored.
+
 ### Network connectivity issues
-The firewall blocks most outbound connections. If you need to access additional services, modify `.devcontainer/init-firewall.sh` to add allowed IPs.
+Check your security preset:
+```bash
+echo $SECURITY_PRESET
+```
+- **Paranoid/Enterprise**: Only allowed domains work. Add custom domains to `.env`:
+  ```bash
+  CUSTOM_ALLOWED_DOMAINS=api.mycompany.com,npm.mycompany.com
+  ```
+- **Development**: Most connections allowed, only known malicious sites blocked
 
 ### Claude Flow not found
-If claude-flow isn't available, install it manually:
+The container installs Claude Flow from source. If it fails:
 ```bash
+# Check installation
+which claude-flow
+
+# Reinstall from npm if needed
 npm install -g claude-flow@alpha
+```
+
+### VS Code doesn't show "Reopen in Container"
+1. Ensure Remote-Containers extension is installed
+2. Check Docker is running: `docker ps`
+3. Try Command Palette (Cmd/Ctrl+Shift+P): "Remote-Containers: Reopen in Container"
+
+## Testing
+
+Run automated tests before opening in VS Code:
+```bash
+# Run all tests
+./test-devcontainer.sh
+
+# Tests check for:
+# - Valid JSON configuration
+# - Successful container build
+# - Proper tool installation
+# - Container persistence
+# - Security initialization
+# - Common configuration errors
 ```
 
 ## Resources

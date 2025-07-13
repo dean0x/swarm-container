@@ -54,19 +54,36 @@ RUN npm install -g \
     ts-node \
     nodemon
 
-# Pre-install claude-flow alpha (can be updated later)
-RUN npm install -g claude-flow@alpha
+# Clone and install claude-flow from source
+RUN git clone https://github.com/ruvnet/claude-flow.git /opt/claude-flow \
+    && cd /opt/claude-flow \
+    && npm install \
+    && npm run build 2>/dev/null || echo "No build script found, using as-is" \
+    && npm install -g . \
+    && rm -rf /opt/claude-flow/.git \
+    && echo "Claude Flow installed from source"
 
-# Create workspace directory
-RUN mkdir -p /workspace && chown -R node:node /workspace
+# Install gosu for privilege dropping (su-exec not in Debian repos)
+RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
-# Switch to node user
-USER node
+# Create workspace directory and ensure node user has proper shell
+RUN mkdir -p /workspace && chown -R node:node /workspace \
+    && usermod -s /bin/bash node || true \
+    && chown -R node:node /opt/claude-flow || true
+
+# Copy security initialization script
+COPY .devcontainer/init-security.sh /.devcontainer/init-security.sh
+COPY .devcontainer/security-config.json /.devcontainer/security-config.json
+RUN chmod +x /.devcontainer/init-security.sh
+
+# Copy and setup entrypoint script
+COPY .devcontainer/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set working directory
 WORKDIR /workspace
 
-# Configure git to use delta
+# Configure git to use delta (as root for now)
 RUN git config --global core.pager "delta" \
     && git config --global interactive.diffFilter "delta --color-only" \
     && git config --global delta.navigate true \
@@ -77,3 +94,9 @@ RUN git config --global core.pager "delta" \
 ENV DEVCONTAINER=true
 ENV SHELL=/bin/zsh
 ENV NODE_ENV=development
+
+# Set entrypoint - this runs as root since we haven't switched users yet
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["/bin/bash"]
+
+# Note: USER directive removed - the entrypoint handles user switching

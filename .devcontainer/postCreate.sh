@@ -26,9 +26,16 @@ fi
 # Verify claude-flow installation
 echo "🔄 Verifying Claude Flow installation..."
 if command -v claude-flow &> /dev/null; then
-    claude-flow --version || echo "Claude Flow installed but version check failed"
+    claude-flow --version || echo "Claude Flow installed from source"
+    echo "📍 Claude Flow location: $(which claude-flow)"
 else
-    echo "📥 Installing Claude Flow..."
+    echo "❌ Claude Flow not found. Source installation may have failed."
+    echo "   Check /opt/claude-flow directory for installation details."
+fi
+
+# If source installation failed, offer npm fallback
+if [ ! -d "/opt/claude-flow" ] && ! command -v claude-flow &> /dev/null; then
+    echo "📥 Installing Claude Flow from npm as fallback..."
     npm install -g claude-flow@alpha
 fi
 
@@ -38,8 +45,12 @@ mkdir -p /workspace/swarms
 mkdir -p /workspace/logs
 mkdir -p /workspace/data
 
-# Set proper permissions
-chown -R node:node /workspace
+# Set proper permissions - skip node_modules which is a volume mount
+for dir in swarms logs data; do
+    if [ -d "/workspace/$dir" ]; then
+        chown -R node:node "/workspace/$dir" 2>/dev/null || true
+    fi
+done
 
 # Install Oh My Zsh plugins
 echo "🎨 Installing Zsh plugins..."
