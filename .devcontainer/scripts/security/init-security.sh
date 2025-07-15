@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Get security preset from environment or use default
-SECURITY_PRESET="${SECURITY_PRESET:-enterprise}"
+SECURITY_PRESET="${SECURITY_PRESET:-development}"
 SECURITY_CONFIG_FILE="/.devcontainer/scripts/security/security-config.json"
 
 echo -e "${BLUE}🔒 Initializing Security Level: ${YELLOW}${SECURITY_PRESET}${NC}"

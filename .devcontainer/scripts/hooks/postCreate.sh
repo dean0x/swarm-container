@@ -37,15 +37,18 @@ echo "📁 Creating deps directory for dependencies..."
 cd /workspace
 mkdir -p deps
 
+# Clean deps directory to ensure fresh clones
+echo "🧹 Cleaning deps directory for fresh installations..."
+if [ -d "/workspace/deps" ]; then
+    # Remove any existing repositories
+    rm -rf /workspace/deps/claude-flow 2>/dev/null || true
+    rm -rf /workspace/deps/ruv-FANN 2>/dev/null || true
+    echo "✅ Deps directory cleaned"
+fi
+
 # Clone and setup claude-flow from source
 echo "🔄 Setting up Claude Flow from source..."
 cd /workspace/deps
-
-# Remove any existing claude-flow (file or directory) to start fresh
-if [ -e "claude-flow" ]; then
-    echo "🧹 Removing existing claude-flow to start fresh..."
-    rm -rf claude-flow
-fi
 
 # Clone claude-flow repository
 echo "📥 Cloning claude-flow repository..."
@@ -270,21 +273,61 @@ if [ -f ~/.zshrc ]; then
     sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
 fi
 
-# Add useful commands to shell history for easy access
-echo "🔧 Adding useful commands to shell history..."
-# For zsh
-if [ -f ~/.zsh_history ]; then
-    echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
-    echo ": $(date +%s):0;claude-flow hive-mind wizard" >> ~/.zsh_history
-    echo ": $(date +%s):0;claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
-    echo ": $(date +%s):0;export ANTHROPIC_API_KEY='sk-ant-...'" >> ~/.zsh_history
+# Add useful commands to shell history and create startup script
+echo "🔧 Setting up quick commands..."
+
+# Create a startup script that adds commands to history
+cat > ~/.swarm_history_init << 'EOF'
+#!/bin/bash
+# Add useful commands to shell history on first run
+
+# Check if we've already added these (to avoid duplicates)
+if [ ! -f ~/.swarm_history_added ]; then
+    # For zsh
+    if [ -n "$ZSH_VERSION" ]; then
+        # Add to current session history (in order: oldest to newest)
+        print -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        print -s "claude-flow hive-mind wizard"
+        print -s "claude --dangerously-skip-permissions"
+        
+        # Also add to history file
+        echo ": $(date +%s):0;claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
+        echo ": $(date +%s):0;claude-flow hive-mind wizard" >> ~/.zsh_history
+        echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
+    fi
+    
+    # For bash
+    if [ -n "$BASH_VERSION" ]; then
+        # Add to history (in order: oldest to newest)
+        history -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        history -s "claude-flow hive-mind wizard"
+        history -s "claude --dangerously-skip-permissions"
+        
+        # Also add to history file
+        echo "claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
+        echo "claude-flow hive-mind wizard" >> ~/.bash_history
+        echo "claude --dangerously-skip-permissions" >> ~/.bash_history
+    fi
+    
+    # Mark as added
+    touch ~/.swarm_history_added
+    echo "✅ Quick commands added to history - press ↑ to access them!"
 fi
-# For bash (as fallback)
-if [ -f ~/.bash_history ]; then
-    echo "claude --dangerously-skip-permissions" >> ~/.bash_history
-    echo "claude-flow hive-mind wizard" >> ~/.bash_history
-    echo "claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
-    echo "export ANTHROPIC_API_KEY='sk-ant-...'" >> ~/.bash_history
+EOF
+
+chmod +x ~/.swarm_history_init
+
+# Add to shell RC files so it runs on shell startup
+if [ -f ~/.zshrc ]; then
+    echo "" >> ~/.zshrc
+    echo "# Swarm Container history initialization" >> ~/.zshrc
+    echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.zshrc
+fi
+
+if [ -f ~/.bashrc ]; then
+    echo "" >> ~/.bashrc
+    echo "# Swarm Container history initialization" >> ~/.bashrc
+    echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.bashrc
 fi
 
 echo "✅ Claude Flow development environment setup complete!"

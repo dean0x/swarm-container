@@ -45,6 +45,7 @@ docs/
 memory/
 coordination/
 workspace/CLAUDE.md
+CLAUDE.md
 
 # Dependencies folder
 deps/

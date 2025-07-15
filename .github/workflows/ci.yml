@@ -62,6 +62,12 @@ jobs:
         # Cleanup
         docker stop test-container
         docker rm test-container
+    
+    - name: Run comprehensive test suite
+      run: |
+        echo "Running comprehensive devcontainer tests..."
+        chmod +x .devcontainer/scripts/tests/*.sh
+        .devcontainer/scripts/tests/test-devcontainer.sh
 
   security-scan:
     runs-on: ubuntu-latest

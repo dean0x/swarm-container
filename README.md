@@ -1,8 +1,8 @@
 # Swarm Container
 
-[![CI](https://github.com/yourusername/swarmcontainer/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/swarmcontainer/actions/workflows/ci.yml)
+[![CI](https://github.com/dean0x/swarm-container/actions/workflows/ci.yml/badge.svg)](https://github.com/dean0x/swarm-container/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/github/v/release/yourusername/swarmcontainer)](https://github.com/yourusername/swarmcontainer/releases)
+[![Version](https://img.shields.io/github/v/release/dean0x/swarm-container)](https://github.com/dean0x/swarm-container/releases)
 
 A secure, isolated development container for running agentic swarms, and CLIs with loose permissions, using Dev Containers in VS Code.
 
@@ -53,59 +53,160 @@ This container has been tested with the following versions:
 
 For detailed version information and update instructions, see [VERSIONS.md](VERSIONS.md).
 
-## Quick Start
+## 🚀 Quick Start
 
-### 1. Choose Your Security Level
+### 1. Clone and Configure
 
 ```bash
-# For maximum security (untrusted code)
-cp .env.paranoid .env
+# Clone the repository
+git clone https://github.com/yourusername/swarmcontainer.git
+cd swarmcontainer
 
-# For corporate environments
-cp .env.enterprise .env
-
-# For local development
-cp .env.development .env
+# Choose your security level (default is 'development')
+cp .env.development .env    # For local development (recommended to start)
+# OR
+cp .env.enterprise .env     # For corporate environments with some restrictions
+# OR
+cp .env.paranoid .env       # For maximum security with untrusted code
 ```
 
-### 2. Configure Your Environment
+### 2. Set Up Authentication
 
-Choose your authentication method:
+You have two options for Claude authentication:
 
-**Option A: Claude Pro/Max** (use browser login)
+#### Option A: Claude Pro/Max Subscription (Recommended)
 ```bash
-# Leave .env as is - you'll be prompt to login after starting Claude Code
+# No configuration needed! You'll log in via browser when you start Claude Code
+# Just leave the .env file as is (no API key required)
 ```
 
-**Option B: API Key** (if you have one)
+#### Option B: Anthropic API Key
 ```bash
 # Edit .env and add your API key
-ANTHROPIC_API_KEY=sk-ant-your-key-here
+echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
+
+# Or manually edit .env and add:
+# ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
 ### 3. Open in VS Code
 
 ```bash
+# Open VS Code in the current directory
 code .
 ```
 
-Then click "Reopen in Container" when prompted.
+**Then:**
+1. Wait for the notification "Folder contains a Dev Container configuration file"
+2. Click **"Reopen in Container"**
+3. Or use Command Palette (F1/Cmd+Shift+P): "Dev Containers: Reopen in Container"
 
-**Note:** During container setup, if prompted "Edit shell configs to add deno to the PATH? (Y/n)", enter **Y** (yes). This occurs during MCP server configuration and is required for proper functionality.
+**First-time setup will:**
+- Download the base Docker image
+- Install all dependencies
+- Clone claude-flow and ruv-FANN sources
+- Configure MCP servers
+- Set up your development environment
 
-### 4. Start Using Claude Flow
+⏱️ **This takes 3-5 minutes on first run**
 
-Inside the container:
+### 4. Container Setup Prompts
+
+During setup, you'll see:
+
+1. **Deno PATH prompt**: 
+   ```
+   Edit shell configs to add deno to the PATH? (Y/n)
+   ```
+   **➜ Type `Y` and press Enter** (required for MCP servers)
+
+2. **Progress messages** showing:
+   - Security level initialization
+   - Claude Flow installation
+   - MCP server configuration
+
+### 5. Start Using Claude Flow
+
+Once the container is ready:
+
 ```bash
-# Activate Claude Code with full permissions (Required for claude-flow at the moment)
+# Step 1: Activate Claude Code (required for claude-flow)
 claude --dangerously-skip-permissions
 
-# Spawn a hive-mind swarm
+# If using Option A (Claude Pro/Max), you'll see:
+# "Please visit: https://[...] to authenticate"
+# Click the link and log in with your Claude account
+
+# Step 2: Verify installation
+claude-flow --version
+
+# Step 3: Start building!
+# Quick swarm spawn
 claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
 
-# Or use the wizard (Still a bit quirky)
+# Or use the interactive wizard
 claude-flow hive-mind wizard
+
+# Or explore example commands (press ↑ arrow for history)
+# We've pre-loaded useful commands in your shell history!
 ```
+
+### 📋 Configuration Options
+
+#### Security Presets Explained
+
+| Preset | Network Access | Use Case | Firewall Rules |
+|--------|---------------|----------|----------------|
+| **development** | Most permissive | Local development, learning | Blocks only known malicious |
+| **enterprise** | Balanced | Corporate environments | Allows dev tools, blocks risky |
+| **paranoid** | Highly restricted | Untrusted code, sensitive data | Explicit allowlist only |
+
+📄 **See [security-config.json](.devcontainer/scripts/security/security-config.json) for detailed preset definitions**
+
+#### Environment Variables
+
+Create or edit `.env` to customize:
+
+```bash
+# Authentication (choose one)
+ANTHROPIC_API_KEY=sk-ant-...          # For API key auth
+# OR leave empty for browser auth
+
+# Security
+SECURITY_PRESET=development            # Options: development, enterprise, paranoid
+                                      # Default set in: .devcontainer/devcontainer.json
+CUSTOM_ALLOWED_DOMAINS=api.myco.com    # Additional allowed domains (comma-separated)
+
+# Resources (optional)
+CONTAINER_MEMORY=8g                    # Container memory limit
+CONTAINER_CPUS=4                       # CPU core limit
+
+# Advanced (optional)
+NO_NEW_PRIVILEGES=true                 # Security: prevent privilege escalation
+```
+
+### 🔧 Advanced Configuration
+
+#### Custom Domain Allowlist
+For `enterprise` or `paranoid` modes, add custom domains:
+
+```bash
+# In .env
+CUSTOM_ALLOWED_DOMAINS=api.company.com,npm.company.com,registry.company.com
+```
+
+#### Workspace Persistence
+Your work is saved in the `workspace/` directory:
+- All files in `workspace/` persist between container restarts
+- Dependencies in `workspace/deps/` are git-ignored
+- Command history is preserved
+
+#### Shell Customization
+The container includes:
+- Zsh with Oh My Zsh
+- Auto-suggestions and syntax highlighting
+- Pre-loaded command history
+- Custom aliases and functions
 
 📚 **For detailed security configuration, see [SECURITY.md](SECURITY.md)**
 
@@ -242,6 +343,35 @@ claude-flow --version
 1. Ensure Remote-Containers extension is installed
 2. Check Docker is running: `docker ps`
 3. Try Command Palette (Cmd/Ctrl+Shift+P): "Remote-Containers: Reopen in Container"
+
+### "No space left on device" during container build
+If you encounter disk space errors during build:
+
+1. **Clean up Docker space**:
+   ```bash
+   # Remove unused containers, images, and volumes
+   docker system prune -a --volumes
+   
+   # Check Docker disk usage
+   docker system df
+   ```
+
+2. **Clear Docker build cache**:
+   ```bash
+   docker builder prune
+   ```
+
+3. **Check your disk space**:
+   ```bash
+   # On macOS/Linux
+   df -h
+   ```
+
+4. **If using Docker Desktop**, increase the disk image size:
+   - Open Docker Desktop
+   - Go to Settings/Preferences → Resources
+   - Increase the "Disk image size" slider
+   - Apply & Restart
 
 ### Deno PATH prompt during setup
 If you missed the prompt "Edit shell configs to add deno to the PATH? (Y/n)" during container creation:

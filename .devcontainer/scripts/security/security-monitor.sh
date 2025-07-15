@@ -4,7 +4,7 @@
 # This script monitors for suspicious activities and can be run periodically
 
 LOGFILE="/workspace/.devcontainer/security.log"
-SECURITY_PRESET="${SECURITY_PRESET:-enterprise}"
+SECURITY_PRESET="${SECURITY_PRESET:-development}"
 
 # Color codes
 RED='\033[0;31m'

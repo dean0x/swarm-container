@@ -4,7 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": "..",
     "args": {
-      "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:enterprise}"
+      "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:development}"
     }
   },
   "features": {
@@ -20,10 +20,6 @@
     "ghcr.io/devcontainers/features/git:1": {
       "version": "latest",
       "ppa": false
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20",
-      "nodeGypDependencies": true
     }
   },
   "customizations": {
@@ -63,7 +59,7 @@
   "containerEnv": {
     "DEVCONTAINER": "true",
     "SHELL": "/bin/zsh",
-    "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:enterprise}",
+    "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:development}",
     "CUSTOM_ALLOWED_DOMAINS": "${localEnv:CUSTOM_ALLOWED_DOMAINS:}",
     "NODE_ENV": "development"
   },

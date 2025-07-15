@@ -35,4 +35,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Persistent command history across container restarts
 - Modern CLI tools: ripgrep, fzf, bat, delta
 
-[1.0.0]: https://github.com/yourusername/swarmcontainer/releases/tag/v1.0.0
+[1.0.0]: https://github.com/dean0x/swarm-container/releases/tag/v1.0.0
