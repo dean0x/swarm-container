@@ -29,9 +29,10 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # Install git-delta for better diffs (handle both amd64 and arm64)
 RUN ARCH=$(dpkg --print-architecture) \
     && if [ "$ARCH" = "amd64" ]; then \
-        wget -q https://github.com/dandavison/delta/releases/download/0.16.5/git-delta_0.16.5_amd64.deb \
-        && dpkg -i git-delta_0.16.5_amd64.deb \
-        && rm git-delta_0.16.5_amd64.deb; \
+        wget -q https://github.com/dandavison/delta/releases/download/0.16.5/delta-0.16.5-x86_64-unknown-linux-gnu.tar.gz \
+        && tar -xzf delta-0.16.5-x86_64-unknown-linux-gnu.tar.gz \
+        && mv delta-0.16.5-x86_64-unknown-linux-gnu/delta /usr/local/bin/ \
+        && rm -rf delta-0.16.5-x86_64-unknown-linux-gnu*; \
     elif [ "$ARCH" = "arm64" ]; then \
         wget -q https://github.com/dandavison/delta/releases/download/0.16.5/delta-0.16.5-aarch64-unknown-linux-gnu.tar.gz \
         && tar -xzf delta-0.16.5-aarch64-unknown-linux-gnu.tar.gz \
