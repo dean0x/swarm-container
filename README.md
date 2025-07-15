@@ -1,8 +1,22 @@
 # Swarm Container
 
-A secure, isolated development container for running agentic swarms with VS Code.
+[![CI](https://github.com/yourusername/swarmcontainer/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/swarmcontainer/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/github/v/release/yourusername/swarmcontainer)](https://github.com/yourusername/swarmcontainer/releases)
+
+A secure, isolated development container for running agentic swarms, and CLIs with loose permissions, using Dev Containers in VS Code.
 
 🔒 **Features multiple security presets**: Paranoid, Enterprise, and Development modes to match your security requirements.
+
+## ✨ Highlights
+
+- **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while experimenting with AI agents
+- **🚀 Bleeding Edge Updates** - Claude Flow and ruv-swarm installed from source, giving you instant access to the latest features from main branch
+- **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - modify, test, and contribute back
+- **⚡ Zero-Latency MCP** - Local MCP servers eliminate network roundtrips for lightning-fast agent coordination
+- **🔧 Production + Development** - Global npm installs for reliability, plus source code for hacking and exploration
+- **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
+- **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
 
 ## Supported Swarm Orchestrators
 
@@ -11,10 +25,19 @@ A secure, isolated development container for running agentic swarms with VS Code
 | [claude-flow](https://github.com/ruvnet/claude-flow) | Advanced swarm intelligence with SQLite memory system and GitHub integration | ✅ Available | Auto-initialized |
 | [claude-swarm](https://github.com/parruda/claude-swarm) | Multi-agent orchestration with tree hierarchy and MCP communication | 🔜 Coming Soon | |
 
+## Supported AI CLIs
+
+| [Claude Code](https://claude.ai/code) | [OpenCode](https://github.com/opencode) | [Codex](https://openai.com/codex) | [Gemini](https://gemini.google.com) |
+|:---:|:---:|:---:|:---:|
+| ✅ **Available** | 🔜 Coming Soon | 🔜 Coming Soon | 🔜 Coming Soon |
+
 ## Prerequisites
 
 - [VS Code](https://code.visualstudio.com/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  - **Windows**: Requires WSL2 backend
+  - **macOS**: Intel or Apple Silicon
+  - **Linux**: Native Docker
 - [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
 - Either an [Anthropic API key](https://console.anthropic.com/account/keys) OR a [Claude Pro/Max subscription](https://claude.ai/subscription)
 
@@ -24,9 +47,9 @@ This container has been tested with the following versions:
 
 | Component | Version | Last Updated |
 |-----------|---------|--------------|
-| **Claude Code** | v1.0.51 | January 2025 |
-| **Claude Flow** | v2.0.0-alpha.53 | January 2025 |
-| **ruv-FANN/ruv-swarm** | v1.0.18 | January 2025 |
+| **Claude Code** | v1.0.51 | July 2025 |
+| **Claude Flow** | v2.0.0-alpha.53 | July 2025 |
+| **ruv-FANN/ruv-swarm** | v1.0.18 | July 2025 |
 
 For detailed version information and update instructions, see [VERSIONS.md](VERSIONS.md).
 
@@ -77,7 +100,11 @@ Inside the container:
 # Activate Claude Code with full permissions (Required for claude-flow at the moment)
 claude --dangerously-skip-permissions
 
-# Prompt claude to use claude-flow and 
+# Spawn a hive-mind swarm
+claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
+
+# Or use the wizard (Still a bit quirky)
+claude-flow hive-mind wizard
 ```
 
 📚 **For detailed security configuration, see [SECURITY.md](SECURITY.md)**
@@ -227,7 +254,7 @@ If you missed the prompt "Edit shell configs to add deno to the PATH? (Y/n)" dur
 Run automated tests before opening in VS Code:
 ```bash
 # Run all tests
-./test-devcontainer.sh
+./.devcontainer/scripts/tests/test-devcontainer.sh
 
 # Tests check for:
 # - Valid JSON configuration
@@ -237,6 +264,31 @@ Run automated tests before opening in VS Code:
 # - Security initialization
 # - Common configuration errors
 ```
+
+## ⚠️ Security Disclaimer
+
+**USE AT YOUR OWN RISK**
+
+This container runs AI agents with elevated permissions (`--dangerously-skip-permissions`) which poses inherent security risks:
+
+### Potential Risks Include:
+- **🔓 Code Exposure** - AI agents can read and potentially expose your source code
+- **💉 Prompt Injection** - Malicious prompts could manipulate agent behavior
+- **🚨 Security Bypass** - Agents may circumvent security measures if instructed
+- **📤 Data Exfiltration** - Despite network controls, data could be leaked through allowed channels
+- **🔥 Resource Exhaustion** - Runaway agents could consume system resources
+- **🐛 Unintended Actions** - AI hallucinations could lead to destructive operations
+
+### Recommended Precautions:
+- ✅ Use **Paranoid** mode for untrusted code or sensitive projects
+- ✅ Never store production credentials or secrets in the container
+- ✅ Regularly review agent actions and generated code
+- ✅ Run in isolated environments when possible
+- ✅ Monitor container resource usage
+- ✅ Keep backups of important work
+
+**By using this container, you acknowledge these risks and accept full responsibility for any consequences. This software is provided "AS IS" without warranty of any kind.**
+
 
 ## Resources
 

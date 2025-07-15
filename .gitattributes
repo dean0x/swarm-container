@@ -1,0 +1,36 @@
+# Ensure shell scripts always use LF line endings, even on Windows
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+
+# Ensure Dockerfile uses LF
+Dockerfile text eol=lf
+
+# Ensure JSON/YAML files use LF
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Ensure markdown files use native line endings
+*.md text=auto
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.flv binary
+*.fla binary
+*.swf binary
+*.gz binary
+*.zip binary
+*.7z binary
+*.ttf binary
+*.eot binary
+*.woff binary
+*.pyc binary
+*.pdf binary

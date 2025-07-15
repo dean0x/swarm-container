@@ -11,13 +11,15 @@ NC='\033[0m'
 
 # Test 1: Validate JSON files
 echo "1️⃣ Validating JSON configuration..."
-for file in .devcontainer/*.json; do
-    if python3 -m json.tool "$file" > /dev/null 2>&1; then
-        echo -e "   ${GREEN}✓${NC} $file is valid JSON"
-    else
-        echo -e "   ${RED}✗${NC} $file has JSON syntax errors"
-        python3 -m json.tool "$file" 2>&1 | head -10
-        exit 1
+for file in .devcontainer/*.json .devcontainer/scripts/security/*.json; do
+    if [ -f "$file" ]; then
+        if python3 -m json.tool "$file" > /dev/null 2>&1; then
+            echo -e "   ${GREEN}✓${NC} $file is valid JSON"
+        else
+            echo -e "   ${RED}✗${NC} $file has JSON syntax errors"
+            python3 -m json.tool "$file" 2>&1 | head -10
+            exit 1
+        fi
     fi
 done
 
@@ -71,7 +73,8 @@ if [ $? -eq 0 ]; then
     # Test 6: Check tools installation
     echo ""
     echo "6️⃣ Testing tool installations..."
-    for tool in node npm claude claude-flow git; do
+    # Note: claude-flow is installed during postCreate, not during build
+    for tool in node npm claude git; do
         if docker exec "$CONTAINER_ID" which $tool > /dev/null 2>&1; then
             echo -e "   ${GREEN}✓${NC} $tool installed"
         else
@@ -91,12 +94,14 @@ fi
 # Test 7: Security script syntax check
 echo ""
 echo "7️⃣ Checking shell scripts..."
-for script in .devcontainer/*.sh; do
-    if bash -n "$script" 2>/dev/null; then
-        echo -e "   ${GREEN}✓${NC} $script syntax OK"
-    else
-        echo -e "   ${RED}✗${NC} $script has syntax errors"
-        bash -n "$script" 2>&1
+for script in .devcontainer/scripts/*/*.sh; do
+    if [ -f "$script" ]; then
+        if bash -n "$script" 2>/dev/null; then
+            echo -e "   ${GREEN}✓${NC} $script syntax OK"
+        else
+            echo -e "   ${RED}✗${NC} $script has syntax errors"
+            bash -n "$script" 2>&1
+        fi
     fi
 done
 
@@ -107,8 +112,8 @@ echo "Now running issue-specific tests..."
 echo ""
 
 # Run the issue-specific tests
-if [ -f "test-container-issues.sh" ]; then
-    bash test-container-issues.sh
+if [ -f ".devcontainer/scripts/tests/test-container-issues.sh" ]; then
+    bash .devcontainer/scripts/tests/test-container-issues.sh
     ISSUE_TEST_RESULT=$?
 else
     echo -e "${YELLOW}⚠${NC} test-container-issues.sh not found"
@@ -120,8 +125,8 @@ echo "Running VS Code integration tests..."
 echo ""
 
 # Run VS Code integration tests
-if [ -f "test-vscode-integration.sh" ]; then
-    bash test-vscode-integration.sh
+if [ -f ".devcontainer/scripts/tests/test-vscode-integration.sh" ]; then
+    bash .devcontainer/scripts/tests/test-vscode-integration.sh
 else
     echo -e "${YELLOW}⚠${NC} test-vscode-integration.sh not found"
 fi

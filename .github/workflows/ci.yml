@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Validate JSON files
+      run: |
+        for file in .devcontainer/*.json .devcontainer/scripts/security/*.json; do
+          if [ -f "$file" ]; then
+            echo "Validating $file"
+            python3 -m json.tool "$file" > /dev/null || exit 1
+          fi
+        done
+    
+    - name: Check shell scripts syntax
+      run: |
+        for script in .devcontainer/scripts/*/*.sh; do
+          if [ -f "$script" ]; then
+            echo "Checking $script"
+            bash -n "$script" || exit 1
+          fi
+        done
+    
+    - name: Run shellcheck
+      run: |
+        sudo apt-get update && sudo apt-get install -y shellcheck
+        find .devcontainer/scripts -name "*.sh" -exec shellcheck {} \; || true
+    
+    - name: Build container
+      run: docker build -t swarmcontainer-test -f .devcontainer/Dockerfile .
+    
+    - name: Test container startup
+      run: |
+        docker run -d --name test-container \
+          -v $(pwd):/workspace \
+          --cap-add=NET_ADMIN \
+          --cap-add=NET_RAW \
+          swarmcontainer-test \
+          sleep 30
+        
+        # Give it time to initialize
+        sleep 5
+        
+        # Check if container is still running
+        docker ps | grep test-container
+        
+        # Check basic commands
+        docker exec test-container which node
+        docker exec test-container which npm
+        docker exec test-container which git
+        
+        # Cleanup
+        docker stop test-container
+        docker rm test-container
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'

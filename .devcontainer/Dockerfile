@@ -64,13 +64,13 @@ RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /workspace && chown -R node:node /workspace \
     && usermod -s /bin/bash node || true
 
-# Copy security initialization script
-COPY .devcontainer/init-security.sh /.devcontainer/init-security.sh
-COPY .devcontainer/security-config.json /.devcontainer/security-config.json
-RUN chmod +x /.devcontainer/init-security.sh
+# Copy security initialization scripts
+COPY .devcontainer/scripts/security/init-security.sh /.devcontainer/scripts/security/init-security.sh
+COPY .devcontainer/scripts/security/security-config.json /.devcontainer/scripts/security/security-config.json
+RUN chmod +x /.devcontainer/scripts/security/init-security.sh
 
 # Copy and setup entrypoint script
-COPY .devcontainer/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY .devcontainer/scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set working directory

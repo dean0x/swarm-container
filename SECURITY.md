@@ -117,7 +117,7 @@ The container implements network security at multiple levels:
 
 Run the security monitor to check for issues:
 ```bash
-bash .devcontainer/security-monitor.sh
+bash .devcontainer/scripts/security/security-monitor.sh
 ```
 
 This checks for:
@@ -198,7 +198,7 @@ This container protects against:
 ### Network Connection Blocked
 - Check allowed domains in your security preset
 - Add required domains to `CUSTOM_ALLOWED_DOMAINS`
-- Use `security-monitor.sh` to see blocked attempts
+- Use `.devcontainer/scripts/security/security-monitor.sh` to see blocked attempts
 
 ### Container Won't Start
 - Verify Docker has sufficient resources

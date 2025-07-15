@@ -14,8 +14,8 @@ if [ -e "claude-flow" ] && [ ! -d "claude-flow" ]; then
 fi
 
 # Make security scripts executable
-chmod +x /devcontainer-config/.devcontainer/init-security.sh 2>/dev/null || true
-chmod +x /devcontainer-config/.devcontainer/security-monitor.sh 2>/dev/null || true
+chmod +x /devcontainer-config/.devcontainer/scripts/security/init-security.sh 2>/dev/null || true
+chmod +x /devcontainer-config/.devcontainer/scripts/security/security-monitor.sh 2>/dev/null || true
 
 # Configure npm
 echo "📦 Configuring npm..."
@@ -72,7 +72,7 @@ echo "📦 Installing Claude Flow..."
 
 # First, try to install from source
 if [ -d "claude-flow" ] && [ -f "claude-flow/package.json" ]; then
-    echo "🔄 Trying to install from source as fallback..."
+    echo "🔄 Trying to install from source..."
     cd claude-flow
     
     # Skip Puppeteer download to avoid ARM issues
@@ -268,6 +268,23 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:
 # Update .zshrc to include plugins
 if [ -f ~/.zshrc ]; then
     sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+fi
+
+# Add useful commands to shell history for easy access
+echo "🔧 Adding useful commands to shell history..."
+# For zsh
+if [ -f ~/.zsh_history ]; then
+    echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
+    echo ": $(date +%s):0;claude-flow hive-mind wizard" >> ~/.zsh_history
+    echo ": $(date +%s):0;claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
+    echo ": $(date +%s):0;export ANTHROPIC_API_KEY='sk-ant-...'" >> ~/.zsh_history
+fi
+# For bash (as fallback)
+if [ -f ~/.bash_history ]; then
+    echo "claude --dangerously-skip-permissions" >> ~/.bash_history
+    echo "claude-flow hive-mind wizard" >> ~/.bash_history
+    echo "claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
+    echo "export ANTHROPIC_API_KEY='sk-ant-...'" >> ~/.bash_history
 fi
 
 echo "✅ Claude Flow development environment setup complete!"

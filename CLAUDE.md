@@ -6,19 +6,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository provides a VS Code development container for running claude-flow swarms in a secure, isolated environment. It's based on Anthropic's Claude Code devcontainer reference implementation, adapted specifically for claude-flow development.
 
+### Recent Updates
+- **Organized script structure**: All scripts moved to logical subdirectories under `.devcontainer/scripts/`
+- **Clean workspace**: Container starts with empty `/workspace`, deps installed to `/workspace/deps/`
+- **Improved installation**: Smart fallback strategies for both claude-flow and ruv-FANN
+- **Comprehensive testing**: Full test suite validates container configuration and functionality
+- **MCP optimization**: Local MCP servers configured for faster connections
+
 ## Key Components
 
 ### Dev Container Configuration
 - `.devcontainer/devcontainer.json` - VS Code container settings with dynamic security
 - `.devcontainer/Dockerfile` - Node.js 20 base with security tools  
-- `.devcontainer/init-security.sh` - Dynamic firewall based on security preset
-- `.devcontainer/postCreate.sh` - Container initialization
-- `.devcontainer/security-config.json` - Security preset definitions
-- `.devcontainer/security-monitor.sh` - Runtime security monitoring
+- `.devcontainer/scripts/` - Organized scripts directory:
+  - `security/init-security.sh` - Dynamic firewall based on security preset
+  - `security/security-config.json` - Security preset definitions
+  - `security/security-monitor.sh` - Runtime security monitoring
+  - `hooks/docker-entrypoint.sh` - Container entrypoint with security initialization
+  - `hooks/postCreate.sh` - Post-creation setup (claude-flow, MCP servers, etc.)
+  - `tests/` - Comprehensive test suite for container validation
 
 ### Claude Flow Installation
-- Installed globally from npm for reliability
-- Source code cloned to `/workspace/deps/claude-flow` for development
+- Dual installation approach for maximum reliability:
+  - Primary: Installed globally from npm (`npm install -g claude-flow@alpha`)
+  - Fallback: Source code cloned to `/workspace/deps/claude-flow`
+- Automatic installation with multiple fallback strategies
 - Easy updates with `npm update -g claude-flow@alpha`
 - Source available for exploration and contributions
 
@@ -43,7 +55,14 @@ This repository provides a VS Code development container for running claude-flow
 ### Environment Files
 - `.env.paranoid` - Maximum security configuration
 - `.env.enterprise` - Corporate environment settings
-- `.env.development` - Relaxed local development settings
+- `.env.development` - Relaxed local development settings (default)
+
+### Key Features
+- **Clean workspace**: Container starts with empty `/workspace` directory
+- **Organized scripts**: All scripts in logical subdirectories
+- **Robust installation**: Multiple fallback strategies for dependencies
+- **Comprehensive testing**: Full test suite for validation
+- **Docker entrypoint**: Proper security initialization and user switching
 
 ## Common Commands
 
@@ -56,7 +75,7 @@ cp .env.paranoid .env  # or .env.enterprise, .env.development
 echo $SECURITY_PRESET
 
 # Run security monitor
-bash .devcontainer/security-monitor.sh
+bash .devcontainer/scripts/security/security-monitor.sh
 
 # View security logs
 tail -f .devcontainer/security.log
@@ -111,14 +130,11 @@ To manually reconfigure:
 ```bash
 # Remove and re-add claude-flow
 claude mcp remove claude-flow
-claude mcp add claude-flow claude-flow
+claude mcp add claude-flow claude-flow mcp start
 
 # Remove and re-add ruv-swarm
 claude mcp remove ruv-swarm
-claude mcp add ruv-swarm /workspace/deps/ruv-FANN/ruv-swarm/npm/bin/ruv-swarm-secure.js
-
-# Start MCP servers
-claude mcp start
+claude mcp add ruv-swarm /workspace/deps/ruv-FANN/ruv-swarm/npm/bin/ruv-swarm-secure.js mcp start
 ```
 
 ### Development
@@ -143,7 +159,7 @@ docker logs <container-name>
 
 When adding new npm packages that require network access:
 1. Identify the package registry domain
-2. Add IP ranges to `.devcontainer/init-firewall.sh`
+2. Add IP ranges to `.devcontainer/scripts/security/init-security.sh`
 3. Rebuild the container
 
 ## Troubleshooting
@@ -166,11 +182,61 @@ npm install --omit=dev
 
 The MCP configuration will work normally since wasm-opt is not required for runtime operation of ruv-swarm.
 
+### Claude-flow Installation Fallbacks
+The container uses a smart fallback strategy for claude-flow installation:
+1. **Primary**: Clone from GitHub and install from source
+2. **Fallback 1**: If clone fails, install from npm registry
+3. **Fallback 2**: If source install fails, use npm global install
+4. **Note**: Puppeteer download is skipped (`PUPPETEER_SKIP_DOWNLOAD=true`) to avoid ARM compatibility issues
+
+### Known Working Versions
+- Claude Code: v1.0.51
+- Claude Flow: v2.0.0-alpha.53
+- ruv-FANN/ruv-swarm: v1.0.18
+- Node.js: 20.x
+- VS Code Dev Containers: Latest
+
+For detailed version information, see [VERSIONS.md](VERSIONS.md).
+
+## Container Structure
+
+### Workspace Organization
+```
+/workspace/                 # Clean workspace directory
+├── deps/                   # Dependencies (in .gitignore)
+│   ├── claude-flow/       # Claude Flow source code
+│   └── ruv-FANN/         # ruv-FANN with ruv-swarm
+└── [your project files]   # Your development work
+```
+
+### Scripts Organization
+```
+.devcontainer/scripts/
+├── security/              # Security-related scripts
+├── hooks/                # Container lifecycle hooks
+└── tests/               # Test suite
+```
+
 ## Testing
 
-To verify the setup:
+Run the comprehensive test suite before using:
+```bash
+# From repository root
+./.devcontainer/scripts/tests/test-devcontainer.sh
+```
+
+Tests verify:
+1. JSON configuration validity
+2. Container build success
+3. Tool installations
+4. Security script syntax
+5. VS Code integration
+6. Container persistence
+7. Mount configurations
+
+Manual verification:
 1. Container builds successfully
 2. Claude Code activates (with API key or /login command)
 3. Claude Flow wizard launches
-4. Network restrictions work (try `curl google.com` - should fail)
+4. Network restrictions work (try `curl google.com` - should fail in paranoid/enterprise)
 5. Allowed services work (npm install, git operations)

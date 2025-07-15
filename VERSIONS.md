@@ -64,4 +64,4 @@ npm install --production
 
 - wasm-opt npm package has platform compatibility issues, resolved by using `npm install --production` for ruv-swarm
 
-Last updated: January 2025
+Last updated: July 2025

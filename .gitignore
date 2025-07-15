@@ -44,6 +44,7 @@ docs/
 .swarm/
 memory/
 coordination/
+workspace/CLAUDE.md
 
 # Dependencies folder
 deps/
