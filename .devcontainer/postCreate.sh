@@ -4,9 +4,18 @@ set +e
 
 echo "🚀 Setting up Claude Flow development environment..."
 
+# Ensure we're in the workspace directory
+cd /workspace
+
+# Clean up any problematic files from previous runs
+if [ -e "claude-flow" ] && [ ! -d "claude-flow" ]; then
+    echo "🧹 Cleaning up non-directory claude-flow file..."
+    rm -f claude-flow
+fi
+
 # Make security scripts executable
-chmod +x .devcontainer/init-security.sh 2>/dev/null || true
-chmod +x .devcontainer/security-monitor.sh 2>/dev/null || true
+chmod +x /devcontainer-config/.devcontainer/init-security.sh 2>/dev/null || true
+chmod +x /devcontainer-config/.devcontainer/security-monitor.sh 2>/dev/null || true
 
 # Configure npm
 echo "📦 Configuring npm..."
@@ -19,38 +28,237 @@ if [ -n "$ANTHROPIC_API_KEY" ]; then
     echo "✅ Claude Code initialized"
 else
     echo "⚠️  ANTHROPIC_API_KEY not set. You have two options:"
-    echo "   Option 1: Set it by running: export ANTHROPIC_API_KEY='your-api-key'"
-    echo "   Option 2: Use the /login command after activating Claude Code"
+    echo "   Option 1: Browser login after activating Claude Code"
+    echo "   Option 2: Set it by running: export ANTHROPIC_API_KEY='your-api-key'"
 fi
 
-# Verify claude-flow installation
-echo "🔄 Verifying Claude Flow installation..."
-if command -v claude-flow &> /dev/null; then
-    claude-flow --version || echo "Claude Flow installed from source"
-    echo "📍 Claude Flow location: $(which claude-flow)"
+# Create deps directory for dependencies
+echo "📁 Creating deps directory for dependencies..."
+cd /workspace
+mkdir -p deps
+
+# Clone and setup claude-flow from source
+echo "🔄 Setting up Claude Flow from source..."
+cd /workspace/deps
+
+# Remove any existing claude-flow (file or directory) to start fresh
+if [ -e "claude-flow" ]; then
+    echo "🧹 Removing existing claude-flow to start fresh..."
+    rm -rf claude-flow
+fi
+
+# Clone claude-flow repository
+echo "📥 Cloning claude-flow repository..."
+if git clone https://github.com/ruvnet/claude-flow.git; then
+    echo "✅ claude-flow cloned successfully"
 else
-    echo "❌ Claude Flow not found. Source installation may have failed."
-    echo "   Check /opt/claude-flow directory for installation details."
+    echo "❌ Failed to clone claude-flow!"
+    echo "📥 Installing Claude Flow from npm as fallback..."
+    if npm install -g claude-flow@alpha; then
+        echo "✅ Claude Flow installed successfully from npm"
+        # Verify installation
+        if command -v claude-flow &> /dev/null; then
+            echo "📍 Claude Flow location: $(which claude-flow)"
+        fi
+        else
+            echo "❌ Failed to install Claude Flow from npm"
+        fi
+    # Skip the rest of source installation
+    SKIP_SOURCE_INSTALL=true
 fi
 
-# If source installation failed, offer npm fallback
-if [ ! -d "/opt/claude-flow" ] && ! command -v claude-flow &> /dev/null; then
-    echo "📥 Installing Claude Flow from npm as fallback..."
-    npm install -g claude-flow@alpha
+# Install claude-flow - prefer source over npm
+echo "📦 Installing Claude Flow..."
+
+# First, try to install from source
+if [ -d "claude-flow" ] && [ -f "claude-flow/package.json" ]; then
+    echo "🔄 Trying to install from source as fallback..."
+    cd claude-flow
+    
+    # Skip Puppeteer download to avoid ARM issues
+    export PUPPETEER_SKIP_DOWNLOAD=true
+    
+    # Install with --force and skip optional dependencies
+    npm install --force --no-optional || echo "Some dependencies failed, continuing..."
+    
+    # Try global install with force
+    npm install -g . --force || echo "Global install had issues, continuing..."
+    
+    cd ..
+
+else
+    # try to install from npm which handles dependencies better
+    echo "📥 Installing Claude Flow from npm registry..."
+    if npm install -g claude-flow@alpha; then
+        echo "✅ Claude Flow installed successfully from npm"
+        
+        # Verify installation
+        if command -v claude-flow &> /dev/null; then
+            echo "📍 Claude Flow location: $(which claude-flow)"
+        fi
+    else
+        echo "❌ Failed to install Claude Flow from npm"
+    fi
 fi
 
 # Create workspace structure
-echo "📁 Setting up workspace structure..."
-mkdir -p /workspace/swarms
-mkdir -p /workspace/logs
-mkdir -p /workspace/data
+echo "📁 Setting up clean workspace..."
 
-# Set proper permissions - skip node_modules which is a volume mount
-for dir in swarms logs data; do
-    if [ -d "/workspace/$dir" ]; then
-        chown -R node:node "/workspace/$dir" 2>/dev/null || true
+# Create initial .gitignore
+cat > /workspace/.gitignore << 'EOF'
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# Claude Flow
+.hive-mind/
+.swarm/
+memory/
+coordination/
+
+# Dependencies folder
+deps/
+EOF
+
+# Setup ruv-FANN repository
+echo "🔄 Setting up ruv-FANN in deps folder..."
+
+# Set proper permissions for workspace
+chown -R node:node /workspace 2>/dev/null || true
+
+cd /workspace/deps
+
+# Setup ruv-FANN
+RUV_FANN_DIR="/workspace/deps/ruv-FANN"
+
+if [ ! -d "$RUV_FANN_DIR" ]; then
+    echo "📥 Cloning ruv-FANN repository to $RUV_FANN_DIR..."
+    # Test network connectivity first
+    if ! curl -s --head https://github.com >/dev/null; then
+        echo "⚠️  Cannot reach github.com - checking security preset..."
+        echo "   Current preset: $SECURITY_PRESET"
     fi
-done
+    
+    if git clone https://github.com/ruvnet/ruv-FANN.git "$RUV_FANN_DIR"; then
+        echo "✅ ruv-FANN cloned successfully"
+    else
+        echo "❌ Failed to clone ruv-FANN!"
+    fi
+else
+    echo "✓ ruv-FANN already cloned"
+fi
+
+# Verify ruv-FANN structure
+echo "📂 Checking ruv-FANN directory structure..."
+if [ -d "$RUV_FANN_DIR" ]; then
+    ls -la "$RUV_FANN_DIR/" | head -10
+    if [ -d "$RUV_FANN_DIR/ruv-swarm/npm" ]; then
+        echo "✅ ruv-swarm directory found"
+    else
+        echo "❌ ruv-swarm directory not found in $RUV_FANN_DIR!"
+        echo "Directory contents:"
+        find "$RUV_FANN_DIR" -type d -name "ruv-swarm" 2>/dev/null | head -10
+    fi
+else
+    echo "❌ $RUV_FANN_DIR directory does not exist!"
+fi
+
+# Install ruv-swarm dependencies with detailed error handling
+echo "📦 Installing ruv-swarm dependencies..."
+if [ -d "$RUV_FANN_DIR/ruv-swarm/npm" ]; then
+    cd "$RUV_FANN_DIR/ruv-swarm/npm"
+    
+    # Install production dependencies only (skip devDependencies including wasm-opt)
+    echo "Installing production dependencies only (skipping wasm-opt devDependency)..."
+    
+    if ! npm install --production 2>&1 | tee /tmp/ruv-swarm-install.log; then
+        echo "⚠️  Production install failed, trying --omit=dev flag..."
+        
+        # Try newer npm syntax
+        if ! npm install --omit=dev 2>&1 | tee /tmp/ruv-swarm-install-omit.log; then
+            echo "❌ ruv-swarm npm install failed!"
+            echo "📋 Error details:"
+            echo "----------------------------------------"
+            tail -20 /tmp/ruv-swarm-install-omit.log
+            echo "----------------------------------------"
+            echo "💡 Debug tips:"
+            echo "   - Check the full log: cat /tmp/ruv-swarm-install.log"
+            echo "   - Try manual install: cd $RUV_FANN_DIR/ruv-swarm/npm && npm install --production"
+            echo "⚠️  Continuing setup - ruv-swarm may still be functional..."
+        else
+            echo "✅ ruv-swarm dependencies installed (production only)"
+        fi
+    else
+        echo "✅ ruv-swarm dependencies installed successfully (production only)"
+        echo "   Note: wasm-opt devDependency was skipped"
+    fi
+else
+    echo "❌ Cannot install ruv-swarm - directory $RUV_FANN_DIR/ruv-swarm/npm not found!"
+    echo "   Check if clone was successful and directory structure is correct"
+fi
+
+# Initialize claude-flow (this will create .claude directory and config)
+echo "🔄 Initializing Claude Flow..."
+cd /workspace
+if command -v claude-flow &> /dev/null; then
+    claude-flow init --force || echo "Claude Flow initialization completed"
+    echo "✅ Claude Flow initialized"
+else
+    echo "⚠️  Claude Flow command not found, skipping initialization"
+fi
+
+# Configure Claude MCP servers (this will override any MCP configs from init)
+echo "🔄 Configuring Claude MCP servers..."
+cd /workspace
+
+# Configure claude-flow MCP to use local installation
+echo "📦 Setting up local claude-flow MCP server..."
+claude mcp remove claude-flow 2>/dev/null || true
+if claude mcp add claude-flow claude-flow mcp start 2>&1; then
+    echo "✅ Claude Flow MCP configured with local installation"
+else
+    echo "⚠️  Failed to add claude-flow MCP server"
+fi
+
+# Configure ruv-swarm MCP
+echo "📦 Setting up local ruv-swarm MCP server..."
+# Update paths for deps folder
+RUV_SWARM_BIN=""
+if [ -f "$RUV_FANN_DIR/ruv-swarm/npm/bin/ruv-swarm-secure.js" ]; then
+    RUV_SWARM_BIN="$RUV_FANN_DIR/ruv-swarm/npm/bin/ruv-swarm-secure.js"
+elif [ -f "$RUV_FANN_DIR/ruv-swarm/npm/index.js" ]; then
+    RUV_SWARM_BIN="$RUV_FANN_DIR/ruv-swarm/npm/index.js"
+elif [ -f "$RUV_FANN_DIR/ruv-swarm/npm/ruv-swarm.js" ]; then
+    RUV_SWARM_BIN="$RUV_FANN_DIR/ruv-swarm/npm/ruv-swarm.js"
+fi
+
+if [ -n "$RUV_SWARM_BIN" ]; then
+    echo "Found ruv-swarm at: $RUV_SWARM_BIN"
+    
+    # Remove existing ruv-swarm if it exists
+    claude mcp remove ruv-swarm 2>/dev/null || true
+    
+    # Add local ruv-swarm
+    if claude mcp add ruv-swarm "$RUV_SWARM_BIN" mcp start 2>&1; then
+        echo "✅ ruv-swarm MCP configured with local installation"
+    else
+        echo "❌ Failed to add ruv-swarm to MCP"
+        echo "   You can try manually: claude mcp add ruv-swarm $RUV_SWARM_BIN mcp start"
+    fi
+else
+    echo "⚠️  ruv-swarm binary not found in expected locations"
+    echo "   Checked:"
+    echo "   - $RUV_FANN_DIR/ruv-swarm/npm/bin/ruv-swarm-secure.js"
+    echo "   - $RUV_FANN_DIR/ruv-swarm/npm/index.js"
+    echo "   - $RUV_FANN_DIR/ruv-swarm/npm/ruv-swarm.js"
+    echo "   You may need to check the actual structure and configure manually"
+fi
 
 # Install Oh My Zsh plugins
 echo "🎨 Installing Zsh plugins..."
@@ -73,3 +281,6 @@ echo ""
 echo "📚 Documentation:"
 echo "   - Claude Code: https://claude.ai/code"
 echo "   - Claude Flow: https://github.com/ruvnet/claude-flow"
+
+# Always exit successfully to prevent container startup issues
+exit 0

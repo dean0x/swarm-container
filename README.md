@@ -1,15 +1,34 @@
-# Claude Flow DevContainer
+# Swarm Container
 
-A secure, isolated development container for running Claude Flow swarms with VS Code.
+A secure, isolated development container for running agentic swarms with VS Code.
 
 🔒 **Features multiple security presets**: Paranoid, Enterprise, and Development modes to match your security requirements.
+
+## Supported Swarm Orchestrators
+
+| Orchestrator | Description | Status | |
+|-------------|-------------|---------|---|
+| [claude-flow](https://github.com/ruvnet/claude-flow) | Advanced swarm intelligence with SQLite memory system and GitHub integration | ✅ Available | Auto-initialized |
+| [claude-swarm](https://github.com/parruda/claude-swarm) | Multi-agent orchestration with tree hierarchy and MCP communication | 🔜 Coming Soon | |
 
 ## Prerequisites
 
 - [VS Code](https://code.visualstudio.com/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
-- An [Anthropic API key](https://console.anthropic.com/account/keys) (optional - can use `/login` command instead)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
+- Either an [Anthropic API key](https://console.anthropic.com/account/keys) OR a [Claude Pro/Max subscription](https://claude.ai/subscription)
+
+### Tested Versions
+
+This container has been tested with the following versions:
+
+| Component | Version | Last Updated |
+|-----------|---------|--------------|
+| **Claude Code** | v1.0.51 | January 2025 |
+| **Claude Flow** | v2.0.0-alpha.53 | January 2025 |
+| **ruv-FANN/ruv-swarm** | v1.0.18 | January 2025 |
+
+For detailed version information and update instructions, see [VERSIONS.md](VERSIONS.md).
 
 ## Quick Start
 
@@ -28,13 +47,17 @@ cp .env.development .env
 
 ### 2. Configure Your Environment
 
-Edit `.env` to optionally add your API key:
-```bash
-# Option 1: Set API key as environment variable
-ANTHROPIC_API_KEY=sk-ant-your-key-here
+Choose your authentication method:
 
-# Option 2: Leave empty and use /login command after starting Claude Code
-# ANTHROPIC_API_KEY=
+**Option A: Claude Pro/Max** (use browser login)
+```bash
+# Leave .env as is - you'll be prompt to login after starting Claude Code
+```
+
+**Option B: API Key** (if you have one)
+```bash
+# Edit .env and add your API key
+ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
 ### 3. Open in VS Code
@@ -45,48 +68,66 @@ code .
 
 Then click "Reopen in Container" when prompted.
 
+**Note:** During container setup, if prompted "Edit shell configs to add deno to the PATH? (Y/n)", enter **Y** (yes). This occurs during MCP server configuration and is required for proper functionality.
+
 ### 4. Start Using Claude Flow
 
 Inside the container:
 ```bash
-# Activate Claude Code Skip Permissions For Claude Flow
+# Activate Claude Code with full permissions (Required for claude-flow at the moment)
 claude --dangerously-skip-permissions
 
-# Launch Claude Flow
-claude-flow hive-mind wizard
+# Prompt claude to use claude-flow and 
 ```
 
 📚 **For detailed security configuration, see [SECURITY.md](SECURITY.md)**
 
 ## What's Included
 
-- **Node.js 20** development environment
-- **Claude Code** pre-installed from npm
-- **Claude Flow** installed from source (GitHub repository)
-- **Security features**:
-  - Network isolation with firewall rules
-  - Default-deny outbound connections
-  - Whitelisted access to npm, GitHub, and Anthropic APIs
-- **Developer tools**:
-  - Zsh with Oh My Zsh
-  - Git with delta for better diffs
-  - ripgrep, fzf, bat, and other modern CLI tools
-  - VS Code extensions for JavaScript/TypeScript development
+### 🧰 Development Environment
+- **Node.js 20** with npm for modern JavaScript development
+- **Zsh with Oh My Zsh** - Enhanced terminal with autosuggestions and syntax highlighting
+- **Modern CLI tools** - ripgrep, fzf, bat, delta for better development experience
+- **VS Code extensions** - ESLint, Prettier, GitLens, and more pre-configured
+
+### 🤖 AI Development Tools
+- **Claude Code** - Latest version installed globally from npm
+- **Claude Flow** - v2.0.0-alpha with advanced swarm orchestration
+  - ✅ Globally installed from npm for reliability
+  - 📂 Source code in `/workspace/deps/claude-flow` for exploration and contributions
+  - 🔄 Easy updates with `npm update -g claude-flow@alpha`
+- **ruv-FANN** - Neural network swarm framework
+  - 📂 Full source in `/workspace/deps/ruv-FANN` for development
+  - 🚀 ruv-swarm MCP server auto-configured for local connections
+  - 🔧 Production dependencies only (no build issues)
+
+### 🛡️ Security Features
+- **Three security presets** - Paranoid, Enterprise, and Development modes
+- **Container-level firewall** - Network isolation without affecting your host
+- **Domain allowlisting** - Controlled access to external services
+- **Process isolation** - Safe execution environment
+
+### 💡 Developer Benefits
+- **📝 Contribute to open source** - Both claude-flow and ruv-FANN sources included
+- **🔄 Stay updated** - Pull latest changes directly in the workspace
+- **🧪 Test locally** - Modify and test changes before committing
+- **🚀 Fast MCP connections** - Local servers reduce latency
+- **📚 Full documentation** - CLAUDE.md, README.md, and SECURITY.md included
+- **🎯 Pre-initialized** - Claude Flow ready to use immediately
 
 ## Environment Variables
 
-Set these in your container or in a `.env` file:
+Available environment variables:
 
-- `ANTHROPIC_API_KEY` - Optional for Claude Code functionality (can also use `/login` command)
+- `ANTHROPIC_API_KEY` - Your API key (only needed if using API key authentication)
+- `SECURITY_PRESET` - Security level: `paranoid`, `enterprise`, or `development` (default)
 - `DEVCONTAINER=true` - Automatically set in the container
 - `NODE_ENV=development` - Automatically set in the container
 
 ## Workspace Structure
 
 The container creates these directories:
-- `/workspace/swarms` - For swarm configurations
-- `/workspace/logs` - For execution logs
-- `/workspace/data` - For data storage
+- `/workspace` - Your project files
 
 ## Security Features
 
@@ -156,10 +197,30 @@ which claude-flow
 npm install -g claude-flow@alpha
 ```
 
+### Updating Claude Flow
+To update to the latest version:
+```bash
+# Update from npm (recommended)
+npm update -g claude-flow@alpha
+
+# Or pull latest source for development
+cd /workspace/deps/claude-flow
+git pull origin main
+
+# Verify update
+claude-flow --version
+```
+
 ### VS Code doesn't show "Reopen in Container"
 1. Ensure Remote-Containers extension is installed
 2. Check Docker is running: `docker ps`
 3. Try Command Palette (Cmd/Ctrl+Shift+P): "Remote-Containers: Reopen in Container"
+
+### Deno PATH prompt during setup
+If you missed the prompt "Edit shell configs to add deno to the PATH? (Y/n)" during container creation:
+- This prompt appears during MCP server configuration
+- Answer **Y** (yes) to ensure MCP servers work correctly
+- If you accidentally selected 'n', you can manually add Deno to PATH later
 
 ## Testing
 

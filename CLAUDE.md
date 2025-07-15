@@ -17,10 +17,21 @@ This repository provides a VS Code development container for running claude-flow
 - `.devcontainer/security-monitor.sh` - Runtime security monitoring
 
 ### Claude Flow Installation
-- Installed from source via GitHub repository
-- Cloned to `/opt/claude-flow` for development
-- Globally linked via `npm link` for system-wide access
-- Fallback to npm installation if source build fails
+- Installed globally from npm for reliability
+- Source code cloned to `/workspace/deps/claude-flow` for development
+- Easy updates with `npm update -g claude-flow@alpha`
+- Source available for exploration and contributions
+
+### ruv-FANN Installation
+- Cloned to `/workspace/deps/ruv-FANN` for development and updates
+- ruv-swarm installed with `--production` flag to skip devDependencies
+- Local ruv-swarm MCP server automatically configured
+
+### Development Benefits
+- Both repositories available in workspace for contributions
+- Easy to pull latest updates with `git pull`
+- Modify and test changes locally
+- Submit PRs directly from the container
 
 ### Security Architecture
 - **Presets**: Paranoid, Enterprise, Development modes
@@ -78,6 +89,38 @@ claude-flow hive-mind wizard
 claude-flow hive-mind spawn "task description" --claude
 ```
 
+### Updating Claude Flow
+```bash
+# Update from npm (recommended)
+npm update -g claude-flow@alpha
+
+# Or pull latest source for development
+cd /workspace/deps/claude-flow
+git pull origin main
+
+# Verify update
+claude-flow --version
+```
+
+### MCP Servers
+The container automatically configures two local MCP servers for faster connections:
+- **claude-flow**: Uses the locally installed claude-flow package
+- **ruv-swarm**: Uses the locally cloned ruv-FANN installation
+
+To manually reconfigure:
+```bash
+# Remove and re-add claude-flow
+claude mcp remove claude-flow
+claude mcp add claude-flow claude-flow
+
+# Remove and re-add ruv-swarm
+claude mcp remove ruv-swarm
+claude mcp add ruv-swarm /workspace/deps/ruv-FANN/ruv-swarm/npm/bin/ruv-swarm-secure.js
+
+# Start MCP servers
+claude mcp start
+```
+
 ### Development
 ```bash
 # Update packages
@@ -102,6 +145,26 @@ When adding new npm packages that require network access:
 1. Identify the package registry domain
 2. Add IP ranges to `.devcontainer/init-firewall.sh`
 3. Rebuild the container
+
+## Troubleshooting
+
+### ruv-swarm npm install fails
+If the ruv-swarm installation fails during container creation:
+
+**Common issue: wasm-opt platform error**
+The wasm-opt npm package doesn't support all platforms (e.g., certain ARM architectures).
+
+**Solution implemented**: Since wasm-opt is only a devDependency in ruv-swarm, we install with `npm install --production` to skip all devDependencies, including the problematic wasm-opt package. This allows ruv-swarm to install successfully without any platform compatibility issues.
+
+If you need to manually reinstall:
+```bash
+cd /workspace/deps/ruv-FANN/ruv-swarm/npm
+npm install --production
+# or for newer npm versions:
+npm install --omit=dev
+```
+
+The MCP configuration will work normally since wasm-opt is not required for runtime operation of ruv-swarm.
 
 ## Testing
 

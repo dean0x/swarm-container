@@ -46,7 +46,7 @@
       }
     }
   },
-  "postCreateCommand": "bash .devcontainer/postCreate.sh || true",
+  "postCreateCommand": "bash /devcontainer-config/.devcontainer/postCreate.sh || true",
   "runArgs": [
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",
@@ -56,7 +56,8 @@
     "--cpus", "${localEnv:CONTAINER_CPUS:4}"
   ],
   "mounts": [
-    "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume"
+    "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume",
+    "source=${localWorkspaceFolder},target=/devcontainer-config,type=bind,readonly"
   ],
   "remoteUser": "node",
   "containerEnv": {
@@ -69,5 +70,5 @@
   "overrideCommand": true,
   "shutdownAction": "stopContainer",
   "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  "workspaceMount": "source=${localWorkspaceFolder}/workspace,target=/workspace,type=bind,consistency=cached"
 }

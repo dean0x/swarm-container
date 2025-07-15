@@ -30,10 +30,23 @@ Thumbs.db
 logs/
 *.log
 
-# Claude Flow specific
-swarms/
-data/
+# Environment
+.env
+.env.*
+
+# Docs
+docs/
+
+# Claude / Claude Flow
+.claude/
 *.claude-session
+.hive-mind/
+.swarm/
+memory/
+coordination/
+
+# Dependencies folder
+deps/
 
 # Docker
 .docker/
@@ -42,3 +55,13 @@ data/
 *.tmp
 *.temp
 .cache/
+
+# Typescript
+*.tsbuildinfo
+
+# Build output
+dist/
+build/
+
+# Coverage
+coverage/

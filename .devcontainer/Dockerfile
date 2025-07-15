@@ -54,22 +54,15 @@ RUN npm install -g \
     ts-node \
     nodemon
 
-# Clone and install claude-flow from source
-RUN git clone https://github.com/ruvnet/claude-flow.git /opt/claude-flow \
-    && cd /opt/claude-flow \
-    && npm install \
-    && npm run build 2>/dev/null || echo "No build script found, using as-is" \
-    && npm install -g . \
-    && rm -rf /opt/claude-flow/.git \
-    && echo "Claude Flow installed from source"
+# Note: claude-flow will be cloned to workspace and installed from there
+# This allows developers to work with the source code directly
 
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
 # Create workspace directory and ensure node user has proper shell
 RUN mkdir -p /workspace && chown -R node:node /workspace \
-    && usermod -s /bin/bash node || true \
-    && chown -R node:node /opt/claude-flow || true
+    && usermod -s /bin/bash node || true
 
 # Copy security initialization script
 COPY .devcontainer/init-security.sh /.devcontainer/init-security.sh
