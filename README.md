@@ -417,7 +417,7 @@ If your container suddenly disconnects:
 3. **Monitor container health**:
    ```bash
    # Check logs
-   docker logs $(docker ps -q -f name=swarmcontainer)
+   docker logs $(docker ps -q -f name=SwarmContainer)
    
    # Check resource usage
    docker stats

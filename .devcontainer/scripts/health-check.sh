@@ -35,8 +35,8 @@ check_node_memory() {
 }
 
 # Main health check
-echo "🏥 Container Health Check"
-echo "========================"
+echo "🏥 SwarmContainer Health Check"
+echo "==============================="
 
 # Check system resources
 echo "📊 System Resources:"

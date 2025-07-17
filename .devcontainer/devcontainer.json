@@ -1,5 +1,5 @@
 {
-  "name": "Claude Flow Development Container",
+  "name": "SwarmContainer",
   "build": {
     "dockerfile": "Dockerfile",
     "context": "..",
