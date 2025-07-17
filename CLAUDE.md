@@ -36,7 +36,7 @@ This repository provides a VS Code development container for running claude-flow
 
 ### ruv-FANN Installation
 - Cloned to `/workspace/deps/ruv-FANN` for development and updates
-- ruv-swarm installed with `--production` flag to skip devDependencies
+- ruv-swarm installed globally from source (`npm install -g . --force`) with `--production` deps
 - Local ruv-swarm MCP server automatically configured
 
 ### Development Benefits
@@ -124,7 +124,7 @@ claude-flow --version
 ### MCP Servers
 The container automatically configures two local MCP servers for faster connections:
 - **claude-flow**: Uses the locally installed claude-flow package
-- **ruv-swarm**: Uses the locally cloned ruv-FANN installation
+- **ruv-swarm**: Uses the globally installed ruv-swarm from the ruv-FANN source
 
 To manually reconfigure:
 ```bash
@@ -134,7 +134,7 @@ claude mcp add claude-flow claude-flow mcp start
 
 # Remove and re-add ruv-swarm
 claude mcp remove ruv-swarm
-claude mcp add ruv-swarm /workspace/deps/ruv-FANN/ruv-swarm/npm/bin/ruv-swarm-secure.js mcp start
+claude mcp add ruv-swarm ruv-swarm mcp start
 ```
 
 ### Development
@@ -178,6 +178,8 @@ cd /workspace/deps/ruv-FANN/ruv-swarm/npm
 npm install --production
 # or for newer npm versions:
 npm install --omit=dev
+# install globally
+npm install -g . --force
 ```
 
 The MCP configuration will work normally since wasm-opt is not required for runtime operation of ruv-swarm.

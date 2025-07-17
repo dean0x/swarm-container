@@ -11,7 +11,7 @@ A secure, isolated development container for running agentic swarms, and CLIs wi
 ## ✨ Highlights
 
 - **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while experimenting with AI agents
-- **🚀 Bleeding Edge Updates** - Claude Flow and ruv-swarm installed from source, giving you instant access to the latest features from main branch
+- **🚀 Bleeding Edge Updates** - Claude Flow and ruv-swarm installed from source and available globally, giving you instant access to the latest features from main branch
 - **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - modify, test, and contribute back
 - **⚡ Zero-Latency MCP** - Local MCP servers eliminate network roundtrips for lightning-fast agent coordination
 - **🔧 Production + Development** - Global npm installs for reliability, plus source code for hacking and exploration
@@ -226,7 +226,7 @@ The container includes:
   - 🔄 Easy updates with `npm update -g claude-flow@alpha`
 - **ruv-FANN** - Neural network swarm framework
   - 📂 Full source in `/workspace/deps/ruv-FANN` for development
-  - 🚀 ruv-swarm MCP server auto-configured for local connections
+  - 🚀 ruv-swarm installed globally from source with MCP auto-configured for local connections
   - 🔧 Production dependencies only (no build issues)
 
 ### 🛡️ Security Features

@@ -8,7 +8,7 @@ This document tracks the current working versions of the core components in the 
 |-----------|---------|--------|-------|
 | **Claude Code** | v1.0.51 | npm: `@anthropic-ai/claude-code` | Installed globally via npm |
 | **Claude Flow** | v2.0.0-alpha.53 | npm: `claude-flow@alpha` | Installed globally from npm, source in `/workspace/deps/claude-flow` |
-| **ruv-FANN/ruv-swarm** | v1.0.18 | GitHub: `ruvnet/ruv-FANN` | Cloned to `/workspace/deps/ruv-FANN`, ruv-swarm installed with `--production` |
+| **ruv-FANN/ruv-swarm** | v1.0.18 | GitHub: `ruvnet/ruv-FANN` | Cloned to `/workspace/deps/ruv-FANN`, ruv-swarm installed globally from source with `--production` deps |
 
 ## Container Base
 
@@ -52,6 +52,7 @@ cd /workspace/deps/ruv-FANN
 git pull origin main
 cd ruv-swarm/npm
 npm install --production
+npm install -g . --force
 ```
 
 ## Version Compatibility
