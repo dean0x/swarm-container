@@ -87,6 +87,8 @@ RUN git config --global core.pager "delta" \
 # Set environment variables
 ENV DEVCONTAINER=true
 ENV SHELL=/bin/zsh
+# Increase Node.js memory limit to prevent OOM errors
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV NODE_ENV=development
 
 # Set entrypoint - this runs as root since we haven't switched users yet

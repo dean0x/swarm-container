@@ -379,6 +379,56 @@ If you missed the prompt "Edit shell configs to add deno to the PATH? (Y/n)" dur
 - Answer **Y** (yes) to ensure MCP servers work correctly
 - If you accidentally selected 'n', you can manually add Deno to PATH later
 
+### Node.js Out of Memory Errors
+If you encounter "JavaScript heap out of memory" errors:
+
+1. **Increase memory in .env**:
+   ```bash
+   CONTAINER_MEMORY=12g  # Increase from default 8g
+   ```
+
+2. **Check current memory usage**:
+   ```bash
+   # Inside container
+   bash /devcontainer-config/.devcontainer/scripts/health-check.sh
+   ```
+
+3. **Temporary fix for current session**:
+   ```bash
+   export NODE_OPTIONS="--max-old-space-size=8192"  # 8GB
+   ```
+
+4. **Rebuild container** after changing memory settings
+
+### Container Disconnection Issues
+If your container suddenly disconnects:
+
+1. **Check Docker Desktop resources**:
+   - Go to Docker Desktop → Settings → Resources
+   - Ensure Docker has enough memory (16GB+ recommended)
+   - Increase CPU limit if needed
+
+2. **Add to .env for stability**:
+   ```bash
+   CONTAINER_MEMORY=10g
+   CONTAINER_CPUS=6
+   ```
+
+3. **Monitor container health**:
+   ```bash
+   # Check logs
+   docker logs $(docker ps -q -f name=swarmcontainer)
+   
+   # Check resource usage
+   docker stats
+   ```
+
+4. **Common causes**:
+   - Docker Desktop memory limits
+   - System running out of resources
+   - Network interruptions
+   - Heavy swarm operations consuming resources
+
 ## Testing
 
 Run automated tests before opening in VS Code:
