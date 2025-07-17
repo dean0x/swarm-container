@@ -16,7 +16,9 @@
           "github.com",
           "api.github.com",
           "registry.npmjs.org",
-          "registry.yarnpkg.com"
+          "registry.yarnpkg.com",
+          "api.openai.com",
+          "codex.openai.com"
         ],
         "block_all_others": true,
         "dns_servers": ["1.1.1.1", "8.8.8.8"],
@@ -51,7 +53,9 @@
           "pypi.org",
           "files.pythonhosted.org",
           "deb.debian.org",
-          "security.debian.org"
+          "security.debian.org",
+          "api.openai.com",
+          "codex.openai.com"
         ],
         "custom_allowed_domains": [],
         "block_all_others": true,
