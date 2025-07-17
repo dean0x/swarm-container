@@ -27,7 +27,7 @@ check_node_memory() {
     for pid in $node_pids; do
         if [ -n "$pid" ]; then
             local rss=$(ps -o rss= -p $pid 2>/dev/null | awk '{print int($1/1024)}')
-            if [ -n "$rss" ] && [ "$rss" -gt 3500 ]; then
+            if [ $? -eq 0 ] && [ -n "$rss" ] && [ "$rss" -gt 3500 ]; then
                 echo "WARNING: Node process $pid using ${rss}MB (limit is 4096MB)"
             fi
         fi
