@@ -15,6 +15,7 @@ A secure, isolated development container for running agentic swarms, and CLIs wi
 - **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - modify, test, and contribute back
 - **⚡ Zero-Latency MCP** - Local MCP servers eliminate network roundtrips for lightning-fast agent coordination
 - **🔧 Production + Development** - Global npm installs for reliability, plus source code for hacking and exploration
+- **🌟 Gemini Ready** - Google Gemini CLI pre-installed for multimodal experimentation
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
 - **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
 
@@ -29,7 +30,7 @@ A secure, isolated development container for running agentic swarms, and CLIs wi
 
 | [Claude Code](https://claude.ai/code) | [OpenCode](https://github.com/opencode) | [Codex](https://openai.com/codex) | [Gemini](https://gemini.google.com) |
 |:---:|:---:|:---:|:---:|
-| ✅ **Available** | 🔜 Coming Soon | 🔜 Coming Soon | 🔜 Coming Soon |
+| ✅ **Available** | 🔜 Coming Soon | 🔜 Coming Soon | ✅ **Available** |
 
 ## Prerequisites
 
@@ -139,6 +140,9 @@ claude --dangerously-skip-permissions
 
 # Step 2: Verify installation
 claude-flow --version
+
+# Optional: verify Gemini CLI
+gemini --version
 
 # Step 3: Start building!
 # Quick swarm spawn

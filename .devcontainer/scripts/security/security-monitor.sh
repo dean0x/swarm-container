@@ -102,6 +102,19 @@ check_claude_integrity() {
     fi
 }
 
+# Function to check Gemini CLI integrity
+check_gemini_integrity() {
+    echo -e "${YELLOW}Checking Gemini CLI integrity...${NC}"
+
+    GEMINI_VERSION=$(gemini --version 2>/dev/null)
+    if [[ -z "$GEMINI_VERSION" ]]; then
+        echo -e "${RED}⚠️  Warning: Gemini CLI not found or not working${NC}"
+        echo "[$(date)] WARNING: Gemini CLI not functional" >> "$LOGFILE"
+    else
+        echo -e "${GREEN}✓ Gemini CLI: $GEMINI_VERSION${NC}"
+    fi
+}
+
 # Main monitoring routine
 echo -e "${GREEN}🔍 Starting security monitor...${NC}"
 echo "Security Preset: $SECURITY_PRESET"
@@ -114,6 +127,8 @@ echo ""
 check_network
 echo ""
 check_claude_integrity
+echo ""
+check_gemini_integrity
 
 echo ""
 echo -e "${GREEN}✅ Security check complete${NC}"

@@ -9,6 +9,7 @@ This document tracks the current working versions of the core components in the 
 | **Claude Code** | v1.0.51 | npm: `@anthropic-ai/claude-code` | Installed globally via npm |
 | **Claude Flow** | v2.0.0-alpha.53 | npm: `claude-flow@alpha` | Installed globally from npm, source in `/workspace/deps/claude-flow` |
 | **ruv-FANN/ruv-swarm** | v1.0.18 | GitHub: `ruvnet/ruv-FANN` | Cloned to `/workspace/deps/ruv-FANN`, ruv-swarm installed with `--production` |
+| **Gemini CLI** | v0.1.12 | npm: `@google/gemini-cli` | Installed globally via npm |
 
 ## Container Base
 

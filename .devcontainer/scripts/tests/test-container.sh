@@ -22,6 +22,7 @@ docker run --rm \
     echo 'npm: ' && npm --version
     echo -n 'Claude Code: ' && claude --version 2>/dev/null || echo 'installed'
     echo -n 'Claude Flow: ' && claude-flow --version 2>/dev/null || echo 'alpha installed'
+    echo -n 'Gemini CLI: ' && gemini --version 2>/dev/null || echo 'installed'
     echo -n 'Git: ' && git --version
     echo -n 'Zsh: ' && zsh --version
   "
