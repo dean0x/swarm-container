@@ -23,12 +23,17 @@ check_memory() {
 
 # Check Node.js memory
 check_node_memory() {
+    # Extract memory limit from NODE_OPTIONS (default to 4096MB)
+    local node_limit=$(echo "$NODE_OPTIONS" | grep -o 'max-old-space-size=[0-9]*' | cut -d= -f2)
+    node_limit=${node_limit:-4096}
+    local warning_threshold=$((node_limit * 85 / 100))  # Warn at 85% of limit
+    
     local node_pids=$(pgrep -f node)
     for pid in $node_pids; do
         if [ -n "$pid" ]; then
             local rss=$(ps -o rss= -p $pid 2>/dev/null | awk '{print int($1/1024)}')
-            if [ $? -eq 0 ] && [ -n "$rss" ] && [ "$rss" -gt 3500 ]; then
-                echo "WARNING: Node process $pid using ${rss}MB (limit is 4096MB)"
+            if [ $? -eq 0 ] && [ -n "$rss" ] && [ "$rss" -gt "$warning_threshold" ]; then
+                echo "WARNING: Node process $pid using ${rss}MB (${node_limit}MB limit, ${warning_threshold}MB threshold)"
             fi
         fi
     done
