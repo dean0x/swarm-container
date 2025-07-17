@@ -177,28 +177,21 @@ echo "📦 Installing ruv-swarm dependencies..."
 if [ -d "$RUV_FANN_DIR/ruv-swarm/npm" ]; then
     cd "$RUV_FANN_DIR/ruv-swarm/npm"
     
-    # Install production dependencies only (skip devDependencies including wasm-opt)
-    echo "Installing production dependencies only (skipping wasm-opt devDependency)..."
-    
-    if ! npm install --production 2>&1 | tee /tmp/ruv-swarm-install.log; then
-        echo "⚠️  Production install failed, trying --omit=dev flag..."
-        
-        # Try newer npm syntax
-        if ! npm install --omit=dev 2>&1 | tee /tmp/ruv-swarm-install-omit.log; then
-            echo "❌ ruv-swarm npm install failed!"
-            echo "📋 Error details:"
-            echo "----------------------------------------"
-            tail -20 /tmp/ruv-swarm-install-omit.log
-            echo "----------------------------------------"
-            echo "💡 Debug tips:"
-            echo "   - Check the full log: cat /tmp/ruv-swarm-install.log"
-            echo "   - Try manual install: cd $RUV_FANN_DIR/ruv-swarm/npm && npm install --production"
-            echo "⚠️  Continuing setup - ruv-swarm may still be functional..."
-        else
-            echo "✅ ruv-swarm dependencies installed (production only)"
-        fi
+    # Install dependencies excluding devDependencies (skip wasm-opt)
+    echo "Installing dependencies without devDependencies (skipping wasm-opt)..."
+
+    if ! npm install --omit=dev 2>&1 | tee /tmp/ruv-swarm-install.log; then
+        echo "❌ ruv-swarm npm install failed!"
+        echo "📋 Error details:"
+        echo "----------------------------------------"
+        tail -20 /tmp/ruv-swarm-install.log
+        echo "----------------------------------------"
+        echo "💡 Debug tips:"
+        echo "   - Check the full log: cat /tmp/ruv-swarm-install.log"
+        echo "   - Try manual install: cd $RUV_FANN_DIR/ruv-swarm/npm && npm install --omit=dev"
+        echo "⚠️  Continuing setup - ruv-swarm may still be functional..."
     else
-        echo "✅ ruv-swarm dependencies installed successfully (production only)"
+        echo "✅ ruv-swarm dependencies installed successfully (without devDependencies)"
         echo "   Note: wasm-opt devDependency was skipped"
     fi
 else
