@@ -194,6 +194,19 @@ if [ -d "$RUV_FANN_DIR/ruv-swarm/npm" ]; then
         echo "✅ ruv-swarm dependencies installed successfully (without devDependencies)"
         echo "   Note: wasm-opt devDependency was skipped"
     fi
+
+    echo "🔄 Installing ruv-swarm globally from source..."
+    if ! npm install -g . --force 2>&1 | tee /tmp/ruv-swarm-global.log; then
+        echo "⚠️  Global install from source failed, attempting npm registry..."
+        if npm install -g ruv-swarm 2>&1 | tee /tmp/ruv-swarm-global.log; then
+            echo "✅ ruv-swarm installed globally from npm"
+        else
+            echo "❌ Failed to install ruv-swarm globally"
+            tail -20 /tmp/ruv-swarm-global.log
+        fi
+    else
+        echo "✅ ruv-swarm installed globally from source"
+    fi
 else
     echo "❌ Cannot install ruv-swarm - directory $RUV_FANN_DIR/ruv-swarm/npm not found!"
     echo "   Check if clone was successful and directory structure is correct"
@@ -224,36 +237,16 @@ fi
 
 # Configure ruv-swarm MCP
 echo "📦 Setting up local ruv-swarm MCP server..."
-# Update paths for deps folder
-RUV_SWARM_BIN=""
-if [ -f "$RUV_FANN_DIR/ruv-swarm/npm/bin/ruv-swarm-secure.js" ]; then
-    RUV_SWARM_BIN="$RUV_FANN_DIR/ruv-swarm/npm/bin/ruv-swarm-secure.js"
-elif [ -f "$RUV_FANN_DIR/ruv-swarm/npm/index.js" ]; then
-    RUV_SWARM_BIN="$RUV_FANN_DIR/ruv-swarm/npm/index.js"
-elif [ -f "$RUV_FANN_DIR/ruv-swarm/npm/ruv-swarm.js" ]; then
-    RUV_SWARM_BIN="$RUV_FANN_DIR/ruv-swarm/npm/ruv-swarm.js"
-fi
 
-if [ -n "$RUV_SWARM_BIN" ]; then
-    echo "Found ruv-swarm at: $RUV_SWARM_BIN"
-    
-    # Remove existing ruv-swarm if it exists
-    claude mcp remove ruv-swarm 2>/dev/null || true
-    
-    # Add local ruv-swarm
-    if claude mcp add ruv-swarm "$RUV_SWARM_BIN" mcp start 2>&1; then
-        echo "✅ ruv-swarm MCP configured with local installation"
-    else
-        echo "❌ Failed to add ruv-swarm to MCP"
-        echo "   You can try manually: claude mcp add ruv-swarm $RUV_SWARM_BIN mcp start"
-    fi
+# Remove existing ruv-swarm configuration if present
+claude mcp remove ruv-swarm 2>/dev/null || true
+
+# Add ruv-swarm using the globally installed command
+if claude mcp add ruv-swarm ruv-swarm mcp start 2>&1; then
+    echo "✅ ruv-swarm MCP configured with global installation"
 else
-    echo "⚠️  ruv-swarm binary not found in expected locations"
-    echo "   Checked:"
-    echo "   - $RUV_FANN_DIR/ruv-swarm/npm/bin/ruv-swarm-secure.js"
-    echo "   - $RUV_FANN_DIR/ruv-swarm/npm/index.js"
-    echo "   - $RUV_FANN_DIR/ruv-swarm/npm/ruv-swarm.js"
-    echo "   You may need to check the actual structure and configure manually"
+    echo "❌ Failed to add ruv-swarm to MCP"
+    echo "   You can try manually: claude mcp add ruv-swarm ruv-swarm mcp start"
 fi
 
 # Install Oh My Zsh plugins
