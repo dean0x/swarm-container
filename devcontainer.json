@@ -56,7 +56,7 @@
   ],
   "mounts": [
     "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume",
-    "source=${localWorkspaceFolder}/.devcontainer,target=/devcontainer-config,type=bind,readonly"
+    "source=${localWorkspaceFolder},target=/devcontainer-config,type=bind,readonly"
   ],
   "remoteUser": "node",
   "containerEnv": {
@@ -68,5 +68,6 @@
   },
   "overrideCommand": true,
   "shutdownAction": "stopContainer",
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspace,type=bind,consistency=cached"
 }
