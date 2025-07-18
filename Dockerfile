@@ -68,12 +68,12 @@ RUN mkdir -p /workspace && chown -R node:node /workspace \
     && usermod -s /bin/bash node || true
 
 # Copy security initialization scripts
-COPY .devcontainer/scripts/security/init-security.sh /.devcontainer/scripts/security/init-security.sh
-COPY .devcontainer/scripts/security/security-config.json /.devcontainer/scripts/security/security-config.json
-RUN chmod +x /.devcontainer/scripts/security/init-security.sh
+COPY scripts/security/init-security.sh /scripts/security/init-security.sh
+COPY scripts/security/security-config.json /scripts/security/security-config.json
+RUN chmod +x /scripts/security/init-security.sh
 
 # Copy and setup entrypoint script
-COPY .devcontainer/scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set working directory

@@ -21,8 +21,8 @@ SECURITY_PRESET="${SECURITY_PRESET:-development}"
 echo -e "${BLUE}🔒 Security Level: ${SECURITY_PRESET}${NC}"
 
 # Run security initialization as root
-# The script is copied during build to /.devcontainer/scripts/security/
-if [ -f "/.devcontainer/scripts/security/init-security.sh" ]; then
+# The script is copied during build to /scripts/security/
+if [ -f "/scripts/security/init-security.sh" ]; then
     echo -e "${BLUE}🔧 Applying security rules...${NC}"
     
     # Export environment variables for the security script
@@ -30,7 +30,7 @@ if [ -f "/.devcontainer/scripts/security/init-security.sh" ]; then
     export CUSTOM_ALLOWED_DOMAINS="${CUSTOM_ALLOWED_DOMAINS:-}"
     
     # Run the security initialization
-    bash /.devcontainer/scripts/security/init-security.sh
+    bash /scripts/security/init-security.sh
     SECURITY_STATUS=$?
     
     if [ $SECURITY_STATUS -eq 0 ]; then
@@ -41,7 +41,7 @@ if [ -f "/.devcontainer/scripts/security/init-security.sh" ]; then
     fi
 else
     echo -e "${RED}❌ Security script not found!${NC}"
-    echo -e "    Expected at: /.devcontainer/scripts/security/init-security.sh"
+    echo -e "    Expected at: /scripts/security/init-security.sh"
     echo -e "${YELLOW}⚠️  Container starting without security rules${NC}"
 fi
 

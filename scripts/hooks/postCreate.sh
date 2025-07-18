@@ -14,8 +14,8 @@ if [ -e "claude-flow" ] && [ ! -d "claude-flow" ]; then
 fi
 
 # Make security scripts executable
-chmod +x /devcontainer-config/.devcontainer/scripts/security/init-security.sh 2>/dev/null || true
-chmod +x /devcontainer-config/.devcontainer/scripts/security/security-monitor.sh 2>/dev/null || true
+chmod +x /devcontainer-config/scripts/security/init-security.sh 2>/dev/null || true
+chmod +x /devcontainer-config/scripts/security/security-monitor.sh 2>/dev/null || true
 
 # Configure npm
 echo "📦 Configuring npm..."

@@ -20,13 +20,13 @@ fi
 # Test 1: Check for VS Code specific configuration
 echo "1️⃣ Checking VS Code configuration..."
 
-if [ -f ".devcontainer/devcontainer.json" ]; then
+if [ -f "devcontainer.json" ]; then
     echo -e "   ${GREEN}✓${NC} devcontainer.json found"
     
     # Check for required VS Code properties
     REQUIRED_PROPS=("customizations" "workspaceFolder" "remoteUser")
     for prop in "${REQUIRED_PROPS[@]}"; do
-        if grep -q "\"$prop\"" .devcontainer/devcontainer.json; then
+        if grep -q "\"$prop\"" devcontainer.json; then
             echo -e "   ${GREEN}✓${NC} $prop configured"
         else
             echo -e "   ${RED}✗${NC} Missing required property: $prop"
@@ -40,8 +40,8 @@ fi
 echo ""
 echo "2️⃣ Checking VS Code extensions..."
 
-if grep -q "extensions" .devcontainer/devcontainer.json; then
-    EXTENSIONS=$(grep -A10 '"extensions"' .devcontainer/devcontainer.json | grep -o '"[^"]*\.[^"]*"' | tr -d '"')
+if grep -q "extensions" devcontainer.json; then
+    EXTENSIONS=$(grep -A10 '"extensions"' devcontainer.json | grep -o '"[^"]*\.[^"]*"' | tr -d '"')
     if [ -n "$EXTENSIONS" ]; then
         echo -e "   ${GREEN}✓${NC} Extensions configured:"
         echo "$EXTENSIONS" | sed 's/^/      - /'
@@ -57,16 +57,16 @@ echo ""
 echo "3️⃣ Checking for common VS Code integration issues..."
 
 # Check if dockerfile or dockerFile is used (VS Code accepts both)
-if grep -q '"dockerfile":\|"dockerFile":' .devcontainer/devcontainer.json; then
+if grep -q '"dockerfile":\|"dockerFile":' devcontainer.json; then
     echo -e "   ${GREEN}✓${NC} Dockerfile reference found"
 else
     echo -e "   ${RED}✗${NC} No Dockerfile reference in devcontainer.json"
 fi
 
 # Check for build context
-if grep -q '"build"' .devcontainer/devcontainer.json; then
+if grep -q '"build"' devcontainer.json; then
     echo -e "   ${GREEN}✓${NC} Build configuration found"
-elif grep -q '"image"' .devcontainer/devcontainer.json; then
+elif grep -q '"image"' devcontainer.json; then
     echo -e "   ${GREEN}✓${NC} Image configuration found"
 else
     echo -e "   ${RED}✗${NC} No build or image configuration found"
@@ -81,7 +81,7 @@ cat > /tmp/test-vscode-sim.sh << 'EOF'
 #!/bin/bash
 # Simulate VS Code's devcontainer detection
 
-CONFIG_FILE=".devcontainer/devcontainer.json"
+CONFIG_FILE="devcontainer.json"
 
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "ERROR: No devcontainer.json found"
@@ -141,11 +141,11 @@ else
 fi
 
 # Check for Dockerfile
-if [ -f ".devcontainer/Dockerfile" ]; then
+if [ -f "Dockerfile" ]; then
     echo -e "   ${GREEN}✓${NC} Dockerfile exists"
     
     # Basic Dockerfile validation
-    if grep -q "^FROM" .devcontainer/Dockerfile; then
+    if grep -q "^FROM" Dockerfile; then
         echo -e "   ${GREEN}✓${NC} Dockerfile has FROM instruction"
     else
         echo -e "   ${RED}✗${NC} Dockerfile missing FROM instruction"
@@ -161,8 +161,8 @@ echo ""
 echo "6️⃣ Testing command execution flow..."
 
 # Check postCreateCommand
-if grep -q '"postCreateCommand"' .devcontainer/devcontainer.json; then
-    POST_CREATE=$(grep '"postCreateCommand"' .devcontainer/devcontainer.json | cut -d'"' -f4)
+if grep -q '"postCreateCommand"' devcontainer.json; then
+    POST_CREATE=$(grep '"postCreateCommand"' devcontainer.json | cut -d'"' -f4)
     echo -e "   ${GREEN}✓${NC} postCreateCommand: $POST_CREATE"
     
     # Check if the command file exists
