@@ -5,6 +5,23 @@ All notable changes to SwarmContainer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-01-18
+
+### Added
+- Multi-AI CLI support: OpenAI Codex and Google Gemini CLIs
+- Global installation of ruv-swarm from source
+- Security allowlist entries for OpenAI and Google AI domains
+- Shell history commands for new CLIs (codex --help, gemini --help)
+
+### Improved
+- npm install now uses --omit=dev flag instead of deprecated --production
+- Better error handling and logging for ruv-swarm installation
+- MCP configuration now uses globally installed ruv-swarm command
+- Documentation updated to show multi-AI CLI support
+
+### Fixed
+- Platform compatibility issues with wasm-opt by skipping devDependencies
+
 ## [1.0.1] - 2025-01-17
 
 ### Fixed
