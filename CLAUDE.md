@@ -36,7 +36,7 @@ This repository provides a VS Code development container for running claude-flow
 
 ### ruv-FANN Installation
 - Cloned to `/workspace/deps/ruv-FANN` for development and updates
-- ruv-swarm installed with `--production` flag to skip devDependencies
+- ruv-swarm installed globally from source (`npm install -g . --force`) with production deps
 - Local ruv-swarm MCP server automatically configured
 
 ### Development Benefits
