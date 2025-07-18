@@ -5,6 +5,25 @@ All notable changes to SwarmContainer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-01-17
+
+### Fixed
+- Node.js out of memory errors by setting NODE_OPTIONS to 4GB heap size
+- Container disconnection issues with resource limits and restart policy
+- Dockerfile syntax for git-delta installation on Debian 11
+
+### Added
+- Health check script for monitoring container resources
+- Container memory management with configurable limits
+- Shared memory configuration (2GB) for heavy operations
+- Dynamic memory threshold in health monitoring
+- Consistent "SwarmContainer" naming throughout project
+
+### Improved
+- Comprehensive troubleshooting documentation for memory and stability issues
+- Resource allocation guidance for Docker Desktop
+- Container stability with --restart=unless-stopped flag
+
 ## [1.0.0] - 2025-01-15
 
 ### Added
@@ -35,4 +54,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Persistent command history across container restarts
 - Modern CLI tools: ripgrep, fzf, bat, delta
 
+[1.0.1]: https://github.com/dean0x/swarm-container/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/dean0x/swarm-container/releases/tag/v1.0.0
