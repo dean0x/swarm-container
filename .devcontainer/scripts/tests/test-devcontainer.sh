@@ -74,7 +74,7 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "6️⃣ Testing tool installations..."
     # Note: claude-flow is installed during postCreate, not during build
-    for tool in node npm claude git; do
+    for tool in node npm claude codex gemini git; do
         if docker exec "$CONTAINER_ID" which $tool > /dev/null 2>&1; then
             echo -e "   ${GREEN}✓${NC} $tool installed"
         else

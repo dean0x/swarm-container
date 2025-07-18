@@ -280,6 +280,8 @@ if [ ! -f ~/.swarm_history_added ]; then
         echo ": $(date +%s):0;claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
         echo ": $(date +%s):0;claude-flow hive-mind wizard" >> ~/.zsh_history
         echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
+        echo ": $(date +%s):0;codex --help" >> ~/.zsh_history
+        echo ": $(date +%s):0;gemini --help" >> ~/.zsh_history
     fi
     
     # For bash
@@ -288,11 +290,15 @@ if [ ! -f ~/.swarm_history_added ]; then
         history -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
         history -s "claude-flow hive-mind wizard"
         history -s "claude --dangerously-skip-permissions"
+        history -s "codex --help"
+        history -s "gemini --help"
         
         # Also add to history file
         echo "claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
         echo "claude-flow hive-mind wizard" >> ~/.bash_history
         echo "claude --dangerously-skip-permissions" >> ~/.bash_history
+        echo "codex --help" >> ~/.bash_history
+        echo "gemini --help" >> ~/.bash_history
     fi
     
     # Mark as added
