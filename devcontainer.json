@@ -55,7 +55,6 @@
     "--restart=unless-stopped"
   ],
   "mounts": [
-    "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume",
     "source=${localWorkspaceFolder}/.devcontainer,target=/devcontainer-config,type=bind,readonly"
   ],
   "remoteUser": "node",
