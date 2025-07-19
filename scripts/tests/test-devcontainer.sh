@@ -11,7 +11,7 @@ NC='\033[0m'
 
 # Test 1: Validate JSON files
 echo "1️⃣ Validating JSON configuration..."
-for file in .devcontainer/*.json .devcontainer/scripts/security/*.json; do
+for file in *.json scripts/security/*.json; do
     if [ -f "$file" ]; then
         if python3 -m json.tool "$file" > /dev/null 2>&1; then
             echo -e "   ${GREEN}✓${NC} $file is valid JSON"
@@ -26,11 +26,11 @@ done
 # Test 2: Build the container
 echo ""
 echo "2️⃣ Building container..."
-if docker build -t devcontainer-test -f .devcontainer/Dockerfile . > /dev/null 2>&1; then
+if docker build -t devcontainer-test -f Dockerfile . > /dev/null 2>&1; then
     echo -e "   ${GREEN}✓${NC} Container build successful"
 else
     echo -e "   ${RED}✗${NC} Container build failed"
-    docker build -t devcontainer-test -f .devcontainer/Dockerfile . 2>&1 | tail -20
+    docker build -t devcontainer-test -f Dockerfile . 2>&1 | tail -20
     exit 1
 fi
 
@@ -94,7 +94,7 @@ fi
 # Test 7: Security script syntax check
 echo ""
 echo "7️⃣ Checking shell scripts..."
-for script in .devcontainer/scripts/*/*.sh; do
+for script in scripts/*/*.sh scripts/*.sh; do
     if [ -f "$script" ]; then
         if bash -n "$script" 2>/dev/null; then
             echo -e "   ${GREEN}✓${NC} $script syntax OK"
@@ -112,8 +112,8 @@ echo "Now running issue-specific tests..."
 echo ""
 
 # Run the issue-specific tests
-if [ -f ".devcontainer/scripts/tests/test-container-issues.sh" ]; then
-    bash .devcontainer/scripts/tests/test-container-issues.sh
+if [ -f "scripts/tests/test-container-issues.sh" ]; then
+    bash scripts/tests/test-container-issues.sh
     ISSUE_TEST_RESULT=$?
 else
     echo -e "${YELLOW}⚠${NC} test-container-issues.sh not found"
@@ -125,8 +125,8 @@ echo "Running VS Code integration tests..."
 echo ""
 
 # Run VS Code integration tests
-if [ -f ".devcontainer/scripts/tests/test-vscode-integration.sh" ]; then
-    bash .devcontainer/scripts/tests/test-vscode-integration.sh
+if [ -f "scripts/tests/test-vscode-integration.sh" ]; then
+    bash scripts/tests/test-vscode-integration.sh
 else
     echo -e "${YELLOW}⚠${NC} test-vscode-integration.sh not found"
 fi
