@@ -69,5 +69,5 @@
   "overrideCommand": true,
   "shutdownAction": "stopContainer",
   "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspace,type=bind,consistency=cached"
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
 }
