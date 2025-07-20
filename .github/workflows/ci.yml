@@ -35,11 +35,6 @@ jobs:
           fi
         done
     
-    - name: Test Node.js scripts
-      run: |
-        # Test the MCP fix script syntax
-        node --check scripts/fix-mcp-json.js
-    
     - name: Run shellcheck
       run: |
         sudo apt-get update && sudo apt-get install -y shellcheck

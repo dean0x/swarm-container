@@ -133,20 +133,7 @@ else
     VSCODE_TEST_RESULT=0
 fi
 
-echo ""
-echo "Running MCP update tests..."
-echo ""
-
-# Run MCP update tests
-if [ -f "scripts/tests/test-mcp-nodejs.sh" ]; then
-    bash scripts/tests/test-mcp-nodejs.sh
-    MCP_TEST_RESULT=$?
-else
-    echo -e "${YELLOW}⚠${NC} test-mcp-nodejs.sh not found"
-    MCP_TEST_RESULT=0
-fi
-
-if [ $ISSUE_TEST_RESULT -eq 0 ] && [ $VSCODE_TEST_RESULT -eq 0 ] && [ $MCP_TEST_RESULT -eq 0 ]; then
+if [ $ISSUE_TEST_RESULT -eq 0 ] && [ $VSCODE_TEST_RESULT -eq 0 ]; then
     echo ""
     echo -e "${GREEN}✅ All tests passed!${NC}"
     echo ""
