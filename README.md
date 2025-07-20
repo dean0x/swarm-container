@@ -132,7 +132,7 @@ code .
 - Download the base Docker image
 - Install all dependencies
 - Clone claude-flow and ruv-FANN sources
-- Configure MCP servers
+- Initialize claude-flow with auto-configured MCP servers
 - Set up your development environment
 
 ⏱️ **This takes 3-5 minutes on first run**
@@ -145,12 +145,12 @@ During setup, you'll see:
    ```
    Edit shell configs to add deno to the PATH? (Y/n)
    ```
-   **➜ Type `Y` and press Enter** (required for MCP servers)
+   **➜ Type `Y` and press Enter** (required for claude-flow to work properly)
 
 2. **Progress messages** showing:
    - Security level initialization
-   - Claude Flow installation
-   - MCP server configuration
+   - Claude Flow global installation
+   - Claude Flow initialization with MCP auto-configuration
 
 ### 5. Start Using Claude Flow
 
@@ -257,8 +257,8 @@ The container includes:
   - 🔄 Easy updates with `npm update -g claude-flow@alpha`
 - **ruv-FANN** - Neural network swarm framework
   - 📂 Full source cloned to `/workspace/deps/ruv-FANN` for development
-  - 🚀 ruv-swarm MCP server auto-configured via npx
-  - 🔧 No installation required - just works
+  - 🚀 ruv-swarm MCP server available for manual configuration
+  - 🔧 No installation required - accessible via npx
 
 ### 🛡️ Security Features
 - **Three security presets** - Paranoid, Enterprise, and Development modes
@@ -410,8 +410,8 @@ If you encounter disk space errors during build:
 
 ### Deno PATH prompt during setup
 If you missed the prompt "Edit shell configs to add deno to the PATH? (Y/n)" during container creation:
-- This prompt appears during MCP server configuration
-- Answer **Y** (yes) to ensure MCP servers work correctly
+- This prompt appears during claude-flow initialization
+- Answer **Y** (yes) to ensure claude-flow works correctly
 - If you accidentally selected 'n', you can manually add Deno to PATH later
 
 ### Node.js Out of Memory Errors

@@ -120,20 +120,11 @@ claude-flow --version
 ```
 
 ### MCP Servers
-The container automatically configures two MCP servers:
-- **claude-flow**: Uses the globally installed claude-flow package
-- **ruv-swarm**: Uses npx to always run the latest version
+MCP servers are automatically configured when you run `claude-flow init`:
+- **claude-flow**: Automatically configured during initialization
+- **ruv-swarm**: Available for manual configuration if needed
 
-To manually reconfigure:
-```bash
-# Remove and re-add claude-flow
-claude mcp remove claude-flow
-claude mcp add claude-flow claude-flow mcp start
-
-# Remove and re-add ruv-swarm
-claude mcp remove ruv-swarm
-claude mcp add ruv-swarm npx ruv-swarm@latest mcp start
-```
+MCP servers provide enhanced functionality for agent coordination and tool access.
 
 
 ### Development
@@ -158,10 +149,10 @@ cd /workspace/deps/claude-flow
 # Install dependencies
 npm install
 
-# Install globally
+# Install globally from your local changes
 npm install -g . --force
 
-# Configure MCP to use local installation
+# Reconfigure MCP to use your local installation
 claude mcp remove claude-flow
 claude mcp add claude-flow claude-flow mcp start
 ```
@@ -174,10 +165,10 @@ cd /workspace/deps/ruv-FANN/ruv-swarm/npm
 # Install dependencies (skip devDependencies to avoid wasm-opt issues)
 npm install --omit=dev
 
-# Install globally
+# Install globally from your local changes
 npm install -g . --force
 
-# Configure MCP to use local installation
+# Configure MCP to use your local installation
 claude mcp remove ruv-swarm
 claude mcp add ruv-swarm ruv-swarm mcp start
 ```
