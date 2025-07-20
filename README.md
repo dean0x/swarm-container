@@ -11,10 +11,10 @@ A drop-in VS Code development container for running AI agents, swarms, and CLIs 
 ## ✨ Highlights
 
 - **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while experimenting with AI agents
-- **🚀 Always Latest Version** - Claude Flow and ruv-swarm run via npx, ensuring you always use the most recent release
+- **🚀 Pre-installed Claude Flow** - Globally installed with automatic initialization on container start
 - **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - explore, modify, and contribute back
 - **⚡ Zero-Latency MCP** - Local MCP servers eliminate network roundtrips for lightning-fast agent coordination
-- **🔧 Zero-Config Setup** - Everything works via npx without installation hassles
+- **🔧 Production + Development** - Global installs for reliability, plus source code for hacking
 - **🤖 Multi-AI Support** - Claude Code, Codex, and Gemini CLIs all pre-installed and configured
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
 - **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
@@ -165,14 +165,14 @@ claude --dangerously-skip-permissions
 # Click the link and log in with your Claude account
 
 # Step 2: Verify installation
-npx claude-flow@alpha --version
+claude-flow --version
 
 # Step 3: Start building!
 # Quick swarm spawn
-npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
+claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
 
 # Or use the interactive wizard
-npx claude-flow@alpha hive-mind wizard
+claude-flow hive-mind wizard
 
 # Or explore example commands (press ↑ arrow for history)
 # We've pre-loaded useful commands in your shell history!
@@ -252,9 +252,9 @@ The container includes:
 ### 🤖 AI Development Tools
 - **Claude Code** - Latest version installed globally from npm
 - **Claude Flow** - v2.0.0-alpha with advanced swarm orchestration
-  - ✅ Executed via npx - no installation required
+  - ✅ Globally installed from npm for reliability
   - 📂 Source code cloned to `/workspace/deps/claude-flow` for exploration
-  - 🔄 Always up-to-date with the latest version
+  - 🔄 Easy updates with `npm update -g claude-flow@alpha`
 - **ruv-FANN** - Neural network swarm framework
   - 📂 Full source cloned to `/workspace/deps/ruv-FANN` for development
   - 🚀 ruv-swarm MCP server auto-configured via npx
@@ -347,26 +347,31 @@ echo $SECURITY_PRESET
   ```
 - **Development**: Most connections allowed, only known malicious sites blocked
 
-### Claude Flow not working
-Claude Flow runs via npx. If it fails:
+### Claude Flow not found
+The container installs Claude Flow globally. If it fails:
 ```bash
-# Test Claude Flow via npx
-npx claude-flow@alpha --version
+# Check if Claude Flow is installed
+which claude-flow
 
-# Check network connectivity (npx requires internet)
-curl -I https://registry.npmjs.org
+# If not found, install manually:
+npm install -g claude-flow@alpha
 
-# If you prefer local installation, see CLAUDE.md for instructions
+# Verify installation
+claude-flow --version
 ```
 
-### Using Claude Flow
+### Updating Claude Flow
+To update to the latest version:
 ```bash
-# Claude Flow is always up-to-date when using npx
-npx claude-flow@alpha --version
+# Update from npm (recommended)
+npm update -g claude-flow@alpha
 
-# Pull latest source for development
+# Or pull latest source for development
 cd /workspace/deps/claude-flow
 git pull origin main
+
+# Verify update
+claude-flow --version
 ```
 
 ### VS Code doesn't show "Reopen in Container"

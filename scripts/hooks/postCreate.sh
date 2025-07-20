@@ -145,18 +145,25 @@ fi
 echo "📂 ruv-FANN source available at: $RUV_FANN_DIR"
 echo "💡 ruv-swarm will be accessed via npx when needed"
 
-# Note: claude-flow init will be run via npx when needed
+# Initialize claude-flow (this will create .claude directory and config)
+echo "🔄 Initializing Claude Flow..."
 cd /workspace
+if command -v claude-flow &> /dev/null; then
+    claude-flow init --force || echo "Claude Flow initialization completed"
+    echo "✅ Claude Flow initialized"
+else
+    echo "⚠️  Claude Flow command not found, skipping initialization"
+fi
 
 # Configure Claude MCP servers
 echo "🔄 Configuring Claude MCP servers..."
 cd /workspace
 
-# Configure claude-flow MCP to use npx
-echo "📦 Setting up claude-flow MCP server via npx..."
+# Configure claude-flow MCP to use global installation
+echo "📦 Setting up claude-flow MCP server..."
 claude mcp remove claude-flow 2>/dev/null || true
-if claude mcp add claude-flow npx claude-flow@alpha mcp start 2>&1; then
-    echo "✅ Claude Flow MCP configured to use npx"
+if claude mcp add claude-flow claude-flow mcp start 2>&1; then
+    echo "✅ Claude Flow MCP configured with global installation"
 else
     echo "⚠️  Failed to add claude-flow MCP server"
 fi
@@ -198,13 +205,13 @@ if [ ! -f ~/.swarm_history_added ]; then
     # For zsh
     if [ -n "$ZSH_VERSION" ]; then
         # Add to current session history (in order: oldest to newest)
-        print -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
-        print -s "npx claude-flow@alpha hive-mind wizard"
+        print -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        print -s "claude-flow hive-mind wizard"
         print -s "claude --dangerously-skip-permissions"
         
         # Also add to history file
-        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
-        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind wizard" >> ~/.zsh_history
+        echo ": $(date +%s):0;claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
+        echo ": $(date +%s):0;claude-flow hive-mind wizard" >> ~/.zsh_history
         echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
         echo ": $(date +%s):0;codex --help" >> ~/.zsh_history
         echo ": $(date +%s):0;gemini --help" >> ~/.zsh_history
@@ -213,8 +220,8 @@ if [ ! -f ~/.swarm_history_added ]; then
     # For bash
     if [ -n "$BASH_VERSION" ]; then
         # Add to history (in order: oldest to newest)
-        history -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
-        history -s "npx claude-flow@alpha hive-mind wizard"
+        history -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        history -s "claude-flow hive-mind wizard"
         history -s "claude --dangerously-skip-permissions"
         history -s "codex --help"
         history -s "gemini --help"

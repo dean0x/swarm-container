@@ -52,13 +52,11 @@ RUN npm install -g \
     @anthropic-ai/claude-code \
     @openai/codex \
     @google/gemini-cli \
+    claude-flow@alpha \
     npm-check-updates \
     typescript \
     ts-node \
     nodemon
-
-# Note: claude-flow will be cloned to workspace and installed from there
-# This allows developers to work with the source code directly
 
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*

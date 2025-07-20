@@ -27,9 +27,9 @@ This repository provides a VS Code development container for running claude-flow
   - `tests/` - Comprehensive test suite for container validation
 
 ### Claude Flow Setup
+- Installed globally from npm (`npm install -g claude-flow@alpha`)
 - Source code cloned to `/workspace/deps/claude-flow` for reference and development
-- Execution via npx ensures you always use the latest version
-- No installation required - just works out of the box
+- Automatically initialized with `claude-flow init` during container setup
 - Source available for exploration and contributions
 
 ### ruv-FANN Setup
@@ -101,31 +101,34 @@ export ANTHROPIC_API_KEY='sk-ant-...'
 claude --dangerously-skip-permissions
 
 # Claude Flow commands
-npx claude-flow@alpha --help
-npx claude-flow@alpha hive-mind wizard
-npx claude-flow@alpha hive-mind spawn "task description" --claude
+claude-flow --help
+claude-flow hive-mind wizard
+claude-flow hive-mind spawn "task description" --claude
 ```
 
-### Using Claude Flow
+### Updating Claude Flow
 ```bash
-# Claude Flow is always up-to-date when using npx
-npx claude-flow@alpha --version
+# Update from npm (recommended)
+npm update -g claude-flow@alpha
 
-# Pull latest source for development
+# Or pull latest source for development
 cd /workspace/deps/claude-flow
 git pull origin main
+
+# Verify update
+claude-flow --version
 ```
 
 ### MCP Servers
 The container automatically configures two MCP servers:
-- **claude-flow**: Uses npx to always run the latest version
+- **claude-flow**: Uses the globally installed claude-flow package
 - **ruv-swarm**: Uses npx to always run the latest version
 
 To manually reconfigure:
 ```bash
 # Remove and re-add claude-flow
 claude mcp remove claude-flow
-claude mcp add claude-flow npx claude-flow@alpha mcp start
+claude mcp add claude-flow claude-flow mcp start
 
 # Remove and re-add ruv-swarm
 claude mcp remove ruv-swarm
@@ -135,13 +138,17 @@ claude mcp add ruv-swarm npx ruv-swarm@latest mcp start
 
 ### Development
 ```bash
+# Update packages
+npm update -g claude-flow@alpha
+npm update -g @anthropic-ai/claude-code
+
 # Check logs
 docker logs <container-name>
 ```
 
 ## Installing from Source (Advanced)
 
-If you prefer to install claude-flow and ruv-swarm locally instead of using npx:
+If you want to use your local source code modifications or install ruv-swarm locally:
 
 ### Claude Flow Local Installation
 ```bash
@@ -181,11 +188,11 @@ claude mcp add ruv-swarm ruv-swarm mcp start
 - Work offline without internet connection
 - Pin to specific versions
 
-### Benefits of npx (Default)
-- Always use the latest version
-- No installation failures
-- Simpler setup and maintenance
-- Smaller container size
+### Benefits of Current Approach
+- claude-flow globally installed for fast startup
+- ruv-swarm via npx to avoid installation issues
+- Source code available for development
+- Best of both worlds
 
 ## Architecture Notes
 
@@ -204,20 +211,23 @@ When adding new npm packages that require network access:
 
 ## Troubleshooting
 
-### npx Command Not Working
-If npx commands fail to run:
+### Claude Flow Not Found
+If claude-flow command is not found:
 
-1. **Check network connectivity**: npx requires internet access
+1. **Check installation**:
    ```bash
-   curl -I https://registry.npmjs.org
+   which claude-flow
    ```
 
-2. **Clear npm cache**:
+2. **Reinstall if needed**:
    ```bash
-   npm cache clean --force
+   npm install -g claude-flow@alpha
    ```
 
-3. **Use local installation** (see "Installing from Source" section above)
+3. **Verify installation**:
+   ```bash
+   claude-flow --version
+   ```
 
 ### MCP Server Connection Issues
 If MCP servers fail to connect:
@@ -230,7 +240,10 @@ If MCP servers fail to connect:
 2. **Reinstall MCP servers**:
    ```bash
    claude mcp remove claude-flow
-   claude mcp add claude-flow npx claude-flow@alpha mcp start
+   claude mcp add claude-flow claude-flow mcp start
+   
+   claude mcp remove ruv-swarm
+   claude mcp add ruv-swarm npx ruv-swarm@latest mcp start
    ```
 
 ### Source Code Not Cloned
