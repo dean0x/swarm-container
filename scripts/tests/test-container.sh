@@ -5,7 +5,7 @@ echo ""
 
 # Build the container
 echo "📦 Building container..."
-docker build -t claude-flow-test -f .devcontainer/Dockerfile . || exit 1
+docker build -t claude-flow-test -f Dockerfile . || exit 1
 
 echo ""
 echo "✅ Build successful!"
@@ -38,7 +38,7 @@ docker run --rm \
   claude-flow-test \
   bash -c "
     # Initialize firewall
-    bash .devcontainer/init-firewall.sh >/dev/null 2>&1
+    bash /scripts/security/init-security.sh >/dev/null 2>&1
     
     # Test blocked site
     echo -n 'Testing blocked site (google.com): '

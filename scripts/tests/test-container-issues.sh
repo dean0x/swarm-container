@@ -16,11 +16,11 @@ echo "1️⃣ Testing for container persistence..."
 echo "   Checking for proper entrypoint configuration..."
 
 # Check Dockerfile for entrypoint
-if grep -q "ENTRYPOINT.*docker-entrypoint.sh" .devcontainer/Dockerfile; then
+if grep -q "ENTRYPOINT.*docker-entrypoint.sh" Dockerfile; then
     echo -e "   ${GREEN}✓${NC} Entrypoint script configured"
     
     # Check if entrypoint script is copied before USER directive
-    if awk '/COPY.*docker-entrypoint.sh/{found=1} /USER node/{if(found) exit 0; else exit 1}' .devcontainer/Dockerfile; then
+    if awk '/COPY.*docker-entrypoint.sh/{found=1} /USER node/{if(found) exit 0; else exit 1}' Dockerfile; then
         echo -e "   ${GREEN}✓${NC} Entrypoint created with correct permissions"
     else
         echo -e "   ${RED}✗${NC} ERROR: Entrypoint script created after USER directive"
@@ -34,7 +34,7 @@ else
 fi
 
 # Check devcontainer.json for overrideCommand
-if grep -q '"overrideCommand":\s*true' .devcontainer/devcontainer.json; then
+if grep -q '"overrideCommand":\s*true' devcontainer.json; then
     echo -e "   ${GREEN}✓${NC} overrideCommand set to true"
 else
     echo -e "   ${YELLOW}⚠${NC} WARNING: overrideCommand not set"
@@ -48,7 +48,7 @@ echo "2️⃣ Testing for mount configuration issues..."
 # Check for problematic system file mounts
 PROBLEMATIC_MOUNTS=("/etc/hosts" "/etc/resolv.conf" "/dev/null")
 for mount in "${PROBLEMATIC_MOUNTS[@]}"; do
-    if grep -q "target=$mount" .devcontainer/devcontainer.json; then
+    if grep -q "target=$mount" devcontainer.json; then
         echo -e "   ${RED}✗${NC} ERROR: Mounting to system file: $mount"
         echo "      This will cause container startup failures!"
         ((ERRORS_FOUND++))
@@ -64,7 +64,7 @@ echo ""
 echo "3️⃣ Testing for duplicate mount points..."
 
 # Extract mount targets from devcontainer.json
-WORKSPACE_MOUNTS=$(grep -E '"target":|"workspaceMount":' .devcontainer/devcontainer.json | grep -o '/workspace[^"]*' | sort)
+WORKSPACE_MOUNTS=$(grep -E '"target":|"workspaceMount":' devcontainer.json | grep -o '/workspace[^"]*' | sort)
 DUPLICATE_COUNT=$(echo "$WORKSPACE_MOUNTS" | uniq -d | wc -l)
 
 if [ $DUPLICATE_COUNT -gt 0 ]; then
@@ -91,8 +91,8 @@ echo "4️⃣ Testing for potential permission issues..."
 # Check if critical directories are created before USER switch
 CRITICAL_DIRS=("/workspace" "/commandhistory")
 for dir in "${CRITICAL_DIRS[@]}"; do
-    if grep -A5 -B5 "mkdir.*$dir" .devcontainer/Dockerfile | grep -q "USER node" && \
-       ! awk "/mkdir.*$dir/{found=1} /USER node/{if(found) exit 0; else exit 1}" .devcontainer/Dockerfile; then
+    if grep -A5 -B5 "mkdir.*$dir" Dockerfile | grep -q "USER node" && \
+       ! awk "/mkdir.*$dir/{found=1} /USER node/{if(found) exit 0; else exit 1}" Dockerfile; then
         echo -e "   ${RED}✗${NC} ERROR: $dir created after USER switch"
         echo "      This may cause permission denied errors!"
         ((ERRORS_FOUND++))
@@ -100,7 +100,7 @@ for dir in "${CRITICAL_DIRS[@]}"; do
 done
 
 # Check for proper ownership commands
-if grep -q "chown.*node:node.*/workspace" .devcontainer/Dockerfile; then
+if grep -q "chown.*node:node.*/workspace" Dockerfile; then
     echo -e "   ${GREEN}✓${NC} Workspace ownership configured"
 else
     echo -e "   ${YELLOW}⚠${NC} WARNING: Workspace ownership not explicitly set"
@@ -111,7 +111,7 @@ echo ""
 echo "5️⃣ Validating JSON syntax..."
 
 JSON_VALID=true
-for file in .devcontainer/*.json; do
+for file in *.json; do
     if [ -f "$file" ]; then
         if python3 -m json.tool "$file" > /dev/null 2>&1; then
             echo -e "   ${GREEN}✓${NC} $file valid"
@@ -129,7 +129,7 @@ echo ""
 echo "6️⃣ Testing container build..."
 
 BUILD_LOG=$(mktemp)
-if docker build -t devcontainer-test -f .devcontainer/Dockerfile . > "$BUILD_LOG" 2>&1; then
+if docker build -t devcontainer-test -f Dockerfile . > "$BUILD_LOG" 2>&1; then
     echo -e "   ${GREEN}✓${NC} Container builds successfully"
     
     # Check for warnings in build log

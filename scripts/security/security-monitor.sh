@@ -3,7 +3,7 @@
 # Security monitoring script for Claude Flow container
 # This script monitors for suspicious activities and can be run periodically
 
-LOGFILE="/workspace/.devcontainer/security.log"
+LOGFILE="/var/log/security-monitor.log"
 SECURITY_PRESET="${SECURITY_PRESET:-development}"
 
 # Color codes

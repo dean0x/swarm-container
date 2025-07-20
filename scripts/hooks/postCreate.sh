@@ -14,8 +14,8 @@ if [ -e "claude-flow" ] && [ ! -d "claude-flow" ]; then
 fi
 
 # Make security scripts executable
-chmod +x /devcontainer-config/.devcontainer/scripts/security/init-security.sh 2>/dev/null || true
-chmod +x /devcontainer-config/.devcontainer/scripts/security/security-monitor.sh 2>/dev/null || true
+chmod +x /devcontainer-config/scripts/security/init-security.sh 2>/dev/null || true
+chmod +x /devcontainer-config/scripts/security/security-monitor.sh 2>/dev/null || true
 
 # Configure npm
 echo "📦 Configuring npm..."
@@ -33,7 +33,9 @@ else
 fi
 
 # Create deps directory for dependencies
-echo "📁 Creating deps directory for dependencies..."
+# Note: This will create a deps/ folder in the user's project
+# It's added to .gitignore automatically
+echo "📁 Creating deps directory for AI tool dependencies..."
 cd /workspace
 mkdir -p deps
 
@@ -105,10 +107,12 @@ else
 fi
 
 # Create workspace structure
-echo "📁 Setting up clean workspace..."
+echo "📁 Setting up workspace dependencies..."
 
-# Create initial .gitignore
-cat > /workspace/.gitignore << 'EOF'
+# Only create .gitignore if it doesn't exist
+if [ ! -f "/workspace/.gitignore" ]; then
+    echo "📝 Creating default .gitignore (none found)..."
+    cat > /workspace/.gitignore << 'EOF'
 # Dependencies
 node_modules/
 
@@ -128,6 +132,15 @@ coordination/
 # Dependencies folder
 deps/
 EOF
+else
+    echo "✓ Existing .gitignore found, preserving it"
+    # Append deps/ to existing .gitignore if not already present
+    if ! grep -q "^deps/$" /workspace/.gitignore; then
+        echo "" >> /workspace/.gitignore
+        echo "# SwarmContainer dependencies" >> /workspace/.gitignore
+        echo "deps/" >> /workspace/.gitignore
+    fi
+fi
 
 # Setup ruv-FANN repository
 echo "🔄 Setting up ruv-FANN in deps folder..."
@@ -220,6 +233,20 @@ if command -v claude-flow &> /dev/null; then
     echo "✅ Claude Flow initialized"
 else
     echo "⚠️  Claude Flow command not found, skipping initialization"
+fi
+
+# Fix any mcp.json that claude-flow might have created at workspace root
+echo "🔧 Fixing MCP configuration to use global packages..."
+if [ -f "/workspace/mcp.json" ]; then
+    echo "📝 Found mcp.json at workspace root, updating npx commands to use global packages..."
+    
+    # Use Node.js script for reliable JSON manipulation
+    if node /devcontainer-config/scripts/fix-mcp-json.js /workspace/mcp.json; then
+        echo "✅ Successfully updated mcp.json using Node.js"
+    else
+        echo "⚠️  Unable to update mcp.json automatically"
+        echo "   Please manually update the command fields from 'npx' to 'claude-flow' and 'ruv-swarm'"
+    fi
 fi
 
 # Configure Claude MCP servers (this will override any MCP configs from init)

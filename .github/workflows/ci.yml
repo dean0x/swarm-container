@@ -19,7 +19,7 @@ jobs:
     
     - name: Validate JSON files
       run: |
-        for file in .devcontainer/*.json .devcontainer/scripts/security/*.json; do
+        for file in *.json scripts/security/*.json; do
           if [ -f "$file" ]; then
             echo "Validating $file"
             python3 -m json.tool "$file" > /dev/null || exit 1
@@ -28,20 +28,25 @@ jobs:
     
     - name: Check shell scripts syntax
       run: |
-        for script in .devcontainer/scripts/*/*.sh; do
+        for script in scripts/*/*.sh scripts/*.sh; do
           if [ -f "$script" ]; then
             echo "Checking $script"
             bash -n "$script" || exit 1
           fi
         done
     
+    - name: Test Node.js scripts
+      run: |
+        # Test the MCP fix script syntax
+        node --check scripts/fix-mcp-json.js
+    
     - name: Run shellcheck
       run: |
         sudo apt-get update && sudo apt-get install -y shellcheck
-        find .devcontainer/scripts -name "*.sh" -exec shellcheck {} \; || true
+        find scripts -name "*.sh" -exec shellcheck {} \; || true
     
     - name: Build container
-      run: docker build -t swarmcontainer-test -f .devcontainer/Dockerfile .
+      run: docker build -t swarmcontainer-test -f Dockerfile .
     
     - name: Test container startup
       run: |
@@ -70,8 +75,8 @@ jobs:
     - name: Run comprehensive test suite
       run: |
         echo "Running comprehensive devcontainer tests..."
-        chmod +x .devcontainer/scripts/tests/*.sh
-        .devcontainer/scripts/tests/test-devcontainer.sh
+        chmod +x scripts/tests/*.sh
+        ./scripts/tests/test-devcontainer.sh
 
   security-scan:
     runs-on: ubuntu-latest

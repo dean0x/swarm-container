@@ -123,8 +123,10 @@ claude-flow --version
 
 ### MCP Servers
 The container automatically configures two local MCP servers for faster connections:
-- **claude-flow**: Uses the locally installed claude-flow package
-- **ruv-swarm**: Uses the locally cloned ruv-FANN installation
+- **claude-flow**: Uses the globally installed claude-flow package
+- **ruv-swarm**: Uses the globally installed ruv-swarm package
+
+**Note**: claude-flow may create an `mcp.json` file that uses `npx`. Our container automatically fixes this to use the globally installed packages instead, ensuring faster startup and consistent behavior.
 
 To manually reconfigure:
 ```bash
@@ -134,8 +136,10 @@ claude mcp add claude-flow claude-flow mcp start
 
 # Remove and re-add ruv-swarm
 claude mcp remove ruv-swarm
-claude mcp add ruv-swarm /workspace/deps/ruv-FANN/ruv-swarm/npm/bin/ruv-swarm-secure.js mcp start
+claude mcp add ruv-swarm ruv-swarm mcp start
 ```
+
+If you find an mcp.json file using npx, the container will automatically update it to use global commands.
 
 ### Development
 ```bash

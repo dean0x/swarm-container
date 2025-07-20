@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/github/v/release/dean0x/swarm-container)](https://github.com/dean0x/swarm-container/releases)
 
-A secure, isolated development container for running agentic swarms, and CLIs with loose permissions, using Dev Containers in VS Code.
+A drop-in VS Code development container for running AI agents, swarms, and CLIs in a secure, isolated environment.
 
 🔒 **Features multiple security presets**: Paranoid, Enterprise, and Development modes to match your security requirements.
 
@@ -56,22 +56,48 @@ For detailed version information and update instructions, see [VERSIONS.md](VERS
 
 ## 🚀 Quick Start
 
-### 1. Clone and Configure
+### Integration Options
 
+#### Option 1: Git Submodule (Recommended - Easy Updates)
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/swarmcontainer.git
-cd swarmcontainer
+cd your-project
+git submodule add https://github.com/dean0x/swarm-container.git .devcontainer
+git commit -m "Add swarm-container devcontainer"
 
-# Choose your security level (default is 'development')
-cp .env.development .env    # For local development (recommended to start)
-# OR
-cp .env.enterprise .env     # For corporate environments with some restrictions
-# OR
-cp .env.paranoid .env       # For maximum security with untrusted code
+# To update later:
+cd .devcontainer && git pull origin main
+cd .. && git add .devcontainer && git commit -m "Update devcontainer"
 ```
 
-### 2. Set Up Authentication
+#### Option 2: Git Subtree (Cleaner History)
+```bash
+cd your-project
+git subtree add --prefix=.devcontainer https://github.com/dean0x/swarm-container.git main --squash
+
+# To update later:
+git subtree pull --prefix=.devcontainer https://github.com/dean0x/swarm-container.git main --squash
+```
+
+#### Option 3: Simple Clone (No Update Tracking)
+```bash
+cd your-project
+git clone https://github.com/dean0x/swarm-container.git .devcontainer
+rm -rf .devcontainer/.git
+git add .devcontainer && git commit -m "Add devcontainer"
+```
+
+### Configure Your Environment
+
+```bash
+# Copy the appropriate environment file
+cp .devcontainer/.env.development .env    # For local development (recommended)
+# OR
+cp .devcontainer/.env.enterprise .env     # For corporate environments
+# OR
+cp .devcontainer/.env.paranoid .env       # For maximum security
+```
+
+### Set Up Authentication
 
 You have two options for Claude authentication:
 
@@ -90,16 +116,16 @@ echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
 # ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
-### 3. Open in VS Code
+### Open in VS Code
 
 ```bash
-# Open VS Code in the current directory
+# Open VS Code in your project directory
 code .
 ```
 
 **Then:**
-1. Wait for the notification "Folder contains a Dev Container configuration file"
-2. Click **"Reopen in Container"**
+1. VS Code will detect the `.devcontainer` folder
+2. Click **"Reopen in Container"** when prompted
 3. Or use Command Palette (F1/Cmd+Shift+P): "Dev Containers: Reopen in Container"
 
 **First-time setup will:**
@@ -201,9 +227,9 @@ CUSTOM_ALLOWED_DOMAINS=api.company.com,npm.company.com,registry.company.com
 ```
 
 #### Workspace Persistence
-Your work is saved in the `workspace/` directory:
-- All files in `workspace/` persist between container restarts
-- Dependencies in `workspace/deps/` are git-ignored
+Your project files are mounted at `/workspace` in the container:
+- All your project files persist between container restarts
+- Dependencies installed in the container are cached in Docker volumes
 - Command history is preserved
 
 #### Shell Customization
@@ -227,10 +253,10 @@ The container includes:
 - **Claude Code** - Latest version installed globally from npm
 - **Claude Flow** - v2.0.0-alpha with advanced swarm orchestration
   - ✅ Globally installed from npm for reliability
-  - 📂 Source code in `/workspace/deps/claude-flow` for exploration and contributions
+  - 📂 Source code cloned to `/workspace/deps/claude-flow` for exploration
   - 🔄 Easy updates with `npm update -g claude-flow@alpha`
 - **ruv-FANN** - Neural network swarm framework
-  - 📂 Full source in `/workspace/deps/ruv-FANN` for development
+  - 📂 Full source cloned to `/workspace/deps/ruv-FANN` for development
   - 🚀 ruv-swarm MCP server auto-configured for local connections
   - 🔧 Production dependencies only (no build issues)
 
@@ -259,8 +285,9 @@ Available environment variables:
 
 ## Workspace Structure
 
-The container creates these directories:
-- `/workspace` - Your project files
+When you open your project in the container:
+- `/workspace` - Your project root (mounted from your local machine)
+- `/workspace/deps/` - Claude Flow and ruv-FANN source code (auto-created)
 
 ## Security Features
 
@@ -336,7 +363,7 @@ To update to the latest version:
 # Update from npm (recommended)
 npm update -g claude-flow@alpha
 
-# Or pull latest source for development
+# Or pull latest source (if you want to contribute)
 cd /workspace/deps/claude-flow
 git pull origin main
 
@@ -395,7 +422,7 @@ If you encounter "JavaScript heap out of memory" errors:
 2. **Check current memory usage**:
    ```bash
    # Inside container
-   bash /devcontainer-config/.devcontainer/scripts/health-check.sh
+   bash /devcontainer-config/scripts/health-check.sh
    ```
 
 3. **Temporary fix for current session**:
@@ -436,9 +463,9 @@ If your container suddenly disconnects:
 
 ## Testing
 
-Run automated tests before opening in VS Code:
+Run automated tests to verify your setup:
 ```bash
-# Run all tests
+# From your project root (after adding the devcontainer)
 ./.devcontainer/scripts/tests/test-devcontainer.sh
 
 # Tests check for:
