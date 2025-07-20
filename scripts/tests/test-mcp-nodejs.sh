@@ -23,7 +23,7 @@ TESTS_FAILED=0
 
 # Test 1: Basic update
 echo -e "\n1️⃣ Testing basic npx replacement..."
-cat > mcp.json << 'EOF'
+cat > .mcp.json << 'EOF'
 {
   "mcpServers": {
     "claude-flow": {
@@ -42,13 +42,13 @@ EOF
 if [ ! -f "$SCRIPT_PATH" ]; then
     echo -e "${RED}❌ Script not found at: $SCRIPT_PATH${NC}"
     ((TESTS_FAILED++))
-elif node "$SCRIPT_PATH" mcp.json 2>&1; then
-    if grep -q '"command": "claude-flow"' mcp.json && grep -q '"command": "ruv-swarm"' mcp.json; then
+elif node "$SCRIPT_PATH" .mcp.json 2>&1; then
+    if grep -q '"command": "claude-flow"' .mcp.json && grep -q '"command": "ruv-swarm"' .mcp.json; then
         echo -e "${GREEN}✅ Basic replacement works${NC}"
         ((TESTS_PASSED++))
     else
         echo -e "${RED}❌ Basic replacement failed${NC}"
-        cat mcp.json
+        cat .mcp.json
         ((TESTS_FAILED++))
     fi
 else
@@ -58,7 +58,7 @@ fi
 
 # Test 2: Preserve other servers
 echo -e "\n2️⃣ Testing preservation of other servers..."
-cat > mcp.json << 'EOF'
+cat > .mcp.json << 'EOF'
 {
   "mcpServers": {
     "claude-flow": {
@@ -75,13 +75,13 @@ cat > mcp.json << 'EOF'
 }
 EOF
 
-if node "$SCRIPT_PATH" mcp.json; then
-    if grep -q '"command": "claude-flow"' mcp.json && grep -q '"command": "my-custom-command"' mcp.json; then
+if node "$SCRIPT_PATH" .mcp.json; then
+    if grep -q '"command": "claude-flow"' .mcp.json && grep -q '"command": "my-custom-command"' .mcp.json; then
         echo -e "${GREEN}✅ Other servers preserved${NC}"
         ((TESTS_PASSED++))
     else
         echo -e "${RED}❌ Other servers not preserved${NC}"
-        cat mcp.json
+        cat .mcp.json
         ((TESTS_FAILED++))
     fi
 else
@@ -91,7 +91,7 @@ fi
 
 # Test 3: Already correct entries
 echo -e "\n3️⃣ Testing skip of already correct entries..."
-cat > mcp.json << 'EOF'
+cat > .mcp.json << 'EOF'
 {
   "mcpServers": {
     "claude-flow": {
@@ -103,18 +103,18 @@ cat > mcp.json << 'EOF'
 }
 EOF
 
-cp mcp.json mcp.json.original
+cp .mcp.json .mcp.json.original
 
-if node "$SCRIPT_PATH" mcp.json; then
-    if diff -q mcp.json mcp.json.original > /dev/null; then
+if node "$SCRIPT_PATH" .mcp.json; then
+    if diff -q .mcp.json .mcp.json.original > /dev/null; then
         echo -e "${GREEN}✅ Already correct entries unchanged${NC}"
         ((TESTS_PASSED++))
     else
         echo -e "${RED}❌ Already correct entries were modified${NC}"
         echo "Original:"
-        cat mcp.json.original
+        cat .mcp.json.original
         echo "Modified:"
-        cat mcp.json
+        cat .mcp.json
         ((TESTS_FAILED++))
     fi
 else
@@ -124,8 +124,8 @@ fi
 
 # Test 4: No mcp.json file
 echo -e "\n4️⃣ Testing missing file handling..."
-rm -f mcp.json
-if node "$SCRIPT_PATH" mcp.json; then
+rm -f .mcp.json
+if node "$SCRIPT_PATH" .mcp.json; then
     echo -e "${GREEN}✅ Missing file handled gracefully${NC}"
     ((TESTS_PASSED++))
 else

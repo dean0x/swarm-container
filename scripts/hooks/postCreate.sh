@@ -235,16 +235,16 @@ else
     echo "⚠️  Claude Flow command not found, skipping initialization"
 fi
 
-# Fix any mcp.json that claude-flow might have created at workspace root
+# Fix any .mcp.json that claude-flow might have created at workspace root
 echo "🔧 Fixing MCP configuration to use global packages..."
-if [ -f "/workspace/mcp.json" ]; then
-    echo "📝 Found mcp.json at workspace root, updating npx commands to use global packages..."
+if [ -f "/workspace/.mcp.json" ]; then
+    echo "📝 Found .mcp.json at workspace root, updating npx commands to use global packages..."
     
     # Use Node.js script for reliable JSON manipulation
-    if node /devcontainer-config/scripts/fix-mcp-json.js /workspace/mcp.json; then
-        echo "✅ Successfully updated mcp.json using Node.js"
+    if node /devcontainer-config/scripts/fix-mcp-json.js /workspace/.mcp.json; then
+        echo "✅ Successfully updated .mcp.json using Node.js"
     else
-        echo "⚠️  Unable to update mcp.json automatically"
+        echo "⚠️  Unable to update .mcp.json automatically"
         echo "   Please manually update the command fields from 'npx' to 'claude-flow' and 'ruv-swarm'"
     fi
 fi

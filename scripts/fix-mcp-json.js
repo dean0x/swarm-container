@@ -6,10 +6,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const filePath = process.argv[2] || '/workspace/mcp.json';
+const filePath = process.argv[2] || '/workspace/.mcp.json';
 
 if (!fs.existsSync(filePath)) {
-    console.log('No mcp.json file found, skipping update');
+    console.log('No .mcp.json file found, skipping update');
     process.exit(0);
 }
 
@@ -51,12 +51,12 @@ try {
         
         // Write updated config
         fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
-        console.log('✅ mcp.json updated successfully');
+        console.log('✅ .mcp.json updated successfully');
     } else {
         console.log('ℹ️  No updates needed - commands already using global packages');
     }
     
 } catch (error) {
-    console.error('❌ Error updating mcp.json:', error.message);
+    console.error('❌ Error updating .mcp.json:', error.message);
     process.exit(1);
 }
