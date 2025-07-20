@@ -48,62 +48,18 @@ if [ -d "/workspace/deps" ]; then
     echo "✅ Deps directory cleaned"
 fi
 
-# Clone and setup claude-flow from source
-echo "🔄 Setting up Claude Flow from source..."
+# Clone claude-flow repository for reference
+echo "🔄 Setting up Claude Flow source for reference..."
 cd /workspace/deps
 
 # Clone claude-flow repository
 echo "📥 Cloning claude-flow repository..."
 if git clone https://github.com/ruvnet/claude-flow.git; then
-    echo "✅ claude-flow cloned successfully"
+    echo "✅ claude-flow source code cloned successfully"
+    echo "📂 Source available at: /workspace/deps/claude-flow"
 else
-    echo "❌ Failed to clone claude-flow!"
-    echo "📥 Installing Claude Flow from npm as fallback..."
-    if npm install -g claude-flow@alpha; then
-        echo "✅ Claude Flow installed successfully from npm"
-        # Verify installation
-        if command -v claude-flow &> /dev/null; then
-            echo "📍 Claude Flow location: $(which claude-flow)"
-        fi
-        else
-            echo "❌ Failed to install Claude Flow from npm"
-        fi
-    # Skip the rest of source installation
-    SKIP_SOURCE_INSTALL=true
-fi
-
-# Install claude-flow - prefer source over npm
-echo "📦 Installing Claude Flow..."
-
-# First, try to install from source
-if [ -d "claude-flow" ] && [ -f "claude-flow/package.json" ]; then
-    echo "🔄 Trying to install from source..."
-    cd claude-flow
-    
-    # Skip Puppeteer download to avoid ARM issues
-    export PUPPETEER_SKIP_DOWNLOAD=true
-    
-    # Install with --force and skip optional dependencies
-    npm install --force --no-optional || echo "Some dependencies failed, continuing..."
-    
-    # Try global install with force
-    npm install -g . --force || echo "Global install had issues, continuing..."
-    
-    cd ..
-
-else
-    # try to install from npm which handles dependencies better
-    echo "📥 Installing Claude Flow from npm registry..."
-    if npm install -g claude-flow@alpha; then
-        echo "✅ Claude Flow installed successfully from npm"
-        
-        # Verify installation
-        if command -v claude-flow &> /dev/null; then
-            echo "📍 Claude Flow location: $(which claude-flow)"
-        fi
-    else
-        echo "❌ Failed to install Claude Flow from npm"
-    fi
+    echo "⚠️  Failed to clone claude-flow source code"
+    echo "   You can still use claude-flow via npx"
 fi
 
 # Create workspace structure
@@ -185,81 +141,38 @@ else
     echo "❌ $RUV_FANN_DIR directory does not exist!"
 fi
 
-# Install ruv-swarm dependencies with detailed error handling
-echo "📦 Installing ruv-swarm dependencies..."
-if [ -d "$RUV_FANN_DIR/ruv-swarm/npm" ]; then
-    cd "$RUV_FANN_DIR/ruv-swarm/npm"
-    
-    # Install dependencies excluding devDependencies (skip wasm-opt)
-    echo "Installing dependencies without devDependencies (skipping wasm-opt)..."
+# Note: ruv-swarm will be used via npx, no installation needed
+echo "📂 ruv-FANN source available at: $RUV_FANN_DIR"
+echo "💡 ruv-swarm will be accessed via npx when needed"
 
-    if ! npm install --omit=dev 2>&1 | tee /tmp/ruv-swarm-install.log; then
-        echo "❌ ruv-swarm npm install failed!"
-        echo "📋 Error details:"
-        echo "----------------------------------------"
-        tail -20 /tmp/ruv-swarm-install.log
-        echo "----------------------------------------"
-        echo "💡 Debug tips:"
-        echo "   - Check the full log: cat /tmp/ruv-swarm-install.log"
-        echo "   - Try manual install: cd $RUV_FANN_DIR/ruv-swarm/npm && npm install --omit=dev"
-        echo "⚠️  Continuing setup - ruv-swarm may still be functional..."
-    else
-        echo "✅ ruv-swarm dependencies installed successfully (without devDependencies)"
-        echo "   Note: wasm-opt devDependency was skipped"
-    fi
-
-    echo "🔄 Installing ruv-swarm globally from source..."
-    if ! npm install -g . --force 2>&1 | tee /tmp/ruv-swarm-global.log; then
-        echo "⚠️  Global install from source failed, attempting npm registry..."
-        if npm install -g ruv-swarm 2>&1 | tee /tmp/ruv-swarm-global.log; then
-            echo "✅ ruv-swarm installed globally from npm"
-        else
-            echo "❌ Failed to install ruv-swarm globally"
-            tail -20 /tmp/ruv-swarm-global.log
-        fi
-    else
-        echo "✅ ruv-swarm installed globally from source"
-    fi
-else
-    echo "❌ Cannot install ruv-swarm - directory $RUV_FANN_DIR/ruv-swarm/npm not found!"
-    echo "   Check if clone was successful and directory structure is correct"
-fi
-
-# Initialize claude-flow (this will create .claude directory and config)
-echo "🔄 Initializing Claude Flow..."
+# Note: claude-flow init will be run via npx when needed
 cd /workspace
-if command -v claude-flow &> /dev/null; then
-    claude-flow init --force || echo "Claude Flow initialization completed"
-    echo "✅ Claude Flow initialized"
-else
-    echo "⚠️  Claude Flow command not found, skipping initialization"
-fi
 
 # Configure Claude MCP servers
 echo "🔄 Configuring Claude MCP servers..."
 cd /workspace
 
-# Configure claude-flow MCP to use local installation
-echo "📦 Setting up local claude-flow MCP server..."
+# Configure claude-flow MCP to use npx
+echo "📦 Setting up claude-flow MCP server via npx..."
 claude mcp remove claude-flow 2>/dev/null || true
-if claude mcp add claude-flow claude-flow mcp start 2>&1; then
-    echo "✅ Claude Flow MCP configured with local installation"
+if claude mcp add claude-flow npx claude-flow@alpha mcp start 2>&1; then
+    echo "✅ Claude Flow MCP configured to use npx"
 else
     echo "⚠️  Failed to add claude-flow MCP server"
 fi
 
-# Configure ruv-swarm MCP
-echo "📦 Setting up local ruv-swarm MCP server..."
+# Configure ruv-swarm MCP to use npx
+echo "📦 Setting up ruv-swarm MCP server via npx..."
 
 # Remove existing ruv-swarm configuration if present
 claude mcp remove ruv-swarm 2>/dev/null || true
 
-# Add ruv-swarm using the globally installed command
-if claude mcp add ruv-swarm ruv-swarm mcp start 2>&1; then
-    echo "✅ ruv-swarm MCP configured with global installation"
+# Add ruv-swarm using npx
+if claude mcp add ruv-swarm npx ruv-swarm@latest mcp start 2>&1; then
+    echo "✅ ruv-swarm MCP configured to use npx"
 else
     echo "❌ Failed to add ruv-swarm to MCP"
-    echo "   You can try manually: claude mcp add ruv-swarm ruv-swarm mcp start"
+    echo "   You can try manually: claude mcp add ruv-swarm npx ruv-swarm@latest mcp start"
 fi
 
 # Install Oh My Zsh plugins
@@ -285,13 +198,13 @@ if [ ! -f ~/.swarm_history_added ]; then
     # For zsh
     if [ -n "$ZSH_VERSION" ]; then
         # Add to current session history (in order: oldest to newest)
-        print -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
-        print -s "claude-flow hive-mind wizard"
+        print -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        print -s "npx claude-flow@alpha hive-mind wizard"
         print -s "claude --dangerously-skip-permissions"
         
         # Also add to history file
-        echo ": $(date +%s):0;claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
-        echo ": $(date +%s):0;claude-flow hive-mind wizard" >> ~/.zsh_history
+        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
+        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind wizard" >> ~/.zsh_history
         echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
         echo ": $(date +%s):0;codex --help" >> ~/.zsh_history
         echo ": $(date +%s):0;gemini --help" >> ~/.zsh_history
@@ -300,8 +213,8 @@ if [ ! -f ~/.swarm_history_added ]; then
     # For bash
     if [ -n "$BASH_VERSION" ]; then
         # Add to history (in order: oldest to newest)
-        history -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
-        history -s "claude-flow hive-mind wizard"
+        history -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        history -s "npx claude-flow@alpha hive-mind wizard"
         history -s "claude --dangerously-skip-permissions"
         history -s "codex --help"
         history -s "gemini --help"

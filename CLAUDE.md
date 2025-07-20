@@ -8,10 +8,10 @@ This repository provides a VS Code development container for running claude-flow
 
 ### Recent Updates
 - **Organized script structure**: All scripts moved to logical subdirectories under `.devcontainer/scripts/`
-- **Clean workspace**: Container starts with empty `/workspace`, deps installed to `/workspace/deps/`
-- **Improved installation**: Smart fallback strategies for both claude-flow and ruv-FANN
+- **Clean workspace**: Container starts with empty `/workspace`, source code cloned to `/workspace/deps/`
+- **Simplified setup**: Uses npx for claude-flow and ruv-swarm - no installation failures
 - **Comprehensive testing**: Full test suite validates container configuration and functionality
-- **MCP optimization**: Local MCP servers configured for faster connections
+- **MCP optimization**: MCP servers configured to use npx for always-latest versions
 
 ## Key Components
 
@@ -26,18 +26,16 @@ This repository provides a VS Code development container for running claude-flow
   - `hooks/postCreate.sh` - Post-creation setup (claude-flow, MCP servers, etc.)
   - `tests/` - Comprehensive test suite for container validation
 
-### Claude Flow Installation
-- Dual installation approach for maximum reliability:
-  - Primary: Installed globally from npm (`npm install -g claude-flow@alpha`)
-  - Fallback: Source code cloned to `/workspace/deps/claude-flow`
-- Automatic installation with multiple fallback strategies
-- Easy updates with `npm update -g claude-flow@alpha`
+### Claude Flow Setup
+- Source code cloned to `/workspace/deps/claude-flow` for reference and development
+- Execution via npx ensures you always use the latest version
+- No installation required - just works out of the box
 - Source available for exploration and contributions
 
-### ruv-FANN Installation
-- Cloned to `/workspace/deps/ruv-FANN` for development and updates
-- ruv-swarm installed globally from source (`npm install -g . --force`) with production deps
-- Local ruv-swarm MCP server automatically configured
+### ruv-FANN Setup
+- Cloned to `/workspace/deps/ruv-FANN` for reference and development
+- ruv-swarm accessed via npx - no installation needed
+- MCP server automatically configured to use npx
 
 ### Development Benefits
 - Both repositories available in workspace for contributions
@@ -103,50 +101,91 @@ export ANTHROPIC_API_KEY='sk-ant-...'
 claude --dangerously-skip-permissions
 
 # Claude Flow commands
-claude-flow --help
-claude-flow hive-mind wizard
-claude-flow hive-mind spawn "task description" --claude
+npx claude-flow@alpha --help
+npx claude-flow@alpha hive-mind wizard
+npx claude-flow@alpha hive-mind spawn "task description" --claude
 ```
 
-### Updating Claude Flow
+### Using Claude Flow
 ```bash
-# Update from npm (recommended)
-npm update -g claude-flow@alpha
+# Claude Flow is always up-to-date when using npx
+npx claude-flow@alpha --version
 
-# Or pull latest source for development
+# Pull latest source for development
 cd /workspace/deps/claude-flow
 git pull origin main
-
-# Verify update
-claude-flow --version
 ```
 
 ### MCP Servers
-The container automatically configures two local MCP servers for faster connections:
-- **claude-flow**: Uses the globally installed claude-flow package
-- **ruv-swarm**: Uses the globally installed ruv-swarm package
+The container automatically configures two MCP servers:
+- **claude-flow**: Uses npx to always run the latest version
+- **ruv-swarm**: Uses npx to always run the latest version
 
 To manually reconfigure:
 ```bash
 # Remove and re-add claude-flow
 claude mcp remove claude-flow
-claude mcp add claude-flow claude-flow mcp start
+claude mcp add claude-flow npx claude-flow@alpha mcp start
 
 # Remove and re-add ruv-swarm
 claude mcp remove ruv-swarm
-claude mcp add ruv-swarm ruv-swarm mcp start
+claude mcp add ruv-swarm npx ruv-swarm@latest mcp start
 ```
 
 
 ### Development
 ```bash
-# Update packages
-npm update -g claude-flow@alpha
-npm update -g @anthropic-ai/claude-code
-
 # Check logs
 docker logs <container-name>
 ```
+
+## Installing from Source (Advanced)
+
+If you prefer to install claude-flow and ruv-swarm locally instead of using npx:
+
+### Claude Flow Local Installation
+```bash
+# Navigate to source directory
+cd /workspace/deps/claude-flow
+
+# Install dependencies
+npm install
+
+# Install globally
+npm install -g . --force
+
+# Configure MCP to use local installation
+claude mcp remove claude-flow
+claude mcp add claude-flow claude-flow mcp start
+```
+
+### ruv-swarm Local Installation
+```bash
+# Navigate to source directory
+cd /workspace/deps/ruv-FANN/ruv-swarm/npm
+
+# Install dependencies (skip devDependencies to avoid wasm-opt issues)
+npm install --omit=dev
+
+# Install globally
+npm install -g . --force
+
+# Configure MCP to use local installation
+claude mcp remove ruv-swarm
+claude mcp add ruv-swarm ruv-swarm mcp start
+```
+
+### Benefits of Local Installation
+- Faster startup times (no network requests)
+- Ability to modify and test local changes
+- Work offline without internet connection
+- Pin to specific versions
+
+### Benefits of npx (Default)
+- Always use the latest version
+- No installation failures
+- Simpler setup and maintenance
+- Smaller container size
 
 ## Architecture Notes
 
@@ -165,30 +204,43 @@ When adding new npm packages that require network access:
 
 ## Troubleshooting
 
-### ruv-swarm npm install fails
-If the ruv-swarm installation fails during container creation:
+### npx Command Not Working
+If npx commands fail to run:
 
-**Common issue: wasm-opt platform error**
-The wasm-opt npm package doesn't support all platforms (e.g., certain ARM architectures).
+1. **Check network connectivity**: npx requires internet access
+   ```bash
+   curl -I https://registry.npmjs.org
+   ```
 
-**Solution implemented**: Since wasm-opt is only a devDependency in ruv-swarm, we install with `npm install --production` to skip all devDependencies, including the problematic wasm-opt package. This allows ruv-swarm to install successfully without any platform compatibility issues.
+2. **Clear npm cache**:
+   ```bash
+   npm cache clean --force
+   ```
 
-If you need to manually reinstall:
+3. **Use local installation** (see "Installing from Source" section above)
+
+### MCP Server Connection Issues
+If MCP servers fail to connect:
+
+1. **Check MCP configuration**:
+   ```bash
+   claude mcp list
+   ```
+
+2. **Reinstall MCP servers**:
+   ```bash
+   claude mcp remove claude-flow
+   claude mcp add claude-flow npx claude-flow@alpha mcp start
+   ```
+
+### Source Code Not Cloned
+If the source code wasn't cloned during setup:
+
 ```bash
-cd /workspace/deps/ruv-FANN/ruv-swarm/npm
-npm install --production
-# or for newer npm versions:
-npm install --omit=dev
+cd /workspace/deps
+git clone https://github.com/ruvnet/claude-flow.git
+git clone https://github.com/ruvnet/ruv-FANN.git
 ```
-
-The MCP configuration will work normally since wasm-opt is not required for runtime operation of ruv-swarm.
-
-### Claude-flow Installation Fallbacks
-The container uses a smart fallback strategy for claude-flow installation:
-1. **Primary**: Clone from GitHub and install from source
-2. **Fallback 1**: If clone fails, install from npm registry
-3. **Fallback 2**: If source install fails, use npm global install
-4. **Note**: Puppeteer download is skipped (`PUPPETEER_SKIP_DOWNLOAD=true`) to avoid ARM compatibility issues
 
 ### Known Working Versions
 - Claude Code: v1.0.51
