@@ -155,33 +155,6 @@ else
     echo "⚠️  Claude Flow command not found, skipping initialization"
 fi
 
-# Configure Claude MCP servers
-echo "🔄 Configuring Claude MCP servers..."
-cd /workspace
-
-# Configure claude-flow MCP to use global installation
-echo "📦 Setting up claude-flow MCP server..."
-claude mcp remove claude-flow 2>/dev/null || true
-if claude mcp add claude-flow claude-flow mcp start 2>&1; then
-    echo "✅ Claude Flow MCP configured with global installation"
-else
-    echo "⚠️  Failed to add claude-flow MCP server"
-fi
-
-# Configure ruv-swarm MCP to use npx
-echo "📦 Setting up ruv-swarm MCP server via npx..."
-
-# Remove existing ruv-swarm configuration if present
-claude mcp remove ruv-swarm 2>/dev/null || true
-
-# Add ruv-swarm using npx
-if claude mcp add ruv-swarm npx ruv-swarm@latest mcp start 2>&1; then
-    echo "✅ ruv-swarm MCP configured to use npx"
-else
-    echo "❌ Failed to add ruv-swarm to MCP"
-    echo "   You can try manually: claude mcp add ruv-swarm npx ruv-swarm@latest mcp start"
-fi
-
 # Install Oh My Zsh plugins
 echo "🎨 Installing Zsh plugins..."
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
