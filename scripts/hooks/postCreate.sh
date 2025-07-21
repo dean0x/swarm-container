@@ -170,16 +170,7 @@ if [ -f ~/.zshrc ]; then
     sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
 fi
 
-# Simple completion setup using Oh My Zsh
-if [ -f ~/.zshrc ]; then
-    echo "" >> ~/.zshrc
-    echo "# Enable zsh completions" >> ~/.zshrc
-    echo "autoload -U compinit && compinit" >> ~/.zshrc
-    echo "zstyle ':completion:*' menu select" >> ~/.zshrc
-    echo "" >> ~/.zshrc
-    echo "# Enable npm command completion" >> ~/.zshrc
-    echo "eval \"\$(npm completion)\"" >> ~/.zshrc
-fi
+# Oh My Zsh handles completions automatically, no need for manual setup
 
 # Add useful commands to shell history and create startup script
 echo "🔧 Setting up quick commands..."
@@ -187,98 +178,44 @@ echo "🔧 Setting up quick commands..."
 # Create a startup script that adds commands to history
 cat > ~/.swarm_history_init << 'EOF'
 #!/bin/bash
-# Add useful commands to shell history - with smart update logic
-
-# Define our commands (easier to maintain)
-declare -a SWARM_COMMANDS=(
-    'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
-    'npx claude-flow@alpha hive-mind wizard'
-    'claude --dangerously-skip-permissions'
-    'codex --help'
-    'gemini --help'
-)
-
-# Detect shell based on parent process or file being sourced from
-CURRENT_SHELL=""
-if [ -n "$ZSH_VERSION" ] || [[ "$0" == *"zsh"* ]] || ps -p $$ | grep -q zsh; then
-    CURRENT_SHELL="zsh"
-elif [ -n "$BASH_VERSION" ] || [[ "$0" == *"bash"* ]] || ps -p $$ | grep -q bash; then
-    CURRENT_SHELL="bash"
-fi
-
-# For zsh
-if [ "$CURRENT_SHELL" = "zsh" ]; then
-    # Use HISTFILE if set, otherwise default to ~/.zsh_history
-    ZSH_HIST_FILE="${HISTFILE:-$HOME/.zsh_history}"
-    
-    # Check if we need to update by looking for old commands
-    if [ -f "$ZSH_HIST_FILE" ] && grep -q "^.*claude-flow hive-mind" "$ZSH_HIST_FILE" 2>/dev/null; then
-        echo "🔄 Updating command history from claude-flow to npx..."
-        # Remove old claude-flow commands (without npx)
-        grep -v ":claude-flow hive-mind\|:claude-flow --" "$ZSH_HIST_FILE" > "$ZSH_HIST_FILE.tmp" 2>/dev/null || true
-        if [ -f "$ZSH_HIST_FILE.tmp" ]; then
-            mv "$ZSH_HIST_FILE.tmp" "$ZSH_HIST_FILE"
-        fi
+# Add useful commands to shell history on first run
+# Check if we've already added these (to avoid duplicates)
+if [ ! -f ~/.swarm_history_added ]; then
+    # For zsh
+    if [ -n "$ZSH_VERSION" ]; then
+        # Add to current session history (in order: oldest to newest)
+        print -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        print -s "npx claude-flow@alpha hive-mind wizard"
+        print -s "claude --dangerously-skip-permissions"
+        
+        # Also add to history file
+        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
+        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind wizard" >> ~/.zsh_history
+        echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
+        echo ": $(date +%s):0;codex --help" >> ~/.zsh_history
+        echo ": $(date +%s):0;gemini --help" >> ~/.zsh_history
     fi
     
-    # Check if new commands already exist
-    UPDATE_NEEDED=false
-    for cmd in "${SWARM_COMMANDS[@]}"; do
-        if ! grep -Fq "$cmd" "$ZSH_HIST_FILE" 2>/dev/null; then
-            UPDATE_NEEDED=true
-            break
-        fi
-    done
-    
-    # Add commands if needed
-    if [ "$UPDATE_NEEDED" = true ]; then
-        echo "📝 Adding quick commands to zsh history..."
-        for cmd in "${SWARM_COMMANDS[@]}"; do
-            # Add to current session
-            print -s "$cmd" 2>/dev/null || true
-            # Add to history file if not already there
-            if ! grep -Fq "$cmd" "$ZSH_HIST_FILE" 2>/dev/null; then
-                echo ": $(date +%s):0;$cmd" >> "$ZSH_HIST_FILE"
-            fi
-        done
-        echo "✅ Quick commands added to history - press ↑ to access them!"
-    fi
-fi
-
-# For bash
-if [ "$CURRENT_SHELL" = "bash" ]; then
-    # Check if we need to update by looking for old commands
-    if [ -f ~/.bash_history ] && grep -q "^claude-flow hive-mind" ~/.bash_history 2>/dev/null; then
-        echo "🔄 Updating command history from claude-flow to npx..."
-        # Remove old claude-flow commands (without npx)
-        grep -v "^claude-flow hive-mind\|^claude-flow --" ~/.bash_history > ~/.bash_history.tmp 2>/dev/null || true
-        if [ -f ~/.bash_history.tmp ]; then
-            mv ~/.bash_history.tmp ~/.bash_history
-        fi
+    # For bash
+    if [ -n "$BASH_VERSION" ]; then
+        # Add to history (in order: oldest to newest)
+        history -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        history -s "npx claude-flow@alpha hive-mind wizard"
+        history -s "claude --dangerously-skip-permissions"
+        history -s "codex --help"
+        history -s "gemini --help"
+        
+        # Also add to history file
+        echo "npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
+        echo "npx claude-flow@alpha hive-mind wizard" >> ~/.bash_history
+        echo "claude --dangerously-skip-permissions" >> ~/.bash_history
+        echo "codex --help" >> ~/.bash_history
+        echo "gemini --help" >> ~/.bash_history
     fi
     
-    # Check if new commands already exist
-    UPDATE_NEEDED=false
-    for cmd in "${SWARM_COMMANDS[@]}"; do
-        if ! grep -Fq "$cmd" ~/.bash_history 2>/dev/null; then
-            UPDATE_NEEDED=true
-            break
-        fi
-    done
-    
-    # Add commands if needed
-    if [ "$UPDATE_NEEDED" = true ]; then
-        echo "📝 Adding quick commands to bash history..."
-        for cmd in "${SWARM_COMMANDS[@]}"; do
-            # Add to current session
-            history -s "$cmd" 2>/dev/null || true
-            # Add to history file if not already there
-            if ! grep -Fq "$cmd" ~/.bash_history 2>/dev/null; then
-                echo "$cmd" >> ~/.bash_history
-            fi
-        done
-        echo "✅ Quick commands added to history - press ↑ to access them!"
-    fi
+    # Mark as added
+    touch ~/.swarm_history_added
+    echo "✅ Quick commands added to history - press ↑ to access them!"
 fi
 EOF
 
@@ -289,26 +226,12 @@ if [ -f ~/.zshrc ]; then
     echo "" >> ~/.zshrc
     echo "# Swarm Container history initialization" >> ~/.zshrc
     echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.zshrc
-    
-    # Add command aliases for easier access
-    echo "" >> ~/.zshrc
-    echo "# Swarm Container aliases" >> ~/.zshrc
-    echo "alias cf='npx claude-flow@alpha'" >> ~/.zshrc
-    echo "alias cfh='npx claude-flow@alpha hive-mind'" >> ~/.zshrc
-    echo "alias cfw='npx claude-flow@alpha hive-mind wizard'" >> ~/.zshrc
 fi
 
 if [ -f ~/.bashrc ]; then
     echo "" >> ~/.bashrc
     echo "# Swarm Container history initialization" >> ~/.bashrc
     echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.bashrc
-    
-    # Add command aliases for easier access
-    echo "" >> ~/.bashrc
-    echo "# Swarm Container aliases" >> ~/.bashrc
-    echo "alias cf='npx claude-flow@alpha'" >> ~/.bashrc
-    echo "alias cfh='npx claude-flow@alpha hive-mind'" >> ~/.bashrc
-    echo "alias cfw='npx claude-flow@alpha hive-mind wizard'" >> ~/.bashrc
 fi
 
 echo "✅ Claude Flow development environment setup complete!"
@@ -319,11 +242,7 @@ echo "   2. Run 'claude --dangerously-skip-permissions' to activate Claude Code"
 echo "      (If no API key is set, use the /login command when prompted)"
 echo "   3. Run 'npx claude-flow@alpha hive-mind wizard' to start using Claude Flow"
 echo ""
-echo "💡 Quick shortcuts available:"
-echo "   - 'cf'  → npx claude-flow@alpha"
-echo "   - 'cfh' → npx claude-flow@alpha hive-mind"
-echo "   - 'cfw' → npx claude-flow@alpha hive-mind wizard"
-echo "   - Press ↑ arrow for command history"
+echo "💡 Quick tip: Press ↑ arrow for command history"
 echo ""
 echo "📚 Documentation:"
 echo "   - Claude Code: https://claude.ai/code"
