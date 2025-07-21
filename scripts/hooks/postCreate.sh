@@ -187,22 +187,33 @@ declare -a SWARM_COMMANDS=(
     'gemini --help'
 )
 
+# Detect shell based on parent process or file being sourced from
+CURRENT_SHELL=""
+if [ -n "$ZSH_VERSION" ] || [[ "$0" == *"zsh"* ]] || ps -p $$ | grep -q zsh; then
+    CURRENT_SHELL="zsh"
+elif [ -n "$BASH_VERSION" ] || [[ "$0" == *"bash"* ]] || ps -p $$ | grep -q bash; then
+    CURRENT_SHELL="bash"
+fi
+
 # For zsh
-if [ -n "$ZSH_VERSION" ]; then
+if [ "$CURRENT_SHELL" = "zsh" ]; then
+    # Use HISTFILE if set, otherwise default to ~/.zsh_history
+    ZSH_HIST_FILE="${HISTFILE:-$HOME/.zsh_history}"
+    
     # Check if we need to update by looking for old commands
-    if [ -f ~/.zsh_history ] && grep -q "^.*claude-flow hive-mind" ~/.zsh_history 2>/dev/null; then
+    if [ -f "$ZSH_HIST_FILE" ] && grep -q "^.*claude-flow hive-mind" "$ZSH_HIST_FILE" 2>/dev/null; then
         echo "🔄 Updating command history from claude-flow to npx..."
         # Remove old claude-flow commands (without npx)
-        grep -v ":claude-flow hive-mind\|:claude-flow --" ~/.zsh_history > ~/.zsh_history.tmp 2>/dev/null || true
-        if [ -f ~/.zsh_history.tmp ]; then
-            mv ~/.zsh_history.tmp ~/.zsh_history
+        grep -v ":claude-flow hive-mind\|:claude-flow --" "$ZSH_HIST_FILE" > "$ZSH_HIST_FILE.tmp" 2>/dev/null || true
+        if [ -f "$ZSH_HIST_FILE.tmp" ]; then
+            mv "$ZSH_HIST_FILE.tmp" "$ZSH_HIST_FILE"
         fi
     fi
     
     # Check if new commands already exist
     UPDATE_NEEDED=false
     for cmd in "${SWARM_COMMANDS[@]}"; do
-        if ! grep -Fq "$cmd" ~/.zsh_history 2>/dev/null; then
+        if ! grep -Fq "$cmd" "$ZSH_HIST_FILE" 2>/dev/null; then
             UPDATE_NEEDED=true
             break
         fi
@@ -215,8 +226,8 @@ if [ -n "$ZSH_VERSION" ]; then
             # Add to current session
             print -s "$cmd" 2>/dev/null || true
             # Add to history file if not already there
-            if ! grep -Fq "$cmd" ~/.zsh_history 2>/dev/null; then
-                echo ": $(date +%s):0;$cmd" >> ~/.zsh_history
+            if ! grep -Fq "$cmd" "$ZSH_HIST_FILE" 2>/dev/null; then
+                echo ": $(date +%s):0;$cmd" >> "$ZSH_HIST_FILE"
             fi
         done
         echo "✅ Quick commands added to history - press ↑ to access them!"
@@ -224,7 +235,7 @@ if [ -n "$ZSH_VERSION" ]; then
 fi
 
 # For bash
-if [ -n "$BASH_VERSION" ]; then
+if [ "$CURRENT_SHELL" = "bash" ]; then
     # Check if we need to update by looking for old commands
     if [ -f ~/.bash_history ] && grep -q "^claude-flow hive-mind" ~/.bash_history 2>/dev/null; then
         echo "🔄 Updating command history from claude-flow to npx..."
@@ -267,12 +278,26 @@ if [ -f ~/.zshrc ]; then
     echo "" >> ~/.zshrc
     echo "# Swarm Container history initialization" >> ~/.zshrc
     echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.zshrc
+    
+    # Add command aliases for easier access
+    echo "" >> ~/.zshrc
+    echo "# Swarm Container aliases" >> ~/.zshrc
+    echo "alias cf='npx claude-flow@alpha'" >> ~/.zshrc
+    echo "alias cfh='npx claude-flow@alpha hive-mind'" >> ~/.zshrc
+    echo "alias cfw='npx claude-flow@alpha hive-mind wizard'" >> ~/.zshrc
 fi
 
 if [ -f ~/.bashrc ]; then
     echo "" >> ~/.bashrc
     echo "# Swarm Container history initialization" >> ~/.bashrc
     echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.bashrc
+    
+    # Add command aliases for easier access
+    echo "" >> ~/.bashrc
+    echo "# Swarm Container aliases" >> ~/.bashrc
+    echo "alias cf='npx claude-flow@alpha'" >> ~/.bashrc
+    echo "alias cfh='npx claude-flow@alpha hive-mind'" >> ~/.bashrc
+    echo "alias cfw='npx claude-flow@alpha hive-mind wizard'" >> ~/.bashrc
 fi
 
 echo "✅ Claude Flow development environment setup complete!"
@@ -282,6 +307,12 @@ echo "   1. Set your ANTHROPIC_API_KEY environment variable (or use /login comma
 echo "   2. Run 'claude --dangerously-skip-permissions' to activate Claude Code"
 echo "      (If no API key is set, use the /login command when prompted)"
 echo "   3. Run 'npx claude-flow@alpha hive-mind wizard' to start using Claude Flow"
+echo ""
+echo "💡 Quick shortcuts available:"
+echo "   - 'cf'  → npx claude-flow@alpha"
+echo "   - 'cfh' → npx claude-flow@alpha hive-mind"
+echo "   - 'cfw' → npx claude-flow@alpha hive-mind wizard"
+echo "   - Press ↑ arrow for command history"
 echo ""
 echo "📚 Documentation:"
 echo "   - Claude Code: https://claude.ai/code"
