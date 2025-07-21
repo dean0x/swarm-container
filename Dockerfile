@@ -52,7 +52,6 @@ RUN npm install -g \
     @anthropic-ai/claude-code \
     @openai/codex \
     @google/gemini-cli \
-    claude-flow@alpha \
     npm-check-updates \
     typescript \
     ts-node \

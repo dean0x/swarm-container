@@ -145,15 +145,20 @@ fi
 echo "📂 ruv-FANN source available at: $RUV_FANN_DIR"
 echo "💡 ruv-swarm will be accessed via npx when needed"
 
-# Initialize claude-flow (this will create .claude directory and config)
+# Initialize claude-flow using npx (recommended approach)
 echo "🔄 Initializing Claude Flow..."
 cd /workspace
-if command -v claude-flow &> /dev/null; then
-    claude-flow init --force || echo "Claude Flow initialization completed"
-    echo "✅ Claude Flow initialized"
-else
-    echo "⚠️  Claude Flow command not found, skipping initialization"
-fi
+npx -y claude-flow@alpha init --force || echo "Claude Flow initialization completed"
+
+# Verify MCP server status after initialization
+echo "🔍 Checking Claude Flow MCP status..."
+npx claude-flow@alpha mcp status || echo "MCP status check completed"
+
+# Ensure MCP server is properly started
+echo "🚀 Starting Claude Flow MCP server..."
+npx claude-flow@alpha mcp start || echo "MCP server startup attempted"
+
+echo "✅ Claude Flow initialized with MCP server"
 
 # Install Oh My Zsh plugins
 echo "🎨 Installing Zsh plugins..."
@@ -178,13 +183,13 @@ if [ ! -f ~/.swarm_history_added ]; then
     # For zsh
     if [ -n "$ZSH_VERSION" ]; then
         # Add to current session history (in order: oldest to newest)
-        print -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
-        print -s "claude-flow hive-mind wizard"
+        print -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        print -s "npx claude-flow@alpha hive-mind wizard"
         print -s "claude --dangerously-skip-permissions"
         
         # Also add to history file
-        echo ": $(date +%s):0;claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
-        echo ": $(date +%s):0;claude-flow hive-mind wizard" >> ~/.zsh_history
+        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
+        echo ": $(date +%s):0;npx claude-flow@alpha hive-mind wizard" >> ~/.zsh_history
         echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
         echo ": $(date +%s):0;codex --help" >> ~/.zsh_history
         echo ": $(date +%s):0;gemini --help" >> ~/.zsh_history
@@ -193,15 +198,15 @@ if [ ! -f ~/.swarm_history_added ]; then
     # For bash
     if [ -n "$BASH_VERSION" ]; then
         # Add to history (in order: oldest to newest)
-        history -s 'claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
-        history -s "claude-flow hive-mind wizard"
+        history -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
+        history -s "npx claude-flow@alpha hive-mind wizard"
         history -s "claude --dangerously-skip-permissions"
         history -s "codex --help"
         history -s "gemini --help"
         
         # Also add to history file
-        echo "claude-flow hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
-        echo "claude-flow hive-mind wizard" >> ~/.bash_history
+        echo "npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
+        echo "npx claude-flow@alpha hive-mind wizard" >> ~/.bash_history
         echo "claude --dangerously-skip-permissions" >> ~/.bash_history
         echo "codex --help" >> ~/.bash_history
         echo "gemini --help" >> ~/.bash_history
@@ -234,7 +239,7 @@ echo "🎯 Next steps:"
 echo "   1. Set your ANTHROPIC_API_KEY environment variable (or use /login command)"
 echo "   2. Run 'claude --dangerously-skip-permissions' to activate Claude Code"
 echo "      (If no API key is set, use the /login command when prompted)"
-echo "   3. Run 'claude-flow hive-mind wizard' to start using Claude Flow"
+echo "   3. Run 'npx claude-flow@alpha hive-mind wizard' to start using Claude Flow"
 echo ""
 echo "📚 Documentation:"
 echo "   - Claude Code: https://claude.ai/code"

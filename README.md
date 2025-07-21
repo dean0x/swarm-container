@@ -11,7 +11,7 @@ A drop-in VS Code development container for running AI agents, swarms, and CLIs 
 ## ✨ Highlights
 
 - **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while experimenting with AI agents
-- **🚀 Pre-installed Claude Flow** - Globally installed with automatic initialization on container start
+- **🚀 Claude Flow via npx** - Always latest version with automatic initialization on container start
 - **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - explore, modify, and contribute back
 - **⚡ Zero-Latency MCP** - Local MCP servers eliminate network roundtrips for lightning-fast agent coordination
 - **🔧 Production + Development** - Global installs for reliability, plus source code for hacking
@@ -132,7 +132,8 @@ code .
 - Download the base Docker image
 - Install all dependencies
 - Clone claude-flow and ruv-FANN sources
-- Initialize claude-flow with auto-configured MCP servers
+- Initialize claude-flow with `npx claude-flow@alpha init`
+- Verify and start MCP servers
 - Set up your development environment
 
 ⏱️ **This takes 3-5 minutes on first run**
@@ -149,8 +150,8 @@ During setup, you'll see:
 
 2. **Progress messages** showing:
    - Security level initialization
-   - Claude Flow global installation
-   - Claude Flow initialization with MCP auto-configuration
+   - Claude Flow initialization via npx
+   - MCP server verification and startup
 
 ### 5. Start Using Claude Flow
 
@@ -165,14 +166,14 @@ claude --dangerously-skip-permissions
 # Click the link and log in with your Claude account
 
 # Step 2: Verify installation
-claude-flow --version
+npx claude-flow@alpha --version
 
 # Step 3: Start building!
 # Quick swarm spawn
-claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
+npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
 
 # Or use the interactive wizard
-claude-flow hive-mind wizard
+npx claude-flow@alpha hive-mind wizard
 
 # Or explore example commands (press ↑ arrow for history)
 # We've pre-loaded useful commands in your shell history!
@@ -252,9 +253,9 @@ The container includes:
 ### 🤖 AI Development Tools
 - **Claude Code** - Latest version installed globally from npm
 - **Claude Flow** - v2.0.0-alpha with advanced swarm orchestration
-  - ✅ Globally installed from npm for reliability
+  - ✅ Accessed via npx - always runs latest version
   - 📂 Source code cloned to `/workspace/deps/claude-flow` for exploration
-  - 🔄 Easy updates with `npm update -g claude-flow@alpha`
+  - 🔄 No updates needed - npx fetches latest automatically
 - **ruv-FANN** - Neural network swarm framework
   - 📂 Full source cloned to `/workspace/deps/ruv-FANN` for development
   - 🚀 ruv-swarm MCP server available for manual configuration
@@ -272,7 +273,7 @@ The container includes:
 - **🧪 Test locally** - Modify and test changes before committing
 - **🚀 Fast MCP connections** - Local servers reduce latency
 - **📚 Full documentation** - CLAUDE.md, README.md, and SECURITY.md included
-- **🎯 Pre-initialized** - Claude Flow ready to use immediately
+- **🎯 Pre-initialized** - Claude Flow initialized with verified MCP server
 
 ## Environment Variables
 
@@ -347,31 +348,31 @@ echo $SECURITY_PRESET
   ```
 - **Development**: Most connections allowed, only known malicious sites blocked
 
-### Claude Flow not found
-The container installs Claude Flow globally. If it fails:
+### Claude Flow not working
+Since we use npx, claude-flow should always work. If it doesn't:
 ```bash
-# Check if Claude Flow is installed
-which claude-flow
+# Check network connectivity
+ping registry.npmjs.org
 
-# If not found, install manually:
-npm install -g claude-flow@alpha
+# Try with explicit version
+npx claude-flow@2.0.0-alpha.53 --version
 
-# Verify installation
-claude-flow --version
+# Clear npx cache if needed
+rm -rf ~/.npm/_npx
+npx claude-flow@alpha --version
 ```
 
 ### Updating Claude Flow
-To update to the latest version:
+Claude Flow always uses the latest version via npx:
 ```bash
-# Update from npm (recommended)
-npm update -g claude-flow@alpha
+# No update needed - npx fetches latest automatically!
 
-# Or pull latest source for development
+# For development, pull latest source
 cd /workspace/deps/claude-flow
 git pull origin main
 
-# Verify update
-claude-flow --version
+# Verify version
+npx claude-flow@alpha --version
 ```
 
 ### VS Code doesn't show "Reopen in Container"

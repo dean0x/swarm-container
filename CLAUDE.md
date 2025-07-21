@@ -27,9 +27,10 @@ This repository provides a VS Code development container for running claude-flow
   - `tests/` - Comprehensive test suite for container validation
 
 ### Claude Flow Setup
-- Installed globally from npm (`npm install -g claude-flow@alpha`)
+- Accessed via npx - no global installation needed
 - Source code cloned to `/workspace/deps/claude-flow` for reference and development
-- Automatically initialized with `claude-flow init` during container setup
+- Automatically initialized with `npx claude-flow@alpha init` during container setup
+- MCP server verified and started during initialization
 - Source available for exploration and contributions
 
 ### ruv-FANN Setup
@@ -100,29 +101,34 @@ export ANTHROPIC_API_KEY='sk-ant-...'
 # Activate Claude Code
 claude --dangerously-skip-permissions
 
-# Claude Flow commands
-claude-flow --help
-claude-flow hive-mind wizard
-claude-flow hive-mind spawn "task description" --claude
+# Claude Flow commands (via npx)
+npx claude-flow@alpha --help
+npx claude-flow@alpha hive-mind wizard
+npx claude-flow@alpha hive-mind spawn "task description" --claude
+
+# Check MCP status
+npx claude-flow@alpha mcp status
 ```
 
 ### Updating Claude Flow
 ```bash
-# Update from npm (recommended)
-npm update -g claude-flow@alpha
+# Always uses latest version via npx - no update needed!
+# Just run your commands and npx will fetch the latest
 
 # Or pull latest source for development
 cd /workspace/deps/claude-flow
 git pull origin main
 
-# Verify update
-claude-flow --version
+# Verify version
+npx claude-flow@alpha --version
 ```
 
 ### MCP Servers
-MCP servers are automatically configured when you run `claude-flow init`:
-- **claude-flow**: Automatically configured during initialization
+MCP servers are automatically configured when you run `npx claude-flow@alpha init`:
+- **claude-flow**: Automatically configured and verified during initialization
 - **ruv-swarm**: Available for manual configuration if needed
+
+The initialization process now includes MCP server startup verification to ensure reliable connections.
 
 MCP servers provide enhanced functionality for agent coordination and tool access.
 
@@ -130,8 +136,8 @@ MCP servers provide enhanced functionality for agent coordination and tool acces
 ### Development
 ```bash
 # Update packages
-npm update -g claude-flow@alpha
 npm update -g @anthropic-ai/claude-code
+# claude-flow always uses latest via npx
 
 # Check logs
 docker logs <container-name>
@@ -180,10 +186,11 @@ claude mcp add ruv-swarm ruv-swarm mcp start
 - Pin to specific versions
 
 ### Benefits of Current Approach
-- claude-flow globally installed for fast startup
-- ruv-swarm via npx to avoid installation issues
+- Both claude-flow and ruv-swarm via npx - always latest version
+- No global installation conflicts
+- Aligns with official claude-flow documentation
 - Source code available for development
-- Best of both worlds
+- MCP server properly initialized and verified
 
 ## Architecture Notes
 
@@ -202,22 +209,23 @@ When adding new npm packages that require network access:
 
 ## Troubleshooting
 
-### Claude Flow Not Found
-If claude-flow command is not found:
+### Claude Flow Not Working
+Since we use npx, claude-flow should always work. If it doesn't:
 
-1. **Check installation**:
+1. **Check network connectivity**:
    ```bash
-   which claude-flow
+   ping registry.npmjs.org
    ```
 
-2. **Reinstall if needed**:
+2. **Try with explicit version**:
    ```bash
-   npm install -g claude-flow@alpha
+   npx claude-flow@2.0.0-alpha.53 --version
    ```
 
-3. **Verify installation**:
+3. **Clear npx cache if needed**:
    ```bash
-   claude-flow --version
+   rm -rf ~/.npm/_npx
+   npx claude-flow@alpha --version
    ```
 
 ### MCP Server Connection Issues
@@ -228,10 +236,21 @@ If MCP servers fail to connect:
    claude mcp list
    ```
 
-2. **Reinstall MCP servers**:
+2. **Check MCP server status**:
+   ```bash
+   npx claude-flow@alpha mcp status --detailed
+   npx claude-flow@alpha mcp logs --tail 100
+   ```
+
+3. **Restart MCP server**:
+   ```bash
+   npx claude-flow@alpha mcp restart
+   ```
+
+4. **Reinstall MCP servers if needed**:
    ```bash
    claude mcp remove claude-flow
-   claude mcp add claude-flow claude-flow mcp start
+   claude mcp add claude-flow npx claude-flow@alpha mcp start
    
    claude mcp remove ruv-swarm
    claude mcp add ruv-swarm npx ruv-swarm@latest mcp start
