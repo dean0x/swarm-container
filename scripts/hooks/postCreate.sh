@@ -170,6 +170,17 @@ if [ -f ~/.zshrc ]; then
     sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
 fi
 
+# Simple completion setup using Oh My Zsh
+if [ -f ~/.zshrc ]; then
+    echo "" >> ~/.zshrc
+    echo "# Enable zsh completions" >> ~/.zshrc
+    echo "autoload -U compinit && compinit" >> ~/.zshrc
+    echo "zstyle ':completion:*' menu select" >> ~/.zshrc
+    echo "" >> ~/.zshrc
+    echo "# Enable npm command completion" >> ~/.zshrc
+    echo "eval \"\$(npm completion)\"" >> ~/.zshrc
+fi
+
 # Add useful commands to shell history and create startup script
 echo "🔧 Setting up quick commands..."
 
