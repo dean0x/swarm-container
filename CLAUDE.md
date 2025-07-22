@@ -148,6 +148,51 @@ npm update -g @anthropic-ai/claude-code
 docker logs <container-name>
 ```
 
+### Tmux Usage
+
+The container includes a fully configured tmux setup with useful plugins for managing multiple terminal sessions.
+
+#### Quick Start
+```bash
+# Start a new tmux session
+tmux new-session -s dev
+
+# Create a 6-pane layout (default 2x3)
+tmux-6pane
+
+# Create different layouts
+tmux-6pane 3x2      # 3 columns, 2 rows
+tmux-6pane main     # Main pane + 5 smaller panes  
+tmux-6pane dev      # Development workflow layout
+
+# Attach to existing session
+tmux attach-session -t dev
+```
+
+#### Key Bindings
+- **Prefix key**: `Ctrl-a` (instead of default Ctrl-b)
+- **Split panes**: 
+  - `Ctrl-a |` - Split vertically
+  - `Ctrl-a -` - Split horizontally
+- **Navigate panes**: 
+  - `Ctrl-a h/j/k/l` - Vim-style navigation
+  - `Alt-Arrow` - Arrow key navigation (no prefix)
+- **Resize panes**: `Ctrl-a H/J/K/L` (repeatable)
+- **Popup menu**: `Ctrl-a \` - Access all tmux commands
+- **Copy mode**: `Ctrl-a [` then `v` to select, `y` to copy
+- **Quick layouts**: `Ctrl-a 6` - Recreate 6-pane layout
+- **Reload config**: `Ctrl-a r`
+
+#### Installed Plugins
+- **tmux-sensible**: Better defaults
+- **tmux-pain-control**: Improved pane management 
+- **tmux-yank**: System clipboard integration
+- **tmux-resurrect**: Save/restore sessions (`Ctrl-a Ctrl-s` / `Ctrl-a Ctrl-r`)
+- **tmux-continuum**: Automatic session saving (every 15 minutes)
+- **tmux-menus**: Context menus for easy command access
+- **tmux-open**: Open files/URLs from terminal
+- **extrakto**: Fuzzy search text in terminal (`Ctrl-a Tab`)
+
 ## Installing from Source (Advanced)
 
 If you want to use your local source code modifications or install ruv-swarm locally:

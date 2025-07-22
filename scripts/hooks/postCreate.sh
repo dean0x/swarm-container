@@ -172,6 +172,23 @@ fi
 
 # Oh My Zsh handles completions automatically, no need for manual setup
 
+# Install tmux plugins if not already installed
+echo "🔧 Setting up tmux plugins..."
+if [ -f ~/.tmux.conf ] && [ -d ~/.tmux/plugins/tpm ]; then
+    # Install tmux plugins
+    ~/.tmux/plugins/tpm/bin/install_plugins || echo "TPM plugins installation completed"
+    echo "✅ Tmux plugins installed"
+else
+    echo "⚠️  Tmux configuration not found, skipping plugin installation"
+fi
+
+# Copy tmux helper script to PATH
+if [ -f /devcontainer-config/scripts/tmux-6pane.sh ]; then
+    cp /devcontainer-config/scripts/tmux-6pane.sh /usr/local/bin/tmux-6pane
+    chmod +x /usr/local/bin/tmux-6pane
+    echo "✅ tmux-6pane helper script installed"
+fi
+
 # Add useful commands to shell history and create startup script
 echo "🔧 Setting up quick commands..."
 
@@ -188,11 +205,15 @@ if [ ! -f ~/.swarm_history_${HISTORY_VERSION} ]; then
         print -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
         print -s "npx claude-flow@alpha hive-mind wizard"
         print -s "claude --dangerously-skip-permissions"
+        print -s "tmux-6pane"
+        print -s "tmux new-session -s dev"
         
         # Also add to history file
         echo ": $(date +%s):0;npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
         echo ": $(date +%s):0;npx claude-flow@alpha hive-mind wizard" >> ~/.zsh_history
         echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
+        echo ": $(date +%s):0;tmux-6pane" >> ~/.zsh_history
+        echo ": $(date +%s):0;tmux new-session -s dev" >> ~/.zsh_history
     fi
     
     # For bash
@@ -201,11 +222,15 @@ if [ ! -f ~/.swarm_history_${HISTORY_VERSION} ]; then
         history -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
         history -s "npx claude-flow@alpha hive-mind wizard"
         history -s "claude --dangerously-skip-permissions"
+        history -s "tmux-6pane"
+        history -s "tmux new-session -s dev"
         
         # Also add to history file
         echo "npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
         echo "npx claude-flow@alpha hive-mind wizard" >> ~/.bash_history
         echo "claude --dangerously-skip-permissions" >> ~/.bash_history
+        echo "tmux-6pane" >> ~/.bash_history
+        echo "tmux new-session -s dev" >> ~/.bash_history
     fi
     
     # Clean up old guard files and mark current version as added
