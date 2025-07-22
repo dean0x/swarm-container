@@ -57,9 +57,6 @@ RUN npm install -g \
     ts-node \
     nodemon
 
-# Note: claude-flow will be cloned to workspace and installed from there
-# This allows developers to work with the source code directly
-
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
@@ -68,13 +65,14 @@ RUN mkdir -p /workspace && chown -R node:node /workspace \
     && usermod -s /bin/bash node || true
 
 # Copy security initialization scripts
-COPY .devcontainer/scripts/security/init-security.sh /.devcontainer/scripts/security/init-security.sh
-COPY .devcontainer/scripts/security/security-config.json /.devcontainer/scripts/security/security-config.json
-RUN chmod +x /.devcontainer/scripts/security/init-security.sh
+COPY scripts/security/init-security.sh /scripts/security/init-security.sh
+COPY scripts/security/security-config.json /scripts/security/security-config.json
+RUN chmod +x /scripts/security/init-security.sh
 
-# Copy and setup entrypoint script
-COPY .devcontainer/scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Copy hook scripts
+COPY scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY scripts/hooks/set-node-memory.sh /scripts/hooks/set-node-memory.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh
 
 # Set working directory
 WORKDIR /workspace
@@ -90,8 +88,7 @@ RUN git config --global core.pager "delta" \
 ENV DEVCONTAINER=true
 ENV SHELL=/bin/zsh
 ENV NODE_ENV=development
-# Increase Node.js memory limit to prevent OOM errors
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+# NODE_OPTIONS will be set dynamically based on container memory
 
 # Set entrypoint - this runs as root since we haven't switched users yet
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

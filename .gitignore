@@ -1,69 +1,29 @@
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.npm
+# This .gitignore is for the SwarmContainer repository itself
+# When this is cloned as a devcontainer, the parent project's .gitignore applies
 
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# IDE
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.swp
-*.swo
-*~
-.idea
-
-# OS
+# OS files
 .DS_Store
 Thumbs.db
 
+# Editor files
+*.swp
+*.swo
+*~
+
+# Environment files (users should copy these, not edit directly)
+.env
+
 # Logs
-logs/
 *.log
 
-# Environment
-.env
-.env.*
-
-# Docs
-docs/
-
-# Claude / Claude Flow
-.claude/
-*.claude-session
-.hive-mind/
-.swarm/
-memory/
-coordination/
-workspace/CLAUDE.md
-CLAUDE.md
-
-# Dependencies folder
-deps/
-
-# Docker
-.docker/
-
-# Temporary files
+# Test artifacts
 *.tmp
 *.temp
 .cache/
 
-# Typescript
-*.tsbuildinfo
+# Don't ignore example env files
+!.env.development
+!.env.enterprise
+!.env.paranoid
 
-# Build output
-dist/
-build/
-
-# Coverage
-coverage/
+node_modules/

@@ -4,17 +4,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/github/v/release/dean0x/swarm-container)](https://github.com/dean0x/swarm-container/releases)
 
-A secure, isolated development container for running agentic swarms, and CLIs with loose permissions, using Dev Containers in VS Code.
+A drop-in VS Code development container for running AI agents, swarms, and CLIs in a secure, isolated environment.
 
 🔒 **Features multiple security presets**: Paranoid, Enterprise, and Development modes to match your security requirements.
 
 ## ✨ Highlights
 
 - **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while experimenting with AI agents
-- **🚀 Bleeding Edge Updates** - Claude Flow and ruv-swarm installed from source, giving you instant access to the latest features from main branch
-- **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - modify, test, and contribute back
-- **⚡ Zero-Latency MCP** - Local MCP servers eliminate network roundtrips for lightning-fast agent coordination
-- **🔧 Production + Development** - Global npm installs for reliability, plus source code for hacking and exploration
+- **🧠 Dynamic Memory Allocation** - Automatically sets Node.js heap to 75% of container memory, prevents OOM errors across all security presets
+- **🚀 Claude Flow via npx** - Always latest version with automatic initialization on container start
+- **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - explore, modify, and contribute back
+- **⚡ Zero-Latency MCP** - Local MCP servers with timeout protection eliminate network roundtrips for lightning-fast agent coordination
 - **🤖 Multi-AI Support** - Claude Code, Codex, and Gemini CLIs all pre-installed and configured
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
 - **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
@@ -56,22 +56,48 @@ For detailed version information and update instructions, see [VERSIONS.md](VERS
 
 ## 🚀 Quick Start
 
-### 1. Clone and Configure
+### Integration Options
 
+#### Option 1: Git Submodule (Recommended - Easy Updates)
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/swarmcontainer.git
-cd swarmcontainer
+cd your-project
+git submodule add https://github.com/dean0x/swarm-container.git .devcontainer
+git commit -m "Add swarm-container devcontainer"
 
-# Choose your security level (default is 'development')
-cp .env.development .env    # For local development (recommended to start)
-# OR
-cp .env.enterprise .env     # For corporate environments with some restrictions
-# OR
-cp .env.paranoid .env       # For maximum security with untrusted code
+# To update later:
+cd .devcontainer && git pull origin main
+cd .. && git add .devcontainer && git commit -m "Update devcontainer"
 ```
 
-### 2. Set Up Authentication
+#### Option 2: Git Subtree (Cleaner History)
+```bash
+cd your-project
+git subtree add --prefix=.devcontainer https://github.com/dean0x/swarm-container.git main --squash
+
+# To update later:
+git subtree pull --prefix=.devcontainer https://github.com/dean0x/swarm-container.git main --squash
+```
+
+#### Option 3: Simple Clone (No Update Tracking)
+```bash
+cd your-project
+git clone https://github.com/dean0x/swarm-container.git .devcontainer
+rm -rf .devcontainer/.git
+git add .devcontainer && git commit -m "Add devcontainer"
+```
+
+### Configure Your Environment
+
+```bash
+# Copy the appropriate environment file
+cp .devcontainer/.env.development .env    # For local development (recommended)
+# OR
+cp .devcontainer/.env.enterprise .env     # For corporate environments
+# OR
+cp .devcontainer/.env.paranoid .env       # For maximum security
+```
+
+### Set Up Authentication
 
 You have two options for Claude authentication:
 
@@ -90,23 +116,24 @@ echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
 # ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
-### 3. Open in VS Code
+### Open in VS Code
 
 ```bash
-# Open VS Code in the current directory
+# Open VS Code in your project directory
 code .
 ```
 
 **Then:**
-1. Wait for the notification "Folder contains a Dev Container configuration file"
-2. Click **"Reopen in Container"**
+1. VS Code will detect the `.devcontainer` folder
+2. Click **"Reopen in Container"** when prompted
 3. Or use Command Palette (F1/Cmd+Shift+P): "Dev Containers: Reopen in Container"
 
 **First-time setup will:**
 - Download the base Docker image
 - Install all dependencies
 - Clone claude-flow and ruv-FANN sources
-- Configure MCP servers
+- Initialize claude-flow with `npx claude-flow@alpha init`
+- Verify and start MCP servers
 - Set up your development environment
 
 ⏱️ **This takes 3-5 minutes on first run**
@@ -119,12 +146,12 @@ During setup, you'll see:
    ```
    Edit shell configs to add deno to the PATH? (Y/n)
    ```
-   **➜ Type `Y` and press Enter** (required for MCP servers)
+   **➜ Type `Y` and press Enter** (required for claude-flow to work properly)
 
 2. **Progress messages** showing:
    - Security level initialization
-   - Claude Flow installation
-   - MCP server configuration
+   - Claude Flow initialization via npx
+   - MCP server verification and startup
 
 ### 5. Start Using Claude Flow
 
@@ -139,14 +166,14 @@ claude --dangerously-skip-permissions
 # Click the link and log in with your Claude account
 
 # Step 2: Verify installation
-claude-flow --version
+npx claude-flow@alpha --version
 
 # Step 3: Start building!
 # Quick swarm spawn
-claude-flow hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
+npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude
 
 # Or use the interactive wizard
-claude-flow hive-mind wizard
+npx claude-flow@alpha hive-mind wizard
 
 # Or explore example commands (press ↑ arrow for history)
 # We've pre-loaded useful commands in your shell history!
@@ -160,13 +187,31 @@ gemini --help    # Google Gemini
 
 #### Security Presets Explained
 
-| Preset | Network Access | Use Case | Firewall Rules |
-|--------|---------------|----------|----------------|
-| **development** | Most permissive | Local development, learning | Blocks only known malicious |
-| **enterprise** | Balanced | Corporate environments | Allows dev tools, blocks risky |
-| **paranoid** | Highly restricted | Untrusted code, sensitive data | Explicit allowlist only |
+| Preset | Network Access | Use Case | Firewall Rules | Memory | CPUs |
+|--------|---------------|----------|----------------|---------|------|
+| **development** | Most permissive | Local development, learning | Blocks only known malicious | 8GB | 4 |
+| **enterprise** | Balanced | Corporate environments | Allows dev tools, blocks risky | 12GB | 6 |
+| **paranoid** | Highly restricted | Untrusted code, sensitive data | Explicit allowlist only | 6GB | 2 |
 
 📄 **See [security-config.json](.devcontainer/scripts/security/security-config.json) for detailed preset definitions**
+
+#### Resource Requirements
+
+The container now **dynamically allocates Node.js heap memory** based on container memory (75% of total):
+
+| Container Memory | Node.js Heap | Use Case |
+|-----------------|--------------|-----------|
+| 4GB | 3GB | Basic single agent operations |
+| 6GB | 4.5GB | Paranoid mode with limited agents |
+| 8GB | 6GB | Standard development (default) |
+| 12GB | 9GB | Enterprise multi-agent swarms |
+| 16GB+ | 12GB+ | Large-scale swarm operations |
+
+**Minimum Requirements**:
+- Single Claude Code instance: 4GB memory, 2 CPUs
+- Small swarm (3-5 agents): 8GB memory, 4 CPUs  
+- Medium swarm (6-10 agents): 12GB memory, 6 CPUs
+- Large swarm (10+ agents): 16GB+ memory, 8+ CPUs
 
 #### Environment Variables
 
@@ -182,9 +227,10 @@ SECURITY_PRESET=development            # Options: development, enterprise, paran
                                       # Default set in: .devcontainer/devcontainer.json
 CUSTOM_ALLOWED_DOMAINS=api.myco.com    # Additional allowed domains (comma-separated)
 
-# Resources (optional)
+# Resources (optional, defaults shown for development preset)
 CONTAINER_MEMORY=8g                    # Container memory limit
 CONTAINER_CPUS=4                       # CPU core limit
+# Note: Node.js heap is automatically set to 75% of container memory
 
 # Advanced (optional)
 NO_NEW_PRIVILEGES=true                 # Security: prevent privilege escalation
@@ -201,9 +247,9 @@ CUSTOM_ALLOWED_DOMAINS=api.company.com,npm.company.com,registry.company.com
 ```
 
 #### Workspace Persistence
-Your work is saved in the `workspace/` directory:
-- All files in `workspace/` persist between container restarts
-- Dependencies in `workspace/deps/` are git-ignored
+Your project files are mounted at `/workspace` in the container:
+- All your project files persist between container restarts
+- Dependencies installed in the container are cached in Docker volumes
 - Command history is preserved
 
 #### Shell Customization
@@ -211,7 +257,7 @@ The container includes:
 - Zsh with Oh My Zsh
 - Auto-suggestions and syntax highlighting
 - Pre-loaded command history
-- Custom aliases and functions
+- Versioned command history system
 
 📚 **For detailed security configuration, see [SECURITY.md](SECURITY.md)**
 
@@ -226,13 +272,13 @@ The container includes:
 ### 🤖 AI Development Tools
 - **Claude Code** - Latest version installed globally from npm
 - **Claude Flow** - v2.0.0-alpha with advanced swarm orchestration
-  - ✅ Globally installed from npm for reliability
-  - 📂 Source code in `/workspace/deps/claude-flow` for exploration and contributions
-  - 🔄 Easy updates with `npm update -g claude-flow@alpha`
+  - ✅ Accessed via npx - always runs latest version
+  - 📂 Source code cloned to `/workspace/deps/claude-flow` for exploration
+  - 🔄 No updates needed - npx fetches latest automatically
 - **ruv-FANN** - Neural network swarm framework
-  - 📂 Full source in `/workspace/deps/ruv-FANN` for development
-  - 🚀 ruv-swarm MCP server auto-configured for local connections
-  - 🔧 Production dependencies only (no build issues)
+  - 📂 Full source cloned to `/workspace/deps/ruv-FANN` for development
+  - 🚀 ruv-swarm MCP server available for manual configuration
+  - 🔧 No installation required - accessible via npx
 
 ### 🛡️ Security Features
 - **Three security presets** - Paranoid, Enterprise, and Development modes
@@ -241,12 +287,12 @@ The container includes:
 - **Process isolation** - Safe execution environment
 
 ### 💡 Developer Benefits
-- **📝 Contribute to open source** - Both claude-flow and ruv-FANN sources included
+- **📝 Contribute to open source** - Both claude-flow and ruv-FANN sources included for development
 - **🔄 Stay updated** - Pull latest changes directly in the workspace
 - **🧪 Test locally** - Modify and test changes before committing
 - **🚀 Fast MCP connections** - Local servers reduce latency
 - **📚 Full documentation** - CLAUDE.md, README.md, and SECURITY.md included
-- **🎯 Pre-initialized** - Claude Flow ready to use immediately
+- **🎯 Pre-initialized** - Claude Flow initialized with verified MCP server
 
 ## Environment Variables
 
@@ -259,8 +305,9 @@ Available environment variables:
 
 ## Workspace Structure
 
-The container creates these directories:
-- `/workspace` - Your project files
+When you open your project in the container:
+- `/workspace` - Your project root (mounted from your local machine)
+- `/workspace/deps/` - Claude Flow and ruv-FANN source code (auto-created)
 
 ## Security Features
 
@@ -320,28 +367,31 @@ echo $SECURITY_PRESET
   ```
 - **Development**: Most connections allowed, only known malicious sites blocked
 
-### Claude Flow not found
-The container installs Claude Flow from source. If it fails:
+### Claude Flow not working
+Since we use npx, claude-flow should always work. If it doesn't:
 ```bash
-# Check installation
-which claude-flow
+# Check network connectivity
+ping registry.npmjs.org
 
-# Reinstall from npm if needed
-npm install -g claude-flow@alpha
+# Try with explicit version
+npx claude-flow@2.0.0-alpha.53 --version
+
+# Clear npx cache if needed
+rm -rf ~/.npm/_npx
+npx claude-flow@alpha --version
 ```
 
 ### Updating Claude Flow
-To update to the latest version:
+Claude Flow always uses the latest version via npx:
 ```bash
-# Update from npm (recommended)
-npm update -g claude-flow@alpha
+# No update needed - npx fetches latest automatically!
 
-# Or pull latest source for development
+# For development, pull latest source
 cd /workspace/deps/claude-flow
 git pull origin main
 
-# Verify update
-claude-flow --version
+# Verify version
+npx claude-flow@alpha --version
 ```
 
 ### VS Code doesn't show "Reopen in Container"
@@ -380,8 +430,8 @@ If you encounter disk space errors during build:
 
 ### Deno PATH prompt during setup
 If you missed the prompt "Edit shell configs to add deno to the PATH? (Y/n)" during container creation:
-- This prompt appears during MCP server configuration
-- Answer **Y** (yes) to ensure MCP servers work correctly
+- This prompt appears during claude-flow initialization
+- Answer **Y** (yes) to ensure claude-flow works correctly
 - If you accidentally selected 'n', you can manually add Deno to PATH later
 
 ### Node.js Out of Memory Errors
@@ -395,7 +445,10 @@ If you encounter "JavaScript heap out of memory" errors:
 2. **Check current memory usage**:
    ```bash
    # Inside container
-   bash /devcontainer-config/.devcontainer/scripts/health-check.sh
+   echo "Container Memory: $(cat /sys/fs/cgroup/memory.max 2>/dev/null || echo 'unlimited')"
+   echo "Node.js Heap: $NODE_OPTIONS"
+   # Or run health check if available
+   bash /devcontainer-config/scripts/health-check.sh 2>/dev/null || true
    ```
 
 3. **Temporary fix for current session**:
@@ -436,9 +489,9 @@ If your container suddenly disconnects:
 
 ## Testing
 
-Run automated tests before opening in VS Code:
+Run automated tests to verify your setup:
 ```bash
-# Run all tests
+# From your project root (after adding the devcontainer)
 ./.devcontainer/scripts/tests/test-devcontainer.sh
 
 # Tests check for:

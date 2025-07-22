@@ -6,8 +6,8 @@ This document tracks the current working versions of the core components in the 
 
 | Component | Version | Source | Notes |
 |-----------|---------|--------|-------|
-| **Claude Code** | v1.0.51 | npm: `@anthropic-ai/claude-code` | Installed globally via npm |
-| **Claude Flow** | v2.0.0-alpha.53 | npm: `claude-flow@alpha` | Installed globally from npm, source in `/workspace/deps/claude-flow` |
+| **Claude Code** | v1.0.56 | npm: `@anthropic-ai/claude-code` | Installed globally via npm |
+| **Claude Flow** | v2.0.0-alpha.63+ | npm: `claude-flow@alpha` | **Accessed via npx (always latest)**, source in `/workspace/deps/claude-flow` |
 | **ruv-FANN/ruv-swarm** | v1.0.18 | GitHub: `ruvnet/ruv-FANN` | Cloned to `/workspace/deps/ruv-FANN`, ruv-swarm installed with `--production` |
 | **OpenAI Codex** | Latest | npm: `@openai/codex` | Installed globally via npm |
 | **Google Gemini CLI** | Latest | npm: `@google/gemini-cli` | Installed globally via npm |
@@ -31,6 +31,7 @@ This document tracks the current working versions of the core components in the 
 - bat (better cat)
 - git-delta (better diffs)
 - zsh with Oh My Zsh
+- set-node-memory.sh (dynamic memory allocation script)
 
 ## Updating Components
 
@@ -41,19 +42,18 @@ npm update -g @anthropic-ai/claude-code
 
 ### Claude Flow
 ```bash
+# No update needed - npx always uses latest version!
+# For development, pull latest source:
 cd /workspace/deps/claude-flow
 git pull origin main
-npm install
-npm run build
-npm install -g .
 ```
 
 ### ruv-FANN
 ```bash
+# ruv-swarm accessed via npx, no installation needed
+# For development, pull latest source:
 cd /workspace/deps/ruv-FANN
 git pull origin main
-cd ruv-swarm/npm
-npm install --production
 ```
 
 ### OpenAI Codex

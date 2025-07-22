@@ -2,7 +2,7 @@
   "name": "SwarmContainer",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": "..",
+    "context": ".",
     "args": {
       "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:development}"
     }
@@ -42,7 +42,7 @@
       }
     }
   },
-  "postCreateCommand": "bash /devcontainer-config/.devcontainer/scripts/hooks/postCreate.sh || true",
+  "postCreateCommand": "bash /devcontainer-config/scripts/hooks/postCreate.sh || true",
   "runArgs": [
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",
@@ -55,8 +55,7 @@
     "--restart=unless-stopped"
   ],
   "mounts": [
-    "source=claude-flow-node-modules,target=/workspace/node_modules,type=volume",
-    "source=${localWorkspaceFolder},target=/devcontainer-config,type=bind,readonly"
+    "source=${localWorkspaceFolder}/.devcontainer,target=/devcontainer-config,type=bind,readonly"
   ],
   "remoteUser": "node",
   "containerEnv": {
@@ -69,5 +68,5 @@
   "overrideCommand": true,
   "shutdownAction": "stopContainer",
   "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder}/workspace,target=/workspace,type=bind,consistency=cached"
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
 }

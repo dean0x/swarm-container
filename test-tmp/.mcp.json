@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "claude-flow": {
+      "command": "claude-flow",
+      "args": [
+        "mcp",
+        "start"
+      ],
+      "type": "stdio"
+    },
+    "ruv-swarm": {
+      "command": "ruv-swarm",
+      "args": [
+        "mcp",
+        "start"
+      ],
+      "type": "stdio"
+    }
+  }
+}
