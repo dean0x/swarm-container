@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/github/v/release/dean0x/swarm-container)](https://github.com/dean0x/swarm-container/releases)
 
-A drop-in VS Code development container for running AI agents, swarms, and CLIs in a secure, isolated environment.
+A drop-in VS Code development container for running Claude Code and claude-flow swarms in a secure, isolated environment.
 
 🔒 **Features multiple security presets**: Paranoid, Enterprise, and Development modes to match your security requirements.
 
@@ -15,7 +15,6 @@ A drop-in VS Code development container for running AI agents, swarms, and CLIs 
 - **🚀 Claude Flow via npx** - Always latest version with automatic initialization on container start
 - **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - explore, modify, and contribute back
 - **⚡ Zero-Latency MCP** - Local MCP servers with timeout protection eliminate network roundtrips for lightning-fast agent coordination
-- **🤖 Multi-AI Support** - Claude Code, Codex, and Gemini CLIs all pre-installed and configured
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
 - **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
 
@@ -26,11 +25,6 @@ A drop-in VS Code development container for running AI agents, swarms, and CLIs 
 | [claude-flow](https://github.com/ruvnet/claude-flow) | Advanced swarm intelligence with SQLite memory system and GitHub integration | ✅ Available | Auto-initialized |
 | [claude-swarm](https://github.com/parruda/claude-swarm) | Multi-agent orchestration with tree hierarchy and MCP communication | 🔜 Coming Soon | |
 
-## Supported AI CLIs
-
-| [Claude Code](https://claude.ai/code) | [OpenCode](https://github.com/opencode) | [Codex](https://openai.com/codex) | [Gemini](https://gemini.google.com) |
-|:---:|:---:|:---:|:---:|
-| ✅ **Available** | 🔜 Coming Soon | ✅ **Available** | ✅ **Available** |
 
 ## Prerequisites
 
@@ -177,10 +171,6 @@ npx claude-flow@alpha hive-mind wizard
 
 # Or explore example commands (press ↑ arrow for history)
 # We've pre-loaded useful commands in your shell history!
-
-# Step 4: Try other AI CLIs
-codex --help     # OpenAI Codex
-gemini --help    # Google Gemini
 ```
 
 ### 📋 Configuration Options
@@ -269,13 +259,13 @@ The container includes:
 - **Modern CLI tools** - ripgrep, fzf, bat, delta for better development experience
 - **VS Code extensions** - ESLint, Prettier, GitLens, and more pre-configured
 
-### 🤖 AI Development Tools
+### 🤖 Claude Development Tools
 - **Claude Code** - Latest version installed globally from npm
 - **Claude Flow** - v2.0.0-alpha with advanced swarm orchestration
   - ✅ Accessed via npx - always runs latest version
   - 📂 Source code cloned to `/workspace/deps/claude-flow` for exploration
   - 🔄 No updates needed - npx fetches latest automatically
-- **ruv-FANN** - Neural network swarm framework
+- **ruv-FANN** - Neural network swarm framework for claude-flow
   - 📂 Full source cloned to `/workspace/deps/ruv-FANN` for development
   - 🚀 ruv-swarm MCP server available for manual configuration
   - 🔧 No installation required - accessible via npx

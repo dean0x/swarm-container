@@ -50,8 +50,6 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
 # Install global npm packages
 RUN npm install -g \
     @anthropic-ai/claude-code \
-    @openai/codex \
-    @google/gemini-cli \
     npm-check-updates \
     typescript \
     ts-node \

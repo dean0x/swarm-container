@@ -193,8 +193,6 @@ if [ ! -f ~/.swarm_history_${HISTORY_VERSION} ]; then
         echo ": $(date +%s):0;npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.zsh_history
         echo ": $(date +%s):0;npx claude-flow@alpha hive-mind wizard" >> ~/.zsh_history
         echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
-        echo ": $(date +%s):0;codex --help" >> ~/.zsh_history
-        echo ": $(date +%s):0;gemini --help" >> ~/.zsh_history
     fi
     
     # For bash
@@ -203,15 +201,11 @@ if [ ! -f ~/.swarm_history_${HISTORY_VERSION} ]; then
         history -s 'npx claude-flow@alpha hive-mind spawn "build me something amazing" --queen-type adaptive --max-workers 5 --claude'
         history -s "npx claude-flow@alpha hive-mind wizard"
         history -s "claude --dangerously-skip-permissions"
-        history -s "codex --help"
-        history -s "gemini --help"
         
         # Also add to history file
         echo "npx claude-flow@alpha hive-mind spawn \"build me something amazing\" --queen-type adaptive --max-workers 5 --claude" >> ~/.bash_history
         echo "npx claude-flow@alpha hive-mind wizard" >> ~/.bash_history
         echo "claude --dangerously-skip-permissions" >> ~/.bash_history
-        echo "codex --help" >> ~/.bash_history
-        echo "gemini --help" >> ~/.bash_history
     fi
     
     # Clean up old guard files and mark current version as added
