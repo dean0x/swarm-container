@@ -52,6 +52,8 @@ echo "$(date): Security initialized with preset: $SECURITY_PRESET" > /var/log/co
 if [ -f "/scripts/hooks/set-node-memory.sh" ]; then
     echo -e "${BLUE}🧠 Configuring Node.js memory settings...${NC}"
     source /scripts/hooks/set-node-memory.sh
+    # Export for all child processes
+    export NODE_OPTIONS
 else
     echo -e "${YELLOW}⚠️  Memory configuration script not found, using defaults${NC}"
 fi

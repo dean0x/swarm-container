@@ -82,6 +82,25 @@ if [ $? -eq 0 ]; then
         fi
     done
     
+    # Test 7: Check NODE_OPTIONS is set correctly
+    echo ""
+    echo "7️⃣ Testing dynamic memory allocation..."
+    NODE_OPTS=$(docker exec "$CONTAINER_ID" bash -c 'echo $NODE_OPTIONS' 2>/dev/null)
+    if [ -n "$NODE_OPTS" ]; then
+        echo -e "   ${GREEN}✓${NC} NODE_OPTIONS set: $NODE_OPTS"
+        # Verify it's approximately 75% of 8GB (6144MB)
+        if [[ "$NODE_OPTS" =~ --max-old-space-size=([0-9]+) ]]; then
+            HEAP_SIZE="${BASH_REMATCH[1]}"
+            if [ "$HEAP_SIZE" -ge 5000 ] && [ "$HEAP_SIZE" -le 7000 ]; then
+                echo -e "   ${GREEN}✓${NC} Heap size $HEAP_SIZE MB is ~75% of container memory"
+            else
+                echo -e "   ${YELLOW}⚠${NC} Heap size $HEAP_SIZE MB seems incorrect for 8GB container"
+            fi
+        fi
+    else
+        echo -e "   ${RED}✗${NC} NODE_OPTIONS not set (dynamic memory allocation failed)"
+    fi
+    
     # Cleanup
     docker stop "$CONTAINER_ID" > /dev/null
     docker rm "$CONTAINER_ID" > /dev/null
@@ -93,7 +112,7 @@ fi
 
 # Test 7: Security script syntax check
 echo ""
-echo "7️⃣ Checking shell scripts..."
+echo "8️⃣ Checking shell scripts..."
 for script in scripts/*/*.sh scripts/*.sh; do
     if [ -f "$script" ]; then
         if bash -n "$script" 2>/dev/null; then
