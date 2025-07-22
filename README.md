@@ -11,10 +11,10 @@ A drop-in VS Code development container for running AI agents, swarms, and CLIs 
 ## ✨ Highlights
 
 - **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while experimenting with AI agents
+- **🧠 Dynamic Memory Allocation** - Automatically sets Node.js heap to 75% of container memory, prevents OOM errors across all security presets
 - **🚀 Claude Flow via npx** - Always latest version with automatic initialization on container start
 - **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - explore, modify, and contribute back
-- **⚡ Zero-Latency MCP** - Local MCP servers eliminate network roundtrips for lightning-fast agent coordination
-- **🔧 Production + Development** - Global installs for reliability, plus source code for hacking
+- **⚡ Zero-Latency MCP** - Local MCP servers with timeout protection eliminate network roundtrips for lightning-fast agent coordination
 - **🤖 Multi-AI Support** - Claude Code, Codex, and Gemini CLIs all pre-installed and configured
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
 - **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
@@ -257,7 +257,7 @@ The container includes:
 - Zsh with Oh My Zsh
 - Auto-suggestions and syntax highlighting
 - Pre-loaded command history
-- Custom aliases and functions
+- Versioned command history system
 
 📚 **For detailed security configuration, see [SECURITY.md](SECURITY.md)**
 

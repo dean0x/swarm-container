@@ -5,6 +5,64 @@ All notable changes to SwarmContainer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-07-22
+
+### 🎉 Major Release: Drop-in DevContainer with Dynamic Resource Allocation
+
+This release completely transforms SwarmContainer into a true drop-in devcontainer with intelligent resource management.
+
+### ✨ Added
+- **🧠 Dynamic Memory Allocation**: Automatically detects container memory and sets Node.js heap to 75%
+  - Supports both cgroup v1 and v2 for broad compatibility
+  - Eliminates out-of-memory errors across all security presets
+  - Smart fallbacks ensure minimum 512MB heap
+- **📦 NPX-Based Claude Flow**: Always uses latest version via npx, no installation issues
+  - MCP server startup with 10-second timeout to prevent container setup blocking
+  - Versioned command history system allows updates without conflicts
+- **🔄 Drop-in Integration**: Three easy integration methods (git submodule, subtree, clone)
+- **🧪 Enhanced Testing**: NODE_OPTIONS verification and 8 comprehensive test categories
+- **📜 New Scripts**:
+  - `scripts/hooks/set-node-memory.sh` - Dynamic memory allocation logic
+  - Enhanced `docker-entrypoint.sh` with memory initialization
+  - Improved `postCreate.sh` with versioned command history
+
+### 🔧 Changed
+- **🛡️ Updated Security Presets**:
+  - Paranoid: 6GB memory, 2 CPUs (increased from 4GB - was insufficient)
+  - Enterprise: 12GB memory, 6 CPUs (reduced from 16GB/8 CPUs - more reasonable)
+  - Development: 8GB memory, 4 CPUs (unchanged)
+- **📁 Repository Structure**: Moved all files from `.devcontainer/` to root for drop-in functionality
+- **🚀 Claude Flow Setup**: Switched from global installation to npx for reliability
+- **📝 Command History**: Implemented versioned guard file system (v2) for seamless updates
+
+### 🐛 Fixed
+- **⏱️ MCP Server Blocking**: Added timeout to prevent container setup from hanging
+- **💾 Memory Exhaustion**: Dynamic allocation prevents OOM errors in all presets  
+- **🔄 History Updates**: Versioned system allows command updates without conflicts
+- **🧹 Script Organization**: All scripts properly organized under `scripts/` subdirectories
+
+### 🗑️ Removed
+- **❌ Command Aliases**: Removed cf, cfh, cfw aliases as requested
+- **❌ Hardcoded NODE_OPTIONS**: Now calculated dynamically based on container memory
+- **❌ Manual Completion Setup**: Let Oh My Zsh handle completions naturally
+
+### 🏗️ Breaking Changes
+- Repository structure reorganized - all files moved from `.devcontainer/` to root
+- Integration now requires one of three drop-in methods (submodule/subtree/clone)
+- Previous workspace structure no longer compatible
+
+### 📊 Technical Improvements
+- **Memory Detection**: Supports cgroup v1 (`/sys/fs/cgroup/memory/`) and v2 (`/sys/fs/cgroup/memory.max`)
+- **Error Handling**: Comprehensive fallbacks for memory detection and tool installation
+- **Test Coverage**: All 8 test categories pass including new NODE_OPTIONS verification
+- **Documentation**: Complete resource requirements guide with scaling recommendations
+
+### 🎯 Benefits
+- **Zero Friction**: Add devcontainer with single command
+- **Smart Resources**: No more manual memory configuration
+- **Always Current**: NPX ensures latest claude-flow version
+- **Production Ready**: 15 commits of improvements with comprehensive testing
+
 ## [1.0.2] - 2025-01-18
 
 ### Added

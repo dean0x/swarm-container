@@ -7,30 +7,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This repository provides a VS Code development container for running claude-flow swarms in a secure, isolated environment. It's based on Anthropic's Claude Code devcontainer reference implementation, adapted specifically for claude-flow development.
 
 ### Recent Updates
-- **Organized script structure**: All scripts moved to logical subdirectories under `.devcontainer/scripts/`
+- **Dynamic Memory Allocation**: Auto-detects container memory and sets Node.js heap to 75% (supports cgroup v1/v2)
+- **Organized script structure**: All scripts moved to logical subdirectories under `scripts/`
 - **Clean workspace**: Container starts with empty `/workspace`, source code cloned to `/workspace/deps/`
-- **Simplified setup**: Uses npx for claude-flow and ruv-swarm - no installation failures
+- **NPX-based setup**: Uses npx for claude-flow and ruv-swarm - always latest, no installation failures
+- **MCP timeout protection**: 10-second timeout prevents MCP server startup from blocking container setup
+- **Versioned command history**: Guard file system allows command updates without conflicts
 - **Comprehensive testing**: Full test suite validates container configuration and functionality
-- **MCP optimization**: MCP servers configured to use npx for always-latest versions
 
 ## Key Components
 
 ### Dev Container Configuration
-- `.devcontainer/devcontainer.json` - VS Code container settings with dynamic security
-- `.devcontainer/Dockerfile` - Node.js 20 base with security tools  
-- `.devcontainer/scripts/` - Organized scripts directory:
+- `devcontainer.json` - VS Code container settings with dynamic resource allocation
+- `Dockerfile` - Node.js 20 base with security tools and dynamic NODE_OPTIONS
+- `scripts/` - Organized scripts directory:
   - `security/init-security.sh` - Dynamic firewall based on security preset
   - `security/security-config.json` - Security preset definitions
   - `security/security-monitor.sh` - Runtime security monitoring
-  - `hooks/docker-entrypoint.sh` - Container entrypoint with security initialization
-  - `hooks/postCreate.sh` - Post-creation setup (claude-flow, MCP servers, etc.)
-  - `tests/` - Comprehensive test suite for container validation
+  - `hooks/docker-entrypoint.sh` - Container entrypoint with security and memory initialization
+  - `hooks/postCreate.sh` - Post-creation setup (claude-flow, MCP servers, versioned history)
+  - `hooks/set-node-memory.sh` - Dynamic Node.js memory allocation based on container limits
+  - `tests/` - Comprehensive test suite for container validation including NODE_OPTIONS verification
 
 ### Claude Flow Setup
-- Accessed via npx - no global installation needed
-- Source code cloned to `/workspace/deps/claude-flow` for reference and development
-- Automatically initialized with `npx claude-flow@alpha init` during container setup
-- MCP server verified and started during initialization
+- **NPX-based access** - Always uses latest version, no global installation needed
+- **Source code cloned** to `/workspace/deps/claude-flow` for reference and development
+- **Automatic initialization** with `npx claude-flow@alpha init` during container setup
+- **MCP server with timeout** - Verified and started with 10-second timeout to prevent blocking
+- **Versioned command history** - Updates commands when container setup changes
 - Source available for exploration and contributions
 
 ### ruv-FANN Setup
@@ -45,8 +49,9 @@ This repository provides a VS Code development container for running claude-flow
 - Submit PRs directly from the container
 
 ### Security Architecture
-- **Presets**: Paranoid, Enterprise, Development modes
+- **Presets**: Paranoid (6GB/2CPU), Enterprise (12GB/6CPU), Development (8GB/4CPU) modes
 - **Network**: Dynamic firewall with domain allowlisting/blocklisting
+- **Memory**: Dynamic Node.js heap allocation (75% of container memory)
 - **Filesystem**: Configurable read-only paths and workspace isolation
 - **Process**: Capability dropping, resource limits, privilege restrictions
 - **Monitoring**: Security audit logging and integrity checking
