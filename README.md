@@ -187,13 +187,31 @@ gemini --help    # Google Gemini
 
 #### Security Presets Explained
 
-| Preset | Network Access | Use Case | Firewall Rules |
-|--------|---------------|----------|----------------|
-| **development** | Most permissive | Local development, learning | Blocks only known malicious |
-| **enterprise** | Balanced | Corporate environments | Allows dev tools, blocks risky |
-| **paranoid** | Highly restricted | Untrusted code, sensitive data | Explicit allowlist only |
+| Preset | Network Access | Use Case | Firewall Rules | Memory | CPUs |
+|--------|---------------|----------|----------------|---------|------|
+| **development** | Most permissive | Local development, learning | Blocks only known malicious | 8GB | 4 |
+| **enterprise** | Balanced | Corporate environments | Allows dev tools, blocks risky | 12GB | 6 |
+| **paranoid** | Highly restricted | Untrusted code, sensitive data | Explicit allowlist only | 6GB | 2 |
 
 📄 **See [security-config.json](.devcontainer/scripts/security/security-config.json) for detailed preset definitions**
+
+#### Resource Requirements
+
+The container now **dynamically allocates Node.js heap memory** based on container memory (75% of total):
+
+| Container Memory | Node.js Heap | Use Case |
+|-----------------|--------------|-----------|
+| 4GB | 3GB | Basic single agent operations |
+| 6GB | 4.5GB | Paranoid mode with limited agents |
+| 8GB | 6GB | Standard development (default) |
+| 12GB | 9GB | Enterprise multi-agent swarms |
+| 16GB+ | 12GB+ | Large-scale swarm operations |
+
+**Minimum Requirements**:
+- Single Claude Code instance: 4GB memory, 2 CPUs
+- Small swarm (3-5 agents): 8GB memory, 4 CPUs  
+- Medium swarm (6-10 agents): 12GB memory, 6 CPUs
+- Large swarm (10+ agents): 16GB+ memory, 8+ CPUs
 
 #### Environment Variables
 
@@ -209,9 +227,10 @@ SECURITY_PRESET=development            # Options: development, enterprise, paran
                                       # Default set in: .devcontainer/devcontainer.json
 CUSTOM_ALLOWED_DOMAINS=api.myco.com    # Additional allowed domains (comma-separated)
 
-# Resources (optional)
+# Resources (optional, defaults shown for development preset)
 CONTAINER_MEMORY=8g                    # Container memory limit
 CONTAINER_CPUS=4                       # CPU core limit
+# Note: Node.js heap is automatically set to 75% of container memory
 
 # Advanced (optional)
 NO_NEW_PRIVILEGES=true                 # Security: prevent privilege escalation
@@ -426,7 +445,10 @@ If you encounter "JavaScript heap out of memory" errors:
 2. **Check current memory usage**:
    ```bash
    # Inside container
-   bash /devcontainer-config/scripts/health-check.sh
+   echo "Container Memory: $(cat /sys/fs/cgroup/memory.max 2>/dev/null || echo 'unlimited')"
+   echo "Node.js Heap: $NODE_OPTIONS"
+   # Or run health check if available
+   bash /devcontainer-config/scripts/health-check.sh 2>/dev/null || true
    ```
 
 3. **Temporary fix for current session**:

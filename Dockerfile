@@ -69,9 +69,10 @@ COPY scripts/security/init-security.sh /scripts/security/init-security.sh
 COPY scripts/security/security-config.json /scripts/security/security-config.json
 RUN chmod +x /scripts/security/init-security.sh
 
-# Copy and setup entrypoint script
+# Copy hook scripts
 COPY scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY scripts/hooks/set-node-memory.sh /scripts/hooks/set-node-memory.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh
 
 # Set working directory
 WORKDIR /workspace
@@ -87,8 +88,7 @@ RUN git config --global core.pager "delta" \
 ENV DEVCONTAINER=true
 ENV SHELL=/bin/zsh
 ENV NODE_ENV=development
-# Increase Node.js memory limit to prevent OOM errors
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+# NODE_OPTIONS will be set dynamically based on container memory
 
 # Set entrypoint - this runs as root since we haven't switched users yet
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

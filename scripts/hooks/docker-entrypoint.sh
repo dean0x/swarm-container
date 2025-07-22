@@ -48,6 +48,14 @@ fi
 # Create a marker file to indicate security was initialized
 echo "$(date): Security initialized with preset: $SECURITY_PRESET" > /var/log/container-security.log
 
+# Set dynamic Node.js memory options based on container memory
+if [ -f "/scripts/hooks/set-node-memory.sh" ]; then
+    echo -e "${BLUE}🧠 Configuring Node.js memory settings...${NC}"
+    source /scripts/hooks/set-node-memory.sh
+else
+    echo -e "${YELLOW}⚠️  Memory configuration script not found, using defaults${NC}"
+fi
+
 # Copy git config to node user
 if [ -f /root/.gitconfig ]; then
     cp /root/.gitconfig /home/node/.gitconfig
