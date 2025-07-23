@@ -32,10 +32,14 @@ deps/
 
 # Claude Flow generated files
 .claude/settings.local.json
+.claude/commands/
+.claude/helpers/
 .mcp.json
 claude-flow.config.json
 .swarm/
 .hive-mind/
+.roo/
+.roomodes
 memory/claude-flow-data.json
 memory/sessions/*
 !memory/sessions/README.md
