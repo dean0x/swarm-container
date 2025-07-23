@@ -14,10 +14,17 @@ else
 fi
 
 # Copy tmux helper script to PATH
+# Try multiple locations since mount paths may vary
 if [ -f /devcontainer-config/scripts/tmux-6pane.sh ]; then
     cp /devcontainer-config/scripts/tmux-6pane.sh /usr/local/bin/tmux-6pane
     chmod +x /usr/local/bin/tmux-6pane
     echo "✅ tmux-6pane helper script installed"
+elif [ -f /workspace/scripts/tmux-6pane.sh ]; then
+    cp /workspace/scripts/tmux-6pane.sh /usr/local/bin/tmux-6pane
+    chmod +x /usr/local/bin/tmux-6pane
+    echo "✅ tmux-6pane helper script installed from workspace"
+else
+    echo "⚠️  tmux-6pane.sh not found in expected locations"
 fi
 
 echo "✅ Tmux environment configured"

@@ -42,7 +42,7 @@
       }
     }
   },
-  "postCreateCommand": "bash /devcontainer-config/scripts/hooks/postCreate.sh || true",
+  "postCreateCommand": "bash /workspace/scripts/hooks/postCreate.sh || true",
   "runArgs": [
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",
@@ -53,9 +53,6 @@
     "--cpus=${localEnv:CONTAINER_CPUS:4}",
     "--shm-size=2g",
     "--restart=unless-stopped"
-  ],
-  "mounts": [
-    "source=${localWorkspaceFolder}/.devcontainer,target=/devcontainer-config,type=bind,readonly"
   ],
   "remoteUser": "node",
   "containerEnv": {
