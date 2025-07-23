@@ -9,8 +9,8 @@ chmod +x /scripts/security/init-security.sh 2>/dev/null || true
 chmod +x /scripts/security/security-monitor.sh 2>/dev/null || true
 
 # Make all module scripts executable in workspace
-if [ -d "scripts/hooks/modules" ]; then
-    chmod +x scripts/hooks/modules/*.sh 2>/dev/null || true
+if [ -d "/workspace/scripts/hooks/modules" ]; then
+    chmod +x /workspace/scripts/hooks/modules/*.sh 2>/dev/null || true
 fi
 
 # Ensure workspace permissions are correct
