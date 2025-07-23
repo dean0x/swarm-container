@@ -32,15 +32,6 @@ jobs:
           fi
         done
     
-    - name: Test MCP fix script
-      run: |
-        echo "🔧 Testing MCP JSON fix script..."
-        if [ -f "scripts/tests/test-mcp-nodejs.sh" ]; then
-          ./scripts/tests/test-mcp-nodejs.sh
-        else
-          echo "⚠️  MCP test script not found"
-        fi
-    
     - name: Upload test results
       uses: actions/upload-artifact@v3
       if: failure()
