@@ -6,7 +6,8 @@ set +e
 echo "🚀 Setting up Claude Flow development environment..."
 
 # Define the modules directory
-MODULES_DIR="/workspace/scripts/hooks/modules"
+# Use relative path from workspace root
+MODULES_DIR="scripts/hooks/modules"
 
 # Function to run a module with error handling
 run_module() {

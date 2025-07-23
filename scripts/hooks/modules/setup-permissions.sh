@@ -4,13 +4,13 @@
 
 echo "🔒 Setting up permissions..."
 
-# Make security scripts executable
-chmod +x /devcontainer-config/scripts/security/init-security.sh 2>/dev/null || true
-chmod +x /devcontainer-config/scripts/security/security-monitor.sh 2>/dev/null || true
+# Make security scripts executable (these are copied to /scripts/security during build)
+chmod +x /scripts/security/init-security.sh 2>/dev/null || true
+chmod +x /scripts/security/security-monitor.sh 2>/dev/null || true
 
-# Make all module scripts executable
-if [ -d "/devcontainer-config/scripts/hooks/modules" ]; then
-    chmod +x /devcontainer-config/scripts/hooks/modules/*.sh 2>/dev/null || true
+# Make all module scripts executable in workspace
+if [ -d "scripts/hooks/modules" ]; then
+    chmod +x scripts/hooks/modules/*.sh 2>/dev/null || true
 fi
 
 # Ensure workspace permissions are correct
