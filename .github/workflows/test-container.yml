@@ -1,0 +1,96 @@
+name: Test Dev Container
+
+on:
+  push:
+    branches: [ main, feat/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Run all tests
+      run: |
+        echo "🧪 Running complete test suite..."
+        ./scripts/tests/test-devcontainer.sh
+    
+    - name: Test Node.js script syntax
+      run: |
+        echo "🔍 Checking Node.js scripts..."
+        for script in scripts/*.js scripts/**/*.js; do
+          if [ -f "$script" ]; then
+            echo "Checking: $script"
+            node -c "$script" || exit 1
+          fi
+        done
+    
+    - name: Test MCP fix script
+      run: |
+        echo "🔧 Testing MCP JSON fix script..."
+        if [ -f "scripts/tests/test-mcp-nodejs.sh" ]; then
+          ./scripts/tests/test-mcp-nodejs.sh
+        else
+          echo "⚠️  MCP test script not found"
+        fi
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: test-results
+        path: |
+          *.log
+          scripts/tests/*.log
+        retention-days: 7
+
+  test-postcreate-runtime:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Build test container
+      run: |
+        docker build -t swarmcontainer-test -f Dockerfile .
+    
+    - name: Test postCreate runtime (quick)
+      run: |
+        # Run a quick version of the runtime test
+        # Only test the first few modules to avoid timeout
+        CONTAINER_ID=$(docker run -d \
+          -v $(pwd):/workspace \
+          -v $(pwd):/devcontainer-config \
+          --memory 4g \
+          --cpus 2 \
+          --entrypoint /bin/bash \
+          swarmcontainer-test \
+          -c "sleep 300")
+        
+        echo "Testing quick module execution..."
+        
+        # Test just the fast modules
+        docker exec -u node "$CONTAINER_ID" bash -c "
+          cd /workspace
+          bash /devcontainer-config/scripts/hooks/modules/setup-permissions.sh &&
+          bash /devcontainer-config/scripts/hooks/modules/init-npm.sh &&
+          bash /devcontainer-config/scripts/hooks/modules/init-claude-code.sh &&
+          bash /devcontainer-config/scripts/hooks/modules/setup-workspace.sh
+        "
+        
+        EXIT_CODE=$?
+        
+        # Cleanup
+        docker stop "$CONTAINER_ID" >/dev/null
+        docker rm "$CONTAINER_ID" >/dev/null
+        
+        exit $EXIT_CODE
