@@ -7,7 +7,7 @@ echo "🚀 Setting up Claude Flow development environment..."
 
 # Define the modules directory
 # Use absolute path from workspace
-MODULES_DIR="/workspace/scripts/hooks/modules"
+MODULES_DIR="/workspace/.devcontainer/scripts/hooks/modules"
 
 # Function to run a module with error handling
 run_module() {
