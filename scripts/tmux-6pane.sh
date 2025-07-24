@@ -31,8 +31,9 @@ show_help() {
 
 # Check if we're in a tmux session
 if [ -z "$TMUX" ]; then
-    echo -e "${YELLOW}Warning: Not in a tmux session. Starting new session...${NC}"
-    tmux new-session -d -s swarm-dev
+    echo -e "${YELLOW}Warning: Not in a tmux session. Starting new session with 6-pane layout...${NC}"
+    # Create new session and run this script inside it
+    tmux new-session -d -s swarm-dev "$0" "$@"
     tmux attach-session -t swarm-dev
     exit 0
 fi
