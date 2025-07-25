@@ -32,13 +32,13 @@ run_module "setup-permissions.sh"    # Set permissions first
 run_module "init-npm.sh"            # Configure NPM
 run_module "init-claude-code.sh"    # Initialize Claude Code
 run_module "setup-workspace.sh"     # Setup workspace structure
-run_module "clone-dependencies.sh"  # Clone repositories
-run_module "init-claude-flow.sh"    # Initialize Claude Flow
+# run_module "clone-dependencies.sh"  # Clone repositories
+# run_module "init-claude-flow.sh"    # Initialize Claude Flow
 run_module "setup-shell.sh"         # Configure shell environment
 run_module "setup-tmux.sh"          # Setup tmux
 
 echo ""
-echo "✅ Claude Flow development environment setup complete!"
+echo "✅ Development environment setup complete!"
 echo ""
 echo "🎯 Next steps:"
 echo "   1. Set your ANTHROPIC_API_KEY environment variable (or use /login command)"
@@ -50,7 +50,7 @@ echo "💡 Quick tip: Press ↑ arrow for command history"
 echo ""
 echo "📚 Documentation:"
 echo "   - Claude Code: https://claude.ai/code"
-echo "   - Claude Flow: https://github.com/ruvnet/claude-flow"
+# echo "   - Claude Flow: https://github.com/ruvnet/claude-flow"
 
 # Always exit successfully to prevent container startup issues
 exit 0
