@@ -8,6 +8,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     ca-certificates \
     git \
     jq \
+    gettext-base \
     ripgrep \
     fd-find \
     bat \

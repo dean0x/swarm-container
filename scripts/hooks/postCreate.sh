@@ -31,6 +31,7 @@ run_module() {
 run_module "setup-permissions.sh"    # Set permissions first
 run_module "init-npm.sh"            # Configure NPM
 run_module "init-claude-code.sh"    # Initialize Claude Code
+run_module "setup-mcp.sh"           # Configure MCP servers
 run_module "setup-workspace.sh"     # Setup workspace structure
 # run_module "clone-dependencies.sh"  # Clone repositories
 # run_module "init-claude-flow.sh"    # Initialize Claude Flow

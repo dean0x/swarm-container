@@ -18,6 +18,12 @@ This directory contains modular scripts that are called by the main `postCreate.
 - Initializes Claude Code if API key is present
 - Provides instructions for authentication options
 
+### setup-mcp.sh
+- Reads MCP configuration from /workspace/.devcontainer/config/.mcp.config
+- Merges mcpServers into /home/node/.claude.json
+- Preserves existing .claude.json properties
+- Substitutes environment variables for API keys
+
 ### setup-workspace.sh
 - Creates workspace directory structure
 - Manages .gitignore file creation/updates
@@ -64,9 +70,10 @@ The modules are executed in this order:
 1. setup-permissions.sh (enables other scripts)
 2. init-npm.sh (npm configuration)
 3. init-claude-code.sh (Claude Code setup)
-4. setup-workspace.sh (workspace structure)
-5. clone-dependencies.sh (repository cloning)
-6. init-claude-flow.sh (Claude Flow initialization)
-7. setup-shell.sh (shell environment)
+4. setup-mcp.sh (MCP servers configuration)
+5. setup-workspace.sh (workspace structure)
+6. clone-dependencies.sh (repository cloning) - currently disabled
+7. init-claude-flow.sh (Claude Flow initialization) - currently disabled
+8. setup-shell.sh (shell environment)
 
 The order can be adjusted in `postCreate.sh` if dependencies change.

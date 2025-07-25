@@ -35,6 +35,9 @@ deps/
 .claude/commands/
 .claude/helpers/
 .mcp.json
+
+# MCP configuration with sensitive data
+config/.mcp.config.local
 claude-flow.config.json
 .swarm/
 .hive-mind/
