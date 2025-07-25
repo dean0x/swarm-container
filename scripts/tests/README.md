@@ -18,16 +18,37 @@ This directory contains comprehensive tests for the SwarmContainer devcontainer.
 - **test-postcreate-modules.sh** - Tests the modular postCreate structure:
   - Module existence and permissions
   - Syntax validation
-  - Module count verification
+  - Module count verification (7 active modules)
   - Documentation checks
   
 - **test-postcreate-runtime.sh** - Tests postCreate execution in a container:
   - Runtime execution with timeout
   - NPM configuration verification
   - Workspace structure validation
-  - Shell and tmux setup verification
+  - Shell setup verification
+
+- **test-mcp-config.sh** - Tests MCP configuration functionality:
+  - Default .mcp.config JSON syntax
+  - Setup module validation
+  - JSON merge logic
+  - Environment variable substitution
+  - Dependency checks (jq, envsubst)
+
+- **test-mcp-watcher.sh** - Tests file watcher functionality:
+  - Inotify-tools installation
+  - Watcher script validation
+  - Control script commands
+  - PID file management
+  - Shell aliases configuration
 
 ### Integration Tests
+- **test-mcp-integration.sh** - End-to-end MCP tests:
+  - Full setup workflow simulation
+  - Configuration merging verification
+  - Watcher control functionality
+  - Shell integration
+  - Race condition prevention
+  
 - **test-container-issues.sh** - Tests for known container issues
 - **test-vscode-integration.sh** - VS Code specific integration tests
 

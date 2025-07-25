@@ -20,7 +20,7 @@ jobs:
     - name: Run all tests
       run: |
         echo "🧪 Running complete test suite..."
-        ./scripts/tests/test-devcontainer.sh
+        ./scripts/test-all.sh
     
     - name: Test Node.js script syntax
       run: |
@@ -75,6 +75,7 @@ jobs:
           bash /devcontainer-config/scripts/hooks/modules/setup-permissions.sh &&
           bash /devcontainer-config/scripts/hooks/modules/init-npm.sh &&
           bash /devcontainer-config/scripts/hooks/modules/init-claude-code.sh &&
+          bash /devcontainer-config/scripts/hooks/modules/setup-mcp.sh &&
           bash /devcontainer-config/scripts/hooks/modules/setup-workspace.sh
         "
         

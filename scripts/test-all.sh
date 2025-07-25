@@ -45,6 +45,10 @@ START_TIME=$(date +%s)
 
 # Run all tests
 run_test "Dev Container Configuration" "scripts/tests/test-devcontainer.sh"
+run_test "PostCreate Modules" "scripts/tests/test-postcreate-modules.sh"
+run_test "MCP Configuration" "scripts/tests/test-mcp-config.sh"
+run_test "MCP File Watcher" "scripts/tests/test-mcp-watcher.sh"
+run_test "MCP Integration" "scripts/tests/test-mcp-integration.sh"
 
 # Additional focused tests (optional, not in main suite to avoid duplication)
 if [ "$1" == "--full" ]; then
