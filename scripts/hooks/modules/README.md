@@ -41,11 +41,6 @@ This directory contains modular scripts that are called by the main `postCreate.
 - Adds useful commands to shell history
 - Configures shell RC files
 
-### setup-tmux.sh
-- Installs tmux plugins via TPM
-- Copies tmux-6pane helper script to PATH
-- Configures tmux environment
-
 ## Adding New Modules
 
 To add a new module:
@@ -73,6 +68,5 @@ The modules are executed in this order:
 5. clone-dependencies.sh (repository cloning)
 6. init-claude-flow.sh (Claude Flow initialization)
 7. setup-shell.sh (shell environment)
-8. setup-tmux.sh (tmux configuration)
 
 The order can be adjusted in `postCreate.sh` if dependencies change.

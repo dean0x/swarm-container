@@ -35,7 +35,6 @@ run_module "setup-workspace.sh"     # Setup workspace structure
 # run_module "clone-dependencies.sh"  # Clone repositories
 # run_module "init-claude-flow.sh"    # Initialize Claude Flow
 run_module "setup-shell.sh"         # Configure shell environment
-run_module "setup-tmux.sh"          # Setup tmux
 
 echo ""
 echo "✅ Development environment setup complete!"

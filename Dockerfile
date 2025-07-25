@@ -13,7 +13,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     bat \
     fzf \
     zsh \
-    tmux \
     htop \
     net-tools \
     dnsutils \
@@ -72,12 +71,7 @@ COPY scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY scripts/hooks/set-node-memory.sh /scripts/hooks/set-node-memory.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh
 
-# Copy tmux configuration
-COPY config/.tmux.conf /home/node/.tmux.conf
-
-# Install TPM (Tmux Plugin Manager) and setup permissions
-RUN git clone https://github.com/tmux-plugins/tpm /home/node/.tmux/plugins/tpm \
-    && chown -R node:node /home/node/.tmux
+# Tmux removed - using VS Code pane splitting instead
 
 # Set working directory
 WORKDIR /workspace
