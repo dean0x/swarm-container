@@ -37,6 +37,16 @@ run_module "setup-workspace.sh"     # Setup workspace structure
 # run_module "init-claude-flow.sh"    # Initialize Claude Flow
 run_module "setup-shell.sh"         # Configure shell environment
 
+# Start MCP config watcher if enabled
+if [ "${ENABLE_MCP_WATCHER:-false}" = "true" ]; then
+    echo ""
+    echo "🔄 Starting MCP config watcher..."
+    if /workspace/.devcontainer/scripts/services/mcp-watcher-control.sh start; then
+        echo "   Use 'mcp-watcher-status' to check watcher status"
+        echo "   Use 'mcp-watcher-stop' to stop the watcher"
+    fi
+fi
+
 echo ""
 echo "✅ Development environment setup complete!"
 echo ""

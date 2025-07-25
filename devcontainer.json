@@ -60,7 +60,9 @@
     "SHELL": "/bin/zsh",
     "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:development}",
     "CUSTOM_ALLOWED_DOMAINS": "${localEnv:CUSTOM_ALLOWED_DOMAINS:}",
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "ENABLE_MCP_WATCHER": "${localEnv:ENABLE_MCP_WATCHER:false}",
+    "TAVILY_API_KEY": "${localEnv:TAVILY_API_KEY:}"
   },
   "overrideCommand": true,
   "shutdownAction": "stopContainer",

@@ -15,6 +15,7 @@ A drop-in VS Code development container for running Claude Code and claude-flow 
 - **🚀 Claude Flow via npx** - Always latest version with automatic initialization on container start
 - **💻 Local Development Ready** - Full source code for both claude-flow and ruv-FANN in your workspace - explore, modify, and contribute back
 - **⚡ Zero-Latency MCP** - Local MCP servers with timeout protection eliminate network roundtrips for lightning-fast agent coordination
+- **🔧 Auto-Updating MCP Config** - Live configuration updates with file watcher - modify `.mcp.config` and changes apply instantly
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
 - **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
 
