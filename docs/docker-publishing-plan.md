@@ -211,7 +211,7 @@ jobs:
       options: --cap-add NET_ADMIN --cap-add NET_RAW
     steps:
       - uses: actions/checkout@v3
-      - run: claude-flow hive-mind spawn "run tests"
+      - run: claude --dangerously-skip-permissions test
 ```
 
 ### Batch Processing
@@ -220,7 +220,7 @@ docker run --rm \
   -v $(pwd):/workspace \
   -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
   yourusername/swarmcontainer:latest \
-  claude-flow hive-mind spawn "process all files in /workspace"
+  claude --dangerously-skip-permissions process
 ```
 
 ## Security Considerations

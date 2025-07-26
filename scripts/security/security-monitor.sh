@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Security monitoring script for Claude Flow container
+# Security monitoring script for SwarmContainer
 # This script monitors for suspicious activities and can be run periodically
 
 LOGFILE="/var/log/security-monitor.log"
@@ -94,11 +94,11 @@ check_claude_integrity() {
         echo -e "${GREEN}✓ Claude Code: $CLAUDE_VERSION${NC}"
     fi
     
-    # Check for modifications to claude-flow
-    NPM_LIST=$(npm list -g claude-flow 2>/dev/null)
+    # Check for modifications to Claude Code
+    NPM_LIST=$(npm list -g @anthropic-ai/claude-code 2>/dev/null)
     if [[ $? -ne 0 ]]; then
-        echo -e "${RED}⚠️  Warning: Claude Flow package may be corrupted${NC}"
-        echo "[$(date)] WARNING: Claude Flow integrity check failed" >> "$LOGFILE"
+        echo -e "${RED}⚠️  Warning: Claude Code package may be corrupted${NC}"
+        echo "[$(date)] WARNING: Claude Code integrity check failed" >> "$LOGFILE"
     fi
 }
 

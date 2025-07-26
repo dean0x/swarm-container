@@ -4,16 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository provides a VS Code development container for running claude-flow swarms in a secure, isolated environment. It's based on Anthropic's Claude Code devcontainer reference implementation, adapted specifically for claude-flow development.
+This repository provides a VS Code development container for running Claude Code in a secure, isolated environment. It's designed to provide a safe, pre-configured development environment with intelligent resource management and customizable security levels.
 
-### Recent Updates
-- **Dynamic Memory Allocation**: Auto-detects container memory and sets Node.js heap to 75% (supports cgroup v1/v2)
-- **Organized script structure**: All scripts moved to logical subdirectories under `scripts/`
-- **Clean workspace**: Container starts with empty `/workspace`, source code cloned to `/workspace/deps/`
-- **NPX-based setup**: Uses npx for claude-flow and ruv-swarm - always latest, no installation failures
-- **MCP timeout protection**: 10-second timeout prevents MCP server startup from blocking container setup
-- **Versioned command history**: Guard file system allows command updates without conflicts
-- **Comprehensive testing**: Full test suite validates container configuration and functionality
+### Key Features
+- **🧠 Dynamic Memory Allocation**: Auto-detects container memory and sets Node.js heap to 75%
+- **🛡️ Three Security Presets**: Paranoid, Enterprise, and Development modes
+- **🔧 MCP Server Support**: Pre-configured Model Context Protocol servers
+- **📦 Auto-updating MCP Config**: Live configuration updates with file watcher
+- **🧪 Comprehensive Testing**: Full test suite validates container configuration
 
 ## Key Components
 
@@ -25,28 +23,15 @@ This repository provides a VS Code development container for running claude-flow
   - `security/security-config.json` - Security preset definitions
   - `security/security-monitor.sh` - Runtime security monitoring
   - `hooks/docker-entrypoint.sh` - Container entrypoint with security and memory initialization
-  - `hooks/postCreate.sh` - Post-creation setup (claude-flow, MCP servers, versioned history)
+  - `hooks/postCreate.sh` - Post-creation setup (Claude Code, MCP servers)
   - `hooks/set-node-memory.sh` - Dynamic Node.js memory allocation based on container limits
-  - `tests/` - Comprehensive test suite for container validation including NODE_OPTIONS verification
+  - `tests/` - Comprehensive test suite for container validation
 
-### Claude Flow Setup
-- **NPX-based access** - Always uses latest version, no global installation needed
-- **Source code cloned** to `/workspace/deps/claude-flow` for reference and development
-- **Automatic initialization** with `npx claude-flow@alpha init` during container setup
-- **MCP server with timeout** - Verified and started with 10-second timeout to prevent blocking
-- **Versioned command history** - Updates commands when container setup changes
-- Source available for exploration and contributions
-
-### ruv-FANN Setup
-- Cloned to `/workspace/deps/ruv-FANN` for reference and development
-- ruv-swarm accessed via npx - no installation needed
-- MCP server automatically configured to use npx
-
-### Development Benefits
-- Both repositories available in workspace for contributions
-- Easy to pull latest updates with `git pull`
-- Modify and test changes locally
-- Submit PRs directly from the container
+### MCP Configuration
+- Default MCP servers configured in `config/.mcp.config`
+- Automatic merging into user's `.claude.json`
+- Support for environment variable substitution
+- Optional file watcher for live updates
 
 ### Security Architecture
 - **Presets**: Paranoid (6GB/2CPU), Enterprise (12GB/6CPU), Development (8GB/4CPU) modes
@@ -61,14 +46,19 @@ This repository provides a VS Code development container for running claude-flow
 - `.env.enterprise` - Corporate environment settings
 - `.env.development` - Relaxed local development settings (default)
 
-### Key Features
-- **Clean workspace**: Container starts with empty `/workspace` directory
-- **Organized scripts**: All scripts in logical subdirectories
-- **Robust installation**: Multiple fallback strategies for dependencies
-- **Comprehensive testing**: Full test suite for validation
-- **Docker entrypoint**: Proper security initialization and user switching
-
 ## Common Commands
+
+### Claude Code Setup
+```bash
+# Set API key (optional - can also use /login command)
+export ANTHROPIC_API_KEY='sk-ant-...'
+# Or leave empty and use /login command after activating Claude Code
+
+# Activate Claude Code
+claude --dangerously-skip-permissions
+
+# If no API key is set, you'll be prompted to use /login
+```
 
 ### Security Configuration
 ```bash
@@ -79,10 +69,10 @@ cp .env.paranoid .env  # or .env.enterprise, .env.development
 echo $SECURITY_PRESET
 
 # Run security monitor
-bash .devcontainer/scripts/security/security-monitor.sh
+bash scripts/security/security-monitor.sh
 
 # View security logs
-tail -f .devcontainer/security.log
+tail -f security.log
 ```
 
 ### Container Management
@@ -97,105 +87,32 @@ sudo iptables -L -n -v
 dmesg | grep "BLOCKED-OUT:"
 ```
 
-### Claude Flow Operations
+### MCP Server Management
 ```bash
-# Set API key (optional - can also use /login command)
-export ANTHROPIC_API_KEY='sk-ant-...'
-# Or leave empty and use /login command after activating Claude Code
+# List configured MCP servers
+claude mcp list
 
-# Activate Claude Code
-claude --dangerously-skip-permissions
+# Update MCP configuration
+mcp-update  # Alias for manual update
 
-# Claude Flow commands (via npx)
-npx claude-flow@alpha --help
-npx claude-flow@alpha hive-mind wizard
-npx claude-flow@alpha hive-mind spawn "task description" --claude
-
-# Check MCP status
-npx claude-flow@alpha mcp status
+# MCP watcher commands (if enabled)
+mcp-watcher-status
+mcp-watcher-start
+mcp-watcher-stop
+mcp-watcher-logs
 ```
-
-### Updating Claude Flow
-```bash
-# Always uses latest version via npx - no update needed!
-# Just run your commands and npx will fetch the latest
-
-# Or pull latest source for development
-cd /workspace/deps/claude-flow
-git pull origin main
-
-# Verify version
-npx claude-flow@alpha --version
-```
-
-### MCP Servers
-MCP servers are automatically configured when you run `npx claude-flow@alpha init`:
-- **claude-flow**: Automatically configured and verified during initialization
-- **ruv-swarm**: Available for manual configuration if needed
-
-The initialization process now includes MCP server startup verification to ensure reliable connections.
-
-MCP servers provide enhanced functionality for agent coordination and tool access.
-
 
 ### Development
 ```bash
-# Update packages
+# Update Claude Code
 npm update -g @anthropic-ai/claude-code
-# claude-flow always uses latest via npx
 
-# Check logs
+# Check container logs
 docker logs <container-name>
+
+# Check memory allocation
+echo $NODE_OPTIONS
 ```
-
-## Installing from Source (Advanced)
-
-If you want to use your local source code modifications or install ruv-swarm locally:
-
-### Claude Flow Local Installation
-```bash
-# Navigate to source directory
-cd /workspace/deps/claude-flow
-
-# Install dependencies
-npm install
-
-# Install globally from your local changes
-npm install -g . --force
-
-# Reconfigure MCP to use your local installation
-claude mcp remove claude-flow
-claude mcp add claude-flow claude-flow mcp start
-```
-
-### ruv-swarm Local Installation
-```bash
-# Navigate to source directory
-cd /workspace/deps/ruv-FANN/ruv-swarm/npm
-
-# Install dependencies (skip devDependencies to avoid wasm-opt issues)
-npm install --omit=dev
-
-# Install globally from your local changes
-npm install -g . --force
-
-# Configure MCP to use your local installation
-claude mcp remove ruv-swarm
-claude mcp add ruv-swarm ruv-swarm mcp start
-```
-
-### Benefits of Local Installation
-- Faster startup times (no network requests)
-- Ability to modify and test local changes
-- Work offline without internet connection
-- Pin to specific versions
-
-### Benefits of Current Approach
-- Both claude-flow and ruv-swarm via npx - always latest version
-- No global installation conflicts
-- Aligns with official claude-flow documentation
-- Source code available for development
-- MCP server properly initialized and verified
 
 ## Architecture Notes
 
@@ -209,93 +126,94 @@ claude mcp add ruv-swarm ruv-swarm mcp start
 
 When adding new npm packages that require network access:
 1. Identify the package registry domain
-2. Add IP ranges to `.devcontainer/scripts/security/init-security.sh`
-3. Rebuild the container
+2. Add to `CUSTOM_ALLOWED_DOMAINS` in your `.env` file
+3. Or add IP ranges to `scripts/security/init-security.sh` for permanent inclusion
+4. Rebuild the container
 
 ## Troubleshooting
 
-### Claude Flow Not Working
-Since we use npx, claude-flow should always work. If it doesn't:
-
-1. **Check network connectivity**:
+### Claude Code Not Working
+1. **Check API key**:
    ```bash
-   ping registry.npmjs.org
+   echo $ANTHROPIC_API_KEY
    ```
 
-2. **Try with explicit version**:
+2. **Try browser authentication**:
    ```bash
-   npx claude-flow@2.0.0-alpha.53 --version
+   claude --dangerously-skip-permissions
+   # Then use /login command when prompted
    ```
 
-3. **Clear npx cache if needed**:
+3. **Verify installation**:
    ```bash
-   rm -rf ~/.npm/_npx
-   npx claude-flow@alpha --version
+   which claude
+   npm list -g @anthropic-ai/claude-code
    ```
 
-### MCP Server Connection Issues
-If MCP servers fail to connect:
-
+### MCP Server Issues
 1. **Check MCP configuration**:
    ```bash
+   cat ~/.claude.json
    claude mcp list
    ```
 
-2. **Check MCP server status**:
+2. **Manually update MCP config**:
    ```bash
-   npx claude-flow@alpha mcp status --detailed
-   npx claude-flow@alpha mcp logs --tail 100
+   mcp-update
    ```
 
-3. **Restart MCP server**:
+3. **Check MCP config file**:
    ```bash
-   npx claude-flow@alpha mcp restart
+   cat /workspace/config/.mcp.config
    ```
 
-4. **Reinstall MCP servers if needed**:
+### Memory Issues
+1. **Check current allocation**:
    ```bash
-   claude mcp remove claude-flow
-   claude mcp add claude-flow npx claude-flow@alpha mcp start
-   
-   claude mcp remove ruv-swarm
-   claude mcp add ruv-swarm npx ruv-swarm@latest mcp start
+   echo $NODE_OPTIONS
+   cat /sys/fs/cgroup/memory.max  # or memory/memory.limit_in_bytes for cgroup v1
    ```
 
-### Source Code Not Cloned
-If the source code wasn't cloned during setup:
+2. **Increase container memory** in `.env`:
+   ```bash
+   CONTAINER_MEMORY=12g
+   ```
 
-```bash
-cd /workspace/deps
-git clone https://github.com/ruvnet/claude-flow.git
-git clone https://github.com/ruvnet/ruv-FANN.git
-```
+3. **Rebuild container** after changes
 
-### Known Working Versions
-- Claude Code: v1.0.51
-- Claude Flow: v2.0.0-alpha.53
-- ruv-FANN/ruv-swarm: v1.0.18
-- Node.js: 20.x
-- VS Code Dev Containers: Latest
+### Network Connectivity Issues
+1. **Check security preset**:
+   ```bash
+   echo $SECURITY_PRESET
+   ```
 
-For detailed version information, see [VERSIONS.md](VERSIONS.md).
+2. **For paranoid/enterprise modes**, add domains to `.env`:
+   ```bash
+   CUSTOM_ALLOWED_DOMAINS=api.mycompany.com,npm.mycompany.com
+   ```
+
+3. **Check firewall logs**:
+   ```bash
+   dmesg | grep "BLOCKED"
+   ```
 
 ## Container Structure
 
 ### Workspace Organization
 ```
-/workspace/                 # Clean workspace directory
-├── deps/                   # Dependencies (in .gitignore)
-│   ├── claude-flow/       # Claude Flow source code
-│   └── ruv-FANN/         # ruv-FANN with ruv-swarm
+/workspace/                 # Your project directory
 └── [your project files]   # Your development work
 ```
 
-### Scripts Organization
+### Configuration Files
 ```
-.devcontainer/scripts/
-├── security/              # Security-related scripts
-├── hooks/                # Container lifecycle hooks
-└── tests/               # Test suite
+├── config/
+│   └── .mcp.config       # Default MCP server configuration
+├── scripts/
+│   ├── security/         # Security-related scripts
+│   ├── hooks/           # Container lifecycle hooks
+│   └── tests/          # Test suite
+└── devcontainer.json   # VS Code container configuration
 ```
 
 ## Testing
@@ -303,7 +221,7 @@ For detailed version information, see [VERSIONS.md](VERSIONS.md).
 Run the comprehensive test suite before using:
 ```bash
 # From repository root
-./.devcontainer/scripts/tests/test-devcontainer.sh
+./scripts/tests/test-devcontainer.sh
 ```
 
 Tests verify:
@@ -314,10 +232,11 @@ Tests verify:
 5. VS Code integration
 6. Container persistence
 7. Mount configurations
+8. Module functionality
 
-Manual verification:
-1. Container builds successfully
-2. Claude Code activates (with API key or /login command)
-3. Claude Flow wizard launches
-4. Network restrictions work (try `curl google.com` - should fail in paranoid/enterprise)
-5. Allowed services work (npm install, git operations)
+## Known Working Versions
+- Claude Code: v1.0.56
+- Node.js: 20.x
+- VS Code Dev Containers: Latest
+
+For detailed version information, see [VERSIONS.md](VERSIONS.md).

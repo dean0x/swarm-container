@@ -26,4 +26,12 @@ Thumbs.db
 !.env.enterprise
 !.env.paranoid
 
+# Node modules
 node_modules/
+
+# MCP configuration with sensitive data
+config/.mcp.config.local
+.mcp.json
+
+# Test directories
+test-tmp/

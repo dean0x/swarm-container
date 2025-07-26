@@ -42,7 +42,7 @@
       }
     }
   },
-  "postCreateCommand": "bash /devcontainer-config/scripts/hooks/postCreate.sh || true",
+  "postCreateCommand": "bash /workspace/.devcontainer/scripts/hooks/postCreate.sh || true",
   "runArgs": [
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",
@@ -54,16 +54,15 @@
     "--shm-size=2g",
     "--restart=unless-stopped"
   ],
-  "mounts": [
-    "source=${localWorkspaceFolder}/.devcontainer,target=/devcontainer-config,type=bind,readonly"
-  ],
   "remoteUser": "node",
   "containerEnv": {
     "DEVCONTAINER": "true",
     "SHELL": "/bin/zsh",
     "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:development}",
     "CUSTOM_ALLOWED_DOMAINS": "${localEnv:CUSTOM_ALLOWED_DOMAINS:}",
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "ENABLE_MCP_WATCHER": "${localEnv:ENABLE_MCP_WATCHER:false}",
+    "TAVILY_API_KEY": "${localEnv:TAVILY_API_KEY:}"
   },
   "overrideCommand": true,
   "shutdownAction": "stopContainer",

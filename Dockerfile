@@ -8,12 +8,12 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     ca-certificates \
     git \
     jq \
+    gettext-base \
     ripgrep \
     fd-find \
     bat \
     fzf \
     zsh \
-    tmux \
     htop \
     net-tools \
     dnsutils \
@@ -24,6 +24,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     apparmor \
     apparmor-utils \
     libcap2-bin \
+    inotify-tools \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Install git-delta for better diffs (handle both amd64 and arm64)
@@ -50,8 +51,6 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
 # Install global npm packages
 RUN npm install -g \
     @anthropic-ai/claude-code \
-    @openai/codex \
-    @google/gemini-cli \
     npm-check-updates \
     typescript \
     ts-node \
@@ -73,6 +72,8 @@ RUN chmod +x /scripts/security/init-security.sh
 COPY scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY scripts/hooks/set-node-memory.sh /scripts/hooks/set-node-memory.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh
+
+# Tmux removed - using VS Code pane splitting instead
 
 # Set working directory
 WORKDIR /workspace

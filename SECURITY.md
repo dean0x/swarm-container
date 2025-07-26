@@ -10,7 +10,7 @@ This devcontainer provides multiple security presets to protect against various 
 - **Network**: Strict allowlist - only explicitly allowed domains
 - **Filesystem**: Read-only except `/workspace` and `/tmp`
 - **Process**: No new privileges, all capabilities dropped
-- **Resources**: Limited to 4GB RAM, 2 CPUs
+- **Resources**: Limited to 6GB RAM, 2 CPUs
 - **Monitoring**: All blocked attempts are logged
 
 **Use when:**
@@ -19,13 +19,13 @@ This devcontainer provides multiple security presets to protect against various 
 - Handling sensitive data
 - Testing potentially malicious prompts
 
-### 🏢 Enterprise Mode (`SECURITY_PRESET=enterprise`) - *Default*
+### 🏢 Enterprise Mode (`SECURITY_PRESET=enterprise`)
 **Balanced security for corporate environments**
 
 - **Network**: Allowlist with common development services
 - **Filesystem**: Restricted system paths, full workspace access
 - **Process**: No new privileges, limited capabilities
-- **Resources**: 8GB RAM, 4 CPUs
+- **Resources**: 12GB RAM, 6 CPUs
 - **Custom domains**: Can add corporate services
 
 **Use when:**
@@ -34,13 +34,13 @@ This devcontainer provides multiple security presets to protect against various 
 - CI/CD pipeline integration
 - Internal tool development
 
-### 🚀 Development Mode (`SECURITY_PRESET=development`)
+### 🚀 Development Mode (`SECURITY_PRESET=development`) - *Default*
 **Relaxed security for local development**
 
 - **Network**: Open access with blocklist for known malicious sites
 - **Filesystem**: Broader access for development tools
 - **Process**: Standard restrictions
-- **Resources**: 16GB RAM, 8 CPUs
+- **Resources**: 8GB RAM, 4 CPUs
 - **Features**: Hot reload, debug logging
 
 **Use when:**
@@ -117,7 +117,7 @@ The container implements network security at multiple levels:
 
 Run the security monitor to check for issues:
 ```bash
-bash .devcontainer/scripts/security/security-monitor.sh
+bash scripts/security/security-monitor.sh
 ```
 
 This checks for:
@@ -155,14 +155,6 @@ HTTPS_PROXY=http://proxy.company.com:8080
 NO_PROXY=localhost,127.0.0.1,.company.com
 ```
 
-## Claude Flow Source Installation
-
-This container installs Claude Flow directly from the GitHub repository source code, providing:
-- Latest development version with all updates
-- Ability to modify and customize Claude Flow
-- Full source code visibility at `/opt/claude-flow`
-- Protection against supply chain attacks through source verification
-
 ## Security Best Practices
 
 1. **Always use the appropriate security preset** for your use case
@@ -198,7 +190,7 @@ This container protects against:
 ### Network Connection Blocked
 - Check allowed domains in your security preset
 - Add required domains to `CUSTOM_ALLOWED_DOMAINS`
-- Use `.devcontainer/scripts/security/security-monitor.sh` to see blocked attempts
+- Use `scripts/security/security-monitor.sh` to see blocked attempts
 
 ### Container Won't Start
 - Verify Docker has sufficient resources
@@ -216,7 +208,7 @@ If you suspect a security breach:
 
 2. **Check security logs**
    ```bash
-   cat .devcontainer/security.log
+   cat security.log
    ```
 
 3. **Review recent file changes**
