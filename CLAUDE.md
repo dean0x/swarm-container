@@ -69,10 +69,10 @@ cp .env.paranoid .env  # or .env.enterprise, .env.development
 echo $SECURITY_PRESET
 
 # Run security monitor
-bash .devcontainer/scripts/security/security-monitor.sh
+bash scripts/security/security-monitor.sh
 
 # View security logs
-tail -f .devcontainer/security.log
+tail -f security.log
 ```
 
 ### Container Management
@@ -127,7 +127,7 @@ echo $NODE_OPTIONS
 When adding new npm packages that require network access:
 1. Identify the package registry domain
 2. Add to `CUSTOM_ALLOWED_DOMAINS` in your `.env` file
-3. Or add IP ranges to `.devcontainer/scripts/security/init-security.sh` for permanent inclusion
+3. Or add IP ranges to `scripts/security/init-security.sh` for permanent inclusion
 4. Rebuild the container
 
 ## Troubleshooting
@@ -164,7 +164,7 @@ When adding new npm packages that require network access:
 
 3. **Check MCP config file**:
    ```bash
-   cat /workspace/.devcontainer/config/.mcp.config
+   cat /workspace/config/.mcp.config
    ```
 
 ### Memory Issues
@@ -207,7 +207,6 @@ When adding new npm packages that require network access:
 
 ### Configuration Files
 ```
-.devcontainer/
 ├── config/
 │   └── .mcp.config       # Default MCP server configuration
 ├── scripts/
@@ -222,7 +221,7 @@ When adding new npm packages that require network access:
 Run the comprehensive test suite before using:
 ```bash
 # From repository root
-./.devcontainer/scripts/tests/test-devcontainer.sh
+./scripts/tests/test-devcontainer.sh
 ```
 
 Tests verify:

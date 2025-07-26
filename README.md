@@ -152,17 +152,17 @@ The container now **dynamically allocates Node.js heap memory** based on contain
 
 | Container Memory | Node.js Heap | Use Case |
 |-----------------|--------------|-----------|
-| 4GB | 3GB | Basic single agent operations |
-| 6GB | 4.5GB | Paranoid mode with limited agents |
+| 4GB | 3GB | Basic Claude Code operations |
+| 6GB | 4.5GB | Paranoid mode with limited resources |
 | 8GB | 6GB | Standard development (default) |
-| 12GB | 9GB | Enterprise multi-agent swarms |
-| 16GB+ | 12GB+ | Large-scale swarm operations |
+| 12GB | 9GB | Enterprise development workloads |
+| 16GB+ | 12GB+ | Large-scale development operations |
 
 **Minimum Requirements**:
 - Single Claude Code instance: 4GB memory, 2 CPUs
-- Small swarm (3-5 agents): 8GB memory, 4 CPUs  
-- Medium swarm (6-10 agents): 12GB memory, 6 CPUs
-- Large swarm (10+ agents): 16GB+ memory, 8+ CPUs
+- Multiple concurrent tasks: 8GB memory, 4 CPUs  
+- Heavy development workloads: 12GB memory, 6 CPUs
+- Large-scale operations: 16GB+ memory, 8+ CPUs
 
 #### Environment Variables
 
@@ -359,8 +359,7 @@ If you encounter "JavaScript heap out of memory" errors:
    # Inside container
    echo "Container Memory: $(cat /sys/fs/cgroup/memory.max 2>/dev/null || echo 'unlimited')"
    echo "Node.js Heap: $NODE_OPTIONS"
-   # Or run health check if available
-   bash /devcontainer-config/scripts/health-check.sh 2>/dev/null || true
+   # Current memory settings will be displayed
    ```
 
 3. **Temporary fix for current session**:
@@ -397,7 +396,7 @@ If your container suddenly disconnects:
    - Docker Desktop memory limits
    - System running out of resources
    - Network interruptions
-   - Heavy swarm operations consuming resources
+   - Heavy development operations consuming resources
 
 ## Testing
 
