@@ -42,15 +42,15 @@ docker exec -u node "$CONTAINER_ID" npm config get registry
 
 echo ""
 echo "2. Checking workspace structure:"
-docker exec -u node "$CONTAINER_ID" ls -la /workspace/deps 2>/dev/null || echo "deps directory not created"
+docker exec -u node "$CONTAINER_ID" ls -la /workspace/.gitignore 2>/dev/null || echo ".gitignore not created"
 
 echo ""
 echo "3. Checking shell history init:"
 docker exec -u node "$CONTAINER_ID" ls -la ~/.swarm_history_* 2>/dev/null || echo "No history files yet"
 
 echo ""
-echo "4. Checking tmux helper:"
-docker exec -u node "$CONTAINER_ID" which tmux-6pane 2>/dev/null || echo "tmux-6pane not in PATH"
+echo "4. Checking MCP configuration:"
+docker exec -u node "$CONTAINER_ID" ls -la ~/.claude.json 2>/dev/null || echo "MCP config not created yet"
 
 # Cleanup
 docker stop "$CONTAINER_ID" >/dev/null

@@ -25,7 +25,7 @@ fi
 echo ""
 echo "2️⃣ Listing modules..."
 modules=($(ls "$MODULES_DIR"/*.sh 2>/dev/null | sort))
-EXPECTED_MODULE_COUNT=7
+EXPECTED_MODULE_COUNT=6
 if [ ${#modules[@]} -gt 0 ]; then
     echo -e "   ${GREEN}✓${NC} Found ${#modules[@]} modules:"
     for module in "${modules[@]}"; do

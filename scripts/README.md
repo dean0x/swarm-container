@@ -13,7 +13,7 @@ scripts/
 │
 ├── hooks/            # Container lifecycle hooks
 │   ├── docker-entrypoint.sh   # Container entrypoint (handles security + user switching)
-│   └── postCreate.sh         # Post-creation setup (claude-flow, MCP servers, etc.)
+│   └── postCreate.sh         # Post-creation setup (Claude Code, MCP servers, etc.)
 │
 └── tests/            # Test scripts
     ├── test-devcontainer.sh     # Main test suite
@@ -33,7 +33,7 @@ scripts/
 ### Hook Scripts (`hooks/`)
 
 - **docker-entrypoint.sh**: Container entrypoint that runs security initialization as root, then switches to the node user.
-- **postCreate.sh**: Sets up the development environment after container creation (installs claude-flow, configures MCP servers, etc.).
+- **postCreate.sh**: Sets up the development environment after container creation (installs Claude Code, configures MCP servers, etc.).
 
 ### Test Scripts (`tests/`)
 

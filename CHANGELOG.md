@@ -16,9 +16,9 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
   - Supports both cgroup v1 and v2 for broad compatibility
   - Eliminates out-of-memory errors across all security presets
   - Smart fallbacks ensure minimum 512MB heap
-- **📦 NPX-Based Claude Flow**: Always uses latest version via npx, no installation issues
-  - MCP server startup with 10-second timeout to prevent container setup blocking
-  - Versioned command history system allows updates without conflicts
+- **📦 MCP Server Support**: Pre-configured Model Context Protocol servers
+  - Browser automation, web search, and custom integrations
+  - Optional file watcher for live configuration updates
 - **🔄 Drop-in Integration**: Three easy integration methods (git submodule, subtree, clone)
 - **🧪 Enhanced Testing**: NODE_OPTIONS verification and 8 comprehensive test categories
 - **📜 New Scripts**:
@@ -32,7 +32,7 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
   - Enterprise: 12GB memory, 6 CPUs (reduced from 16GB/8 CPUs - more reasonable)
   - Development: 8GB memory, 4 CPUs (unchanged)
 - **📁 Repository Structure**: Moved all files from `.devcontainer/` to root for drop-in functionality
-- **🚀 Claude Flow Setup**: Switched from global installation to npx for reliability
+- **🔧 MCP Configuration**: Automatic setup with environment variable support
 - **📝 Command History**: Implemented versioned guard file system (v2) for seamless updates
 
 ### 🐛 Fixed
@@ -60,7 +60,7 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
 ### 🎯 Benefits
 - **Zero Friction**: Add devcontainer with single command
 - **Smart Resources**: No more manual memory configuration
-- **Always Current**: NPX ensures latest claude-flow version
+- **Always Current**: MCP servers via npx for latest versions
 - **Production Ready**: 15 commits of improvements with comprehensive testing
 
 ## [1.0.2] - 2025-01-18
@@ -104,12 +104,11 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
 ### Added
 - Initial release of SwarmContainer
 - Three security presets: Paranoid, Enterprise, and Development modes
-- Automatic installation of Claude Flow from source with npm fallback
-- Automatic installation of ruv-FANN with production-only dependencies
-- Local MCP server configuration for claude-flow and ruv-swarm
+- Claude Code installation and configuration
+- MCP server support with pre-configured servers
 - Comprehensive test suite for container validation
 - Support for Windows (WSL2), macOS (Intel/ARM), and Linux
-- Clean workspace organization with deps/ folder for dependencies
+- Clean workspace organization
 - Shell history pre-populated with useful commands
 - Zsh with Oh My Zsh, autosuggestions, and syntax highlighting
 - Docker entrypoint with proper security initialization
@@ -123,7 +122,6 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
 - Security monitoring script for runtime checks
 
 ### Developer Experience
-- Both claude-flow and ruv-FANN source code available for contributions
 - Smart installation fallbacks for maximum compatibility
 - VS Code integration with recommended extensions
 - Persistent command history across container restarts

@@ -3,7 +3,7 @@
 # Don't use set -e to allow the script to continue even if some commands fail
 set +e
 
-echo "🚀 Setting up Claude Flow development environment..."
+echo "🚀 Setting up Claude Code development environment..."
 
 # Define the modules directory
 # Use absolute path from workspace
@@ -33,8 +33,6 @@ run_module "init-npm.sh"            # Configure NPM
 run_module "init-claude-code.sh"    # Initialize Claude Code
 run_module "setup-mcp.sh"           # Configure MCP servers
 run_module "setup-workspace.sh"     # Setup workspace structure
-# run_module "clone-dependencies.sh"  # Clone repositories
-# run_module "init-claude-flow.sh"    # Initialize Claude Flow
 run_module "setup-shell.sh"         # Configure shell environment
 
 # Start MCP config watcher if enabled
@@ -54,13 +52,11 @@ echo "🎯 Next steps:"
 echo "   1. Set your ANTHROPIC_API_KEY environment variable (or use /login command)"
 echo "   2. Run 'claude --dangerously-skip-permissions' to activate Claude Code"
 echo "      (If no API key is set, use the /login command when prompted)"
-echo "   3. Run 'npx claude-flow@alpha hive-mind wizard' to start using Claude Flow"
 echo ""
 echo "💡 Quick tip: Press ↑ arrow for command history"
 echo ""
 echo "📚 Documentation:"
 echo "   - Claude Code: https://claude.ai/code"
-# echo "   - Claude Flow: https://github.com/ruvnet/claude-flow"
 
 # Always exit successfully to prevent container startup issues
 exit 0

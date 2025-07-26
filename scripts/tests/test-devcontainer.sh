@@ -73,7 +73,7 @@ if [ $? -eq 0 ]; then
     # Test 6: Check tools installation
     echo ""
     echo "6️⃣ Testing tool installations..."
-    # Note: claude-flow is installed during postCreate, not during build
+    # Note: MCP servers are configured during postCreate, not during build
     test_tool() {
         local tool=$1
         if docker exec "$CONTAINER_ID" which $tool > /dev/null 2>&1; then

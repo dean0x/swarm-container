@@ -27,19 +27,7 @@ This directory contains modular scripts that are called by the main `postCreate.
 ### setup-workspace.sh
 - Creates workspace directory structure
 - Manages .gitignore file creation/updates
-- Cleans up any problematic files from previous runs
-- Creates deps/ directory for dependencies
-
-### clone-dependencies.sh
-- Clones claude-flow repository for reference
-- Clones ruv-FANN repository
-- Tests network connectivity before cloning
-- Verifies repository structures
-
-### init-claude-flow.sh
-- Initializes claude-flow using npx
-- Verifies MCP server status
-- Tests MCP server startup with timeout
+- Sets proper permissions for workspace
 
 ### setup-shell.sh
 - Installs Oh My Zsh plugins (autosuggestions, syntax highlighting)
@@ -72,8 +60,6 @@ The modules are executed in this order:
 3. init-claude-code.sh (Claude Code setup)
 4. setup-mcp.sh (MCP servers configuration)
 5. setup-workspace.sh (workspace structure)
-6. clone-dependencies.sh (repository cloning) - currently disabled
-7. init-claude-flow.sh (Claude Flow initialization) - currently disabled
-8. setup-shell.sh (shell environment)
+6. setup-shell.sh (shell environment)
 
 The order can be adjusted in `postCreate.sh` if dependencies change.

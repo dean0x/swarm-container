@@ -153,7 +153,7 @@ if [ $ERRORS_FOUND -eq 0 ] && [ "$JSON_VALID" = "true" ]; then
     # Test container startup
     CONTAINER_ID=$(docker run -d \
         -v "$(pwd):/workspace" \
-        -v "claude-flow-node-modules:/workspace/node_modules" \
+        -v "swarmcontainer-node-modules:/workspace/node_modules" \
         --cap-add=NET_ADMIN \
         --cap-add=NET_RAW \
         -e SECURITY_PRESET=development \

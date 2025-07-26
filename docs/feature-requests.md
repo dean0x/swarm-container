@@ -105,10 +105,10 @@ This document tracks potential features and improvements for the SwarmContainer 
 - **Status**: ✅ Completed
 - **Release**: v1.1.0
 
-### NPX-based Claude Flow (v1.1.0)
-- **Description**: Transitioned to npx for always-latest claude-flow
+### Simplified Container Focus (v1.2.0)
+- **Description**: Removed Claude Flow installation, focused on Claude Code with MCP
 - **Status**: ✅ Completed
-- **Release**: v1.1.0
+- **Release**: v1.2.0 (Unreleased)
 
 ### MCP Timeout Protection (v1.1.0)
 - **Description**: 10-second timeout prevents blocking during setup
