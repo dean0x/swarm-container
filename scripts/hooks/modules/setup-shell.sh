@@ -4,14 +4,24 @@
 
 echo "🎨 Setting up shell environment..."
 
-# Install Oh My Zsh plugins
-echo "🎨 Installing Zsh plugins..."
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true
+# Install oh-my-zsh if not already installed
+if [ ! -d ~/.oh-my-zsh ]; then
+    echo "📦 Installing oh-my-zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || {
+        echo "⚠️  Failed to install oh-my-zsh, continuing without it..."
+    }
+fi
 
-# Update .zshrc to include plugins
-if [ -f ~/.zshrc ]; then
-    sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+# Install Oh My Zsh plugins (only if oh-my-zsh exists)
+if [ -d ~/.oh-my-zsh ]; then
+    echo "🎨 Installing Zsh plugins..."
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true
+
+    # Update .zshrc to include plugins
+    if [ -f ~/.zshrc ]; then
+        sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+    fi
 fi
 
 # Create a startup script that adds commands to history
@@ -49,14 +59,19 @@ EOF
 
 chmod +x ~/.swarm_history_init
 
+# Ensure shell RC files exist
+touch ~/.bashrc
+touch ~/.zshrc
+
 # Add to shell RC files so it runs on shell startup
-if [ -f ~/.zshrc ]; then
+# Check if already added to avoid duplicates
+if ! grep -q "swarm_history_init" ~/.zshrc 2>/dev/null; then
     echo "" >> ~/.zshrc
     echo "# Swarm Container history initialization" >> ~/.zshrc
     echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.zshrc
 fi
 
-if [ -f ~/.bashrc ]; then
+if ! grep -q "swarm_history_init" ~/.bashrc 2>/dev/null; then
     echo "" >> ~/.bashrc
     echo "# Swarm Container history initialization" >> ~/.bashrc
     echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.bashrc
@@ -64,7 +79,10 @@ fi
 
 # Add MCP watcher control aliases
 echo "🔧 Adding MCP watcher commands..."
-cat >> ~/.bashrc << 'EOF'
+
+# Add to bashrc if not already there
+if ! grep -q "mcp-watcher-start" ~/.bashrc 2>/dev/null; then
+    cat >> ~/.bashrc << 'EOF'
 
 # MCP Config Watcher Commands
 alias mcp-watcher-start='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh start'
@@ -74,9 +92,10 @@ alias mcp-watcher-status='/workspace/.devcontainer/scripts/services/mcp-watcher-
 alias mcp-watcher-logs='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh logs'
 alias mcp-update='bash /workspace/.devcontainer/scripts/hooks/modules/setup-mcp.sh'
 EOF
+fi
 
-# Also add to zshrc if it exists
-if [ -f ~/.zshrc ]; then
+# Also add to zshrc if not already there
+if ! grep -q "mcp-watcher-start" ~/.zshrc 2>/dev/null; then
     cat >> ~/.zshrc << 'EOF'
 
 # MCP Config Watcher Commands
