@@ -78,7 +78,7 @@ if [ -f "$CONTROL_SCRIPT" ]; then
     
     # Check for required commands
     for cmd in start stop restart status logs; do
-        if grep -q "\"$cmd\")" "$CONTROL_SCRIPT"; then
+        if grep -q "$cmd)" "$CONTROL_SCRIPT"; then
             echo -e "   ${GREEN}✓${NC} Supports '$cmd' command"
         else
             echo -e "   ${RED}✗${NC} Missing '$cmd' command"
