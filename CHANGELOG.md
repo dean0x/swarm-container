@@ -5,7 +5,7 @@ All notable changes to SwarmContainer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2025-07-22
+## [1.1.0] - 2025-07-27
 
 ### 🎉 Major Release: Drop-in DevContainer with Dynamic Resource Allocation
 
@@ -25,6 +25,8 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
   - `scripts/hooks/set-node-memory.sh` - Dynamic memory allocation logic
   - Enhanced `docker-entrypoint.sh` with memory initialization
   - Improved `postCreate.sh` with versioned command history
+- **🔧 Modular PostCreate**: Split into 6 focused modules for better maintainability
+- **🤖 GitHub Actions CI**: Automated testing on every push
 
 ### 🔧 Changed
 - **🛡️ Updated Security Presets**:
@@ -40,8 +42,12 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
 - **💾 Memory Exhaustion**: Dynamic allocation prevents OOM errors in all presets  
 - **🔄 History Updates**: Versioned system allows command updates without conflicts
 - **🧹 Script Organization**: All scripts properly organized under `scripts/` subdirectories
+- **🐚 Shell Environment**: Fixed oh-my-zsh installation and plugin setup
+- **📝 Documentation**: Cleaned up for new users, removed outdated references
 
 ### 🗑️ Removed
+- **❌ Claude Flow**: Removed all Claude Flow integration to focus on Claude Code
+- **❌ Multi-AI CLIs**: Removed Codex and Gemini CLIs - focused on Claude Code only
 - **❌ Command Aliases**: Removed cf, cfh, cfw aliases as requested
 - **❌ Hardcoded NODE_OPTIONS**: Now calculated dynamically based on container memory
 - **❌ Manual Completion Setup**: Let Oh My Zsh handle completions naturally
@@ -61,7 +67,8 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
 - **Zero Friction**: Add devcontainer with single command
 - **Smart Resources**: No more manual memory configuration
 - **Always Current**: MCP servers via npx for latest versions
-- **Production Ready**: 15 commits of improvements with comprehensive testing
+- **Production Ready**: 23 commits of improvements with comprehensive testing
+- **CI/CD**: Automated testing ensures quality on every change
 
 ## [1.0.2] - 2025-01-18
 
@@ -127,5 +134,7 @@ This release completely transforms SwarmContainer into a true drop-in devcontain
 - Persistent command history across container restarts
 - Modern CLI tools: ripgrep, fzf, bat, delta
 
+[1.1.0]: https://github.com/dean0x/swarm-container/compare/v1.0.2...v1.1.0
+[1.0.2]: https://github.com/dean0x/swarm-container/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/dean0x/swarm-container/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/dean0x/swarm-container/releases/tag/v1.0.0
