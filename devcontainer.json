@@ -3,6 +3,7 @@
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".",
+    "target": "local",
     "args": {
       "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:development}"
     }

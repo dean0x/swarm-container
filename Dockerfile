@@ -1,4 +1,9 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:20-bullseye
+# Multi-stage Dockerfile for SwarmContainer
+# - base: Common setup for all deployments
+# - local: VS Code Dev Container (default)
+# - remote: Fly.io SSH deployment (future)
+
+FROM mcr.microsoft.com/devcontainers/javascript-node:20-bullseye AS base
 
 # Install essential tools and security utilities
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -96,3 +101,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/bin/bash"]
 
 # Note: USER directive removed - the entrypoint handles user switching
+
+# Local development stage - preserves current functionality
+FROM base AS local
+# No additional changes needed - inherits everything from base
