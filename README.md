@@ -16,6 +16,7 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 - **🔧 Auto-Updating MCP Config** - Live configuration updates with file watcher - modify `.mcp.config` and changes apply instantly
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
 - **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
+- **🌐 Cloud Ready** - Optional deployment to Fly.io for remote development from anywhere
 
 
 
@@ -133,6 +134,29 @@ claude --dangerously-skip-permissions
 # "Please visit: https://[...] to authenticate"
 # Click the link and log in with your Claude account
 ```
+
+## 🌐 Remote Development Option
+
+Want to access your development environment from anywhere? SwarmContainer now supports deployment to [Fly.io](https://fly.io) for cloud-based development.
+
+### Benefits
+- 🌍 **Access from anywhere** - Work from any device with SSH
+- 💪 **Scalable resources** - Need more power? Scale up instantly  
+- 👥 **Team collaboration** - Share environments with your team
+- 💰 **Cost effective** - Pay only for what you use (~$5-20/month)
+
+### Quick Start
+```bash
+# Set up in under 5 minutes
+flyctl auth login
+./scripts/fly-volume-setup.sh
+./scripts/fly-ssh-setup.sh  
+flyctl deploy
+```
+
+**[Full Fly.io Setup Guide →](docs/fly-io-setup.md)**
+
+> **Note**: Remote development is completely optional. All existing local features work exactly as before.
 
 ### 📋 Configuration Options
 
@@ -252,6 +276,8 @@ Available environment variables:
 
 When you open your project in the container:
 - `/workspace` - Your project root (mounted from your local machine)
+
+**For cloud deployment**: The same structure is maintained with persistent volumes. See [Fly.io Setup Guide](docs/fly-io-setup.md) for details.
 
 ## Security Features
 
@@ -443,3 +469,5 @@ This container runs AI agents with elevated permissions (`--dangerously-skip-per
 
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
 - [VS Code DevContainers](https://code.visualstudio.com/docs/devcontainers/containers)
+- [Fly.io Remote Development Guide](docs/fly-io-setup.md)
+- [Development Team Agents Guide](docs/development-team-agents-guide.md)

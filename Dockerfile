@@ -105,3 +105,60 @@ CMD ["/bin/bash"]
 # Local development stage - preserves current functionality
 FROM base AS local
 # No additional changes needed - inherits everything from base
+
+# Remote development stage for Fly.io
+FROM base AS remote
+
+# Install SSH server and sudo
+RUN apt-get update && apt-get install -y \
+    openssh-server \
+    sudo \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /run/sshd
+
+# Add passwordless sudo for node user
+RUN echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Configure SSH for security
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config \
+    && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
+    && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
+    && echo "AllowUsers node" >> /etc/ssh/sshd_config
+
+# Enhanced SSH security configuration
+RUN echo "# Security hardening" >> /etc/ssh/sshd_config \
+    && echo "Protocol 2" >> /etc/ssh/sshd_config \
+    && echo "ClientAliveInterval 300" >> /etc/ssh/sshd_config \
+    && echo "ClientAliveCountMax 2" >> /etc/ssh/sshd_config \
+    && echo "MaxAuthTries 3" >> /etc/ssh/sshd_config \
+    && echo "MaxSessions 10" >> /etc/ssh/sshd_config \
+    && echo "TCPKeepAlive yes" >> /etc/ssh/sshd_config \
+    && echo "X11Forwarding no" >> /etc/ssh/sshd_config \
+    && echo "AllowAgentForwarding yes" >> /etc/ssh/sshd_config \
+    && echo "PermitTunnel no" >> /etc/ssh/sshd_config \
+    && echo "Banner /etc/ssh/banner" >> /etc/ssh/sshd_config
+
+# Create login banner
+RUN echo "****************************************************" > /etc/ssh/banner \
+    && echo "* SwarmContainer Development Environment           *" >> /etc/ssh/banner \
+    && echo "* Authorized access only. All actions logged.     *" >> /etc/ssh/banner \
+    && echo "****************************************************" >> /etc/ssh/banner
+
+# Create .ssh directory for node user
+RUN mkdir -p /home/node/.ssh && \
+    chown -R node:node /home/node/.ssh && \
+    chmod 700 /home/node/.ssh
+
+# Will be overridden by fly-entrypoint.sh
+COPY --chown=node:node fly-entrypoint.sh /fly-entrypoint.sh
+RUN chmod +x /fly-entrypoint.sh
+
+# Switch to node user
+USER node
+WORKDIR /workspace
+
+# SSH runs on port 22
+EXPOSE 22
+
+ENTRYPOINT ["/fly-entrypoint.sh"]
+CMD ["/usr/sbin/sshd", "-D"]
