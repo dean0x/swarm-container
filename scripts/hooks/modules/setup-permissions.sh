@@ -13,12 +13,7 @@ if [ -d "/workspace/.devcontainer/scripts/hooks/modules" ]; then
     chmod +x /workspace/.devcontainer/scripts/hooks/modules/*.sh 2>/dev/null || true
 fi
 
-# Skip the expensive recursive chown on the entire workspace
-# The workspace is already mounted with correct permissions in devcontainer.json
-# Only fix permissions for files we create during setup
-echo "   Skipping recursive workspace permissions (handled by mount)"
-
-# Just ensure .devcontainer scripts are executable
+# Ensure .devcontainer scripts are executable
 find /workspace/.devcontainer -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null || true
 
 echo "✅ Permissions configured"
