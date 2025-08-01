@@ -1,6 +1,6 @@
 # Fly.io configuration for SwarmContainer Remote Development
-app = "swarmcontainer-dev"  # Will be replaced by actual app name
-primary_region = "iad"       # Default to US East, user can change
+app = "my-swarm-dev"
+primary_region = "iad"
 
 # Build configuration
 [build]
@@ -45,15 +45,11 @@ primary_region = "iad"       # Default to US East, user can change
     port = 10022  # Non-standard SSH port for security
 
 # Persistent storage
+# Note: Fly.io only supports one volume mount per machine
+# We'll mount a single volume at root of persistent data
 [[mounts]]
-  # Mount for workspace persistence
-  source = "swarm_workspace"
-  destination = "/workspace"
-  
-[[mounts]]
-  # Mount for home directory persistence
-  source = "swarm_home"
-  destination = "/home/node"
+  source = "swarm_data"
+  destination = "/data"
 
 # Machine configuration
 [experimental]

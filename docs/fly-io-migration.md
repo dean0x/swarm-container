@@ -20,7 +20,16 @@ git push
 
 ### 2. Deploy to Fly.io
 
-Follow the [setup guide](fly-io-setup.md) to create your cloud environment.
+Use the new deployment system:
+```bash
+# Initial setup
+./scripts/fly-setup.sh
+
+# Deploy
+./scripts/fly-deploy.sh deploy
+
+# Or follow the detailed [setup guide](fly-io-setup.md)
+```
 
 ### 3. Clone Your Projects
 

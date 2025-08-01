@@ -4,9 +4,19 @@ This guide helps resolve common issues with SwarmContainer on Fly.io.
 
 ## Quick Diagnostics
 
-Run this command to check your setup:
+### New Deployment System
 ```bash
-./scripts/tests/test-fly-ssh.sh
+# Check all dependencies
+./scripts/fly-setup.sh --check
+
+# View deployment status
+./scripts/fly-deploy.sh status
+```
+
+### Legacy Scripts
+```bash
+# Test SSH connectivity
+./scripts/fly-advanced/test-fly-ssh.sh
 ```
 
 ## Common Issues
@@ -87,6 +97,60 @@ Force specific key:
 ```bash
 ssh -i ~/.ssh/specific_key -p 10022 node@app.fly.dev
 ```
+
+### 🚀 Deployment Script Issues
+
+#### "flyctl not found" error
+
+**Symptoms:**
+```
+flyctl: command not found
+```
+
+**Solutions:**
+1. Run setup script:
+   ```bash
+   ./scripts/fly-setup.sh
+   ```
+
+2. Add to PATH manually:
+   ```bash
+   export PATH="$HOME/.fly/bin:$PATH"
+   echo 'export PATH="$HOME/.fly/bin:$PATH"' >> ~/.bashrc
+   ```
+
+#### "Missing .env.fly configuration"
+
+**Symptoms:**
+```
+Configuration file not found at .env.fly
+```
+
+**Solutions:**
+1. Create from template:
+   ```bash
+   cp .env.fly.example .env.fly
+   ./scripts/fly-deploy.sh config
+   ```
+
+2. Use command-line args instead:
+   ```bash
+   ./scripts/fly-deploy.sh deploy my-app iad
+   ```
+
+#### "App already exists" error
+
+**Solutions:**
+1. Update existing app:
+   ```bash
+   ./scripts/fly-deploy.sh deploy  # Choose option 1 when prompted
+   ```
+
+2. Or destroy and recreate:
+   ```bash
+   ./scripts/fly-deploy.sh destroy
+   ./scripts/fly-deploy.sh deploy
+   ```
 
 ### 💾 Volume Issues
 

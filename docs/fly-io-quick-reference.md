@@ -1,48 +1,72 @@
 # Fly.io Quick Reference
 
-## Essential Commands
+## New Deployment System
 
-### Setup
+### Initial Setup (One-time)
 ```bash
-flyctl launch --generate-name --no-deploy
-./scripts/fly-volume-setup.sh
-./scripts/fly-ssh-setup.sh
-flyctl deploy
+./scripts/fly-setup.sh
 ```
 
-### Daily Use
+### Configuration
 ```bash
-# Connect
-ssh node@app.fly.dev -p 10022
+# Create config from template
+cp .env.fly.example .env.fly
+
+# Edit configuration
+./scripts/fly-deploy.sh config
+```
+
+### Deployment Commands
+```bash
+# Deploy using config file
+./scripts/fly-deploy.sh deploy
+
+# Quick deploy with args
+./scripts/fly-deploy.sh deploy my-app iad
 
 # Check status
-flyctl status
+./scripts/fly-deploy.sh status
 
-# View logs
-flyctl logs
-
-# Restart
-flyctl machine restart
+# Destroy deployment
+./scripts/fly-deploy.sh destroy
 ```
 
-### Management
+### Connection
 ```bash
-# Scale up
-flyctl scale vm shared-cpu-4x
+# SSH
+ssh node@app-name.fly.dev -p 10022
 
-# Stop
-flyctl machine stop
+# Fly.io logs
+flyctl logs --app app-name
 
-# Destroy (careful!)
-flyctl apps destroy app-name
+# Fly.io console
+flyctl ssh console --app app-name
+```
+
+## Configuration Options (.env.fly)
+
+```bash
+# Basic settings
+FLY_APP_NAME=my-swarm-dev
+FLY_REGION=iad
+FLY_VM_SIZE=shared-cpu-1x
+FLY_VM_MEMORY=1gb
+
+# Cost controls
+AUTO_STOP_MACHINES=true
+MIN_MACHINES_RUNNING=0
+
+# Features
+ENABLE_MCP_SERVERS=true
+GENERATE_VSCODE_CONFIG=true
 ```
 
 ## File Locations
 
 | What | Where |
 |------|-------|
-| Your code | `/workspace` |
-| User settings | `/home/node` |
+| Your code | `/workspace` (symlink to `/data/workspace`) |
+| User settings | `/home/node` (persistent dirs symlinked) |
 | SwarmContainer | `/workspace/.devcontainer` |
 | Logs | `flyctl logs` |
 
@@ -57,29 +81,44 @@ flyctl apps destroy app-name
 
 Plus: $0.15/GB/month for storage
 
-## Cost Monitoring
+## Regions
 
-```bash
-# Check current costs
-./scripts/fly-cost-monitor.sh
+Popular regions:
+- `iad` - Virginia, USA (default)
+- `lax` - Los Angeles, USA
+- `lhr` - London, UK
+- `fra` - Frankfurt, Germany
+- `nrt` - Tokyo, Japan
+- `syd` - Sydney, Australia
 
-# Track usage over time
-./scripts/fly-usage-tracker.sh app-name report
-
-# Set budget alert ($10/month)
-./scripts/fly-budget-alert.sh app-name 10
-```
+Full list: https://fly.io/docs/reference/regions/
 
 ## Troubleshooting
 
 ```bash
-# Not connecting?
-flyctl machine list
-flyctl machine restart <id>
+# Check dependency installation
+./scripts/fly-setup.sh --check
 
-# SSH key issues?
-./scripts/fly-ssh-setup.sh
+# View deployment logs
+flyctl logs --app app-name
 
-# Need more power?
-flyctl scale vm performance-2x
+# SSH to debug
+flyctl ssh console --app app-name
+
+# Check machine status
+flyctl machine list --app app-name
+
+# Restart machine
+flyctl machine restart <id> --app app-name
 ```
+
+## Advanced Scripts
+
+Located in `scripts/fly-advanced/`:
+- `fly-cost-monitor.sh` - Detailed cost analysis
+- `fly-usage-tracker.sh` - Track usage over time
+- `fly-budget-alert.sh` - Set up budget alerts
+- `fly-volume-backup.sh` - Backup persistent data
+- `fly-security-audit.sh` - Security checks
+
+See [fly-advanced/README.md](../scripts/fly-advanced/README.md) for details.

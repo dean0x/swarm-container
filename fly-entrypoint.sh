@@ -3,10 +3,16 @@ set -euo pipefail
 
 echo "🚀 Initializing SwarmContainer on Fly.io..."
 
-# Ensure SSH host keys exist
+# Ensure SSH host keys exist (should be generated during build)
 if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
-    echo "Generating SSH host keys..."
-    sudo ssh-keygen -A
+    echo "⚠️  SSH host keys missing - they should have been generated during build"
+    # Try to generate if we have permissions
+    if [ -w /etc/ssh ]; then
+        ssh-keygen -A
+    else
+        echo "❌ Cannot generate SSH host keys - no write permission to /etc/ssh"
+        exit 1
+    fi
 fi
 
 # Setup SSH authorized keys from environment
@@ -53,12 +59,43 @@ chmod 660 /workspace/.ssh-access.log
 
 echo "✅ Security logging configured"
 
-# Enhanced workspace setup
-echo "🗂️  Setting up persistent volumes..."
+# Enhanced workspace setup with single volume
+echo "🗂️  Setting up persistent volume..."
 
-# Initialize workspace
-if [ ! -d /workspace ]; then
-    echo "Creating workspace directory..."
+# Create symlinks for persistent data
+# /data is our single persistent volume
+if [ -d /data ]; then
+    # Create directory structure in persistent volume
+    mkdir -p /data/workspace
+    mkdir -p /data/home
+    
+    # Symlink workspace to persistent location
+    if [ ! -L /workspace ] && [ ! -d /workspace ]; then
+        sudo ln -s /data/workspace /workspace
+    elif [ -d /workspace ] && [ ! -L /workspace ]; then
+        # Move existing workspace content to persistent volume
+        sudo mv /workspace/* /data/workspace/ 2>/dev/null || true
+        sudo rm -rf /workspace
+        sudo ln -s /data/workspace /workspace
+    fi
+    
+    # Ensure workspace ownership
+    sudo chown -R node:node /data/workspace
+    
+    # Link home subdirectories to persistent storage
+    for dir in .ssh .config .cache .local .npm; do
+        if [ ! -d /data/home/$dir ]; then
+            mkdir -p /data/home/$dir
+        fi
+        if [ ! -L ~/$dir ]; then
+            rm -rf ~/$dir 2>/dev/null || true
+            ln -s /data/home/$dir ~/$dir
+        fi
+    done
+    
+    echo "✅ Persistent volume configured"
+else
+    echo "⚠️  Warning: /data volume not mounted, using ephemeral storage"
     sudo mkdir -p /workspace
     sudo chown node:node /workspace
 fi
@@ -71,7 +108,7 @@ if [ ! -d /workspace/.devcontainer ] && [ -d /.devcontainer ]; then
 fi
 
 # Initialize home directory structure
-if [ ! -f ~/.bashrc ]; then
+if [ ! -f ~/.bashrc ] && [ -f /etc/skel/.bashrc ]; then
     echo "Setting up user environment..."
     cp /etc/skel/.bashrc ~/
     cp /etc/skel/.profile ~/

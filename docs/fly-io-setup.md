@@ -2,33 +2,62 @@
 
 Deploy your SwarmContainer development environment to the cloud with Fly.io for remote access from anywhere.
 
-## Prerequisites
+## Quick Start (New Deployment System)
 
-1. **Fly.io Account**: Sign up at [fly.io](https://fly.io)
-2. **Fly CLI**: Install from [fly.io/docs/flyctl/installing](https://fly.io/docs/flyctl/installing/)
-3. **SSH Key**: Generate if needed: `ssh-keygen -t ed25519`
-4. **SwarmContainer**: Clone or add as submodule
+### 1. First-Time Setup
 
-## Quick Start
-
-### Automated Deployment (Recommended)
-
-Deploy everything with a single command:
+Run the interactive setup assistant:
 ```bash
-./scripts/fly-deploy-all.sh my-app-name iad
+./scripts/fly-setup.sh
 ```
 
 This will:
-- Create your Fly.io app
-- Set up persistent volumes
-- Deploy the container
-- Configure SSH access
-- Set up MCP servers
-- Generate VS Code config
+- Install flyctl (if needed)
+- Configure SSH keys
+- Set up your Fly.io account
+- Create initial configuration file
 
-### Manual Deployment
+### 2. Deploy Your Environment
 
-If you prefer step-by-step control:
+```bash
+# Option A: Using configuration file (recommended)
+./scripts/fly-deploy.sh deploy
+
+# Option B: Quick deployment with arguments
+./scripts/fly-deploy.sh deploy my-app-name iad
+```
+
+### 3. Connect
+
+```bash
+# SSH directly
+ssh node@my-app-name.fly.dev -p 10022
+
+# Check status
+./scripts/fly-deploy.sh status
+
+# Destroy when done
+./scripts/fly-deploy.sh destroy
+```
+
+## Configuration
+
+Create your configuration from the template:
+```bash
+cp .env.fly.example .env.fly
+# Edit with your settings
+```
+
+Key settings in `.env.fly`:
+- `FLY_APP_NAME`: Your unique app name
+- `FLY_REGION`: Deployment region (iad, lhr, etc.)
+- `FLY_VM_SIZE`: Machine size (shared-cpu-1x to 8x)
+- `FLY_VM_MEMORY`: Memory allocation
+- `AUTO_STOP_MACHINES`: Enable cost-saving auto-stop
+
+## Advanced Deployment (Legacy Scripts)
+
+For fine-grained control, use the scripts in `scripts/fly-advanced/`:
 
 #### 1. Initialize Fly.io App
 

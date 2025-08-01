@@ -144,6 +144,9 @@ RUN echo "****************************************************" > /etc/ssh/banne
     && echo "* Authorized access only. All actions logged.     *" >> /etc/ssh/banner \
     && echo "****************************************************" >> /etc/ssh/banner
 
+# Generate SSH host keys during build
+RUN ssh-keygen -A
+
 # Create .ssh directory for node user
 RUN mkdir -p /home/node/.ssh && \
     chown -R node:node /home/node/.ssh && \

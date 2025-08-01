@@ -25,6 +25,12 @@ Thumbs.db
 !.env.development
 !.env.enterprise
 !.env.paranoid
+!.env.fly.example
+
+# Fly.io configuration
+.env.fly
+fly.toml.bak
+.fly/
 
 # Node modules
 node_modules/

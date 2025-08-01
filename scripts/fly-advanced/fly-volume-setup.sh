@@ -77,11 +77,8 @@ main() {
     echo "📍 Region: $region"
     echo ""
     
-    # Create workspace volume (20GB default)
-    create_volume "$app_name" "swarm_workspace" "20" "$region"
-    
-    # Create home volume (10GB default)
-    create_volume "$app_name" "swarm_home" "10" "$region"
+    # Create single data volume (30GB default - combines workspace and home)
+    create_volume "$app_name" "swarm_data" "30" "$region"
     
     # List all volumes
     list_volumes "$app_name"
