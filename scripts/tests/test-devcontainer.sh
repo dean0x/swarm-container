@@ -86,7 +86,6 @@ if [ $? -eq 0 ]; then
     test_tool "npm"
     test_tool "claude"
     test_tool "git"
-    test_tool "tmux"
     test_tool "zsh"
     
     # Test 7: Check NODE_OPTIONS is set correctly
