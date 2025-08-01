@@ -29,6 +29,7 @@ Thumbs.db
 
 # Fly.io configuration
 .env.fly
+fly.toml
 fly.toml.bak
 .fly/
 

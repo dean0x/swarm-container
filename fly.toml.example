@@ -1,12 +1,6 @@
-# Example Fly.io configuration for SwarmContainer
-# Copy this to fly.toml and customize
-
-app = "your-app-name"  # Change this to your unique app name
-primary_region = "iad" # Change to your preferred region
-
-# Available regions (as of 2024):
-# ams (Amsterdam), iad (Virginia), sin (Singapore), syd (Sydney),
-# fra (Frankfurt), sjc (San Jose), lhr (London), nrt (Tokyo), etc.
+# Fly.io configuration for SwarmContainer Remote Development
+app = "my-swarm-dev"
+primary_region = "iad"
 
 # Build configuration
 [build]
@@ -15,18 +9,24 @@ primary_region = "iad" # Change to your preferred region
 
 # Environment variables
 [env]
+  # Public environment variables
   NODE_ENV = "development"
   DEVCONTAINER = "true"
+  
+  # Memory settings (matching local development)
   CONTAINER_MEMORY = "8g"
   CONTAINER_CPUS = "4"
+  
+  # Security preset for remote development
   SECURITY_PRESET = "development"
 
-# Process configuration
+# Process groups
 [processes]
   app = "/fly-entrypoint.sh /usr/sbin/sshd -D"
 
 # Services configuration
 [[services]]
+  # SSH service configuration
   processes = ["app"]
   internal_port = 22
   protocol = "tcp"
@@ -34,25 +34,26 @@ primary_region = "iad" # Change to your preferred region
   auto_start_machines = true
   min_machines_running = 0
 
+  # Concurrency settings
   [services.concurrency]
     type = "connections"
     hard_limit = 25
     soft_limit = 20
 
+  # Public port mapping
   [[services.ports]]
-    port = 10022
+    port = 10022  # Non-standard SSH port for security
 
-# Persistent storage volumes
+# Persistent storage
+# Note: Fly.io only supports one volume mount per machine
+# We'll mount a single volume at root of persistent data
 [[mounts]]
-  source = "swarm_workspace"
-  destination = "/workspace"
-  
-[[mounts]]
-  source = "swarm_home"
-  destination = "/home/node"
+  source = "swarm_data"
+  destination = "/data"
 
 # Machine configuration
 [experimental]
+  # Use Fly Machines v2
   auto_rollback = true
 
 # Health checks
@@ -61,34 +62,9 @@ primary_region = "iad" # Change to your preferred region
   timeout = "2s"
   grace_period = "5s"
 
-# Customize machine size based on your needs:
+# Resource allocation
 [[vm]]
-  cpu_kind = "shared"    # Options: "shared" or "performance"
-  cpus = 2               # 1-8 for shared, 1-64 for performance
-  memory_mb = 2048       # 256-8192 for shared, higher for performance
-
-# Machine size examples:
-# 
-# Minimal (testing):
-#   cpu_kind = "shared"
-#   cpus = 1
-#   memory_mb = 512
-#
-# Standard (development):
-#   cpu_kind = "shared"
-#   cpus = 2
-#   memory_mb = 2048
-#
-# High Performance:
-#   cpu_kind = "performance"
-#   cpus = 4
-#   memory_mb = 8192
-
-# Cost estimates (shared CPU, as of 2024):
-# - shared-cpu-1x (1 CPU, 256MB): ~$3/month
-# - shared-cpu-2x (2 CPU, 512MB): ~$5/month
-# - shared-cpu-4x (4 CPU, 1GB): ~$10/month
-# - shared-cpu-8x (8 CPU, 2GB): ~$20/month
-# 
-# With auto-stop enabled, you only pay when the machine is running.
-# Storage volumes: $0.15/GB/month
+  # Default to shared CPU for cost efficiency
+  cpu_kind = "shared"
+  cpus = 2
+  memory_mb = 2048
