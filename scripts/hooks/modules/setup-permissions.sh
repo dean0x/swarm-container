@@ -13,7 +13,7 @@ if [ -d "/workspace/.devcontainer/scripts/hooks/modules" ]; then
     chmod +x /workspace/.devcontainer/scripts/hooks/modules/*.sh 2>/dev/null || true
 fi
 
-# Ensure workspace permissions are correct
-chown -R node:node /workspace 2>/dev/null || true
+# Ensure .devcontainer scripts are executable
+find /workspace/.devcontainer -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null || true
 
 echo "✅ Permissions configured"

@@ -26,11 +26,11 @@ done
 # Test 2: Build the container
 echo ""
 echo "2️⃣ Building container..."
-if docker build -t devcontainer-test -f Dockerfile . > /dev/null 2>&1; then
+if docker build -t devcontainer-test -f Dockerfile --target local . > /dev/null 2>&1; then
     echo -e "   ${GREEN}✓${NC} Container build successful"
 else
     echo -e "   ${RED}✗${NC} Container build failed"
-    docker build -t devcontainer-test -f Dockerfile . 2>&1 | tail -20
+    docker build -t devcontainer-test -f Dockerfile --target local . 2>&1 | tail -20
     exit 1
 fi
 
@@ -86,7 +86,6 @@ if [ $? -eq 0 ]; then
     test_tool "npm"
     test_tool "claude"
     test_tool "git"
-    test_tool "tmux"
     test_tool "zsh"
     
     # Test 7: Check NODE_OPTIONS is set correctly

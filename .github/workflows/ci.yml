@@ -28,7 +28,7 @@ jobs:
     
     - name: Check shell scripts syntax
       run: |
-        for script in scripts/*/*.sh scripts/*.sh; do
+        for script in scripts/*/*.sh scripts/*.sh scripts/*/*/*.sh; do
           if [ -f "$script" ]; then
             echo "Checking $script"
             bash -n "$script" || exit 1
@@ -41,7 +41,7 @@ jobs:
         find scripts -name "*.sh" -exec shellcheck {} \; || true
     
     - name: Build container
-      run: docker build -t swarmcontainer-test -f Dockerfile .
+      run: docker build -t swarmcontainer-test -f Dockerfile --target local .
     
     - name: Test container startup
       run: |

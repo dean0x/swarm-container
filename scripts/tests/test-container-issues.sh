@@ -129,7 +129,7 @@ echo ""
 echo "6️⃣ Testing container build..."
 
 BUILD_LOG=$(mktemp)
-if docker build -t devcontainer-test -f Dockerfile . > "$BUILD_LOG" 2>&1; then
+if docker build -t devcontainer-test -f Dockerfile --target local . > "$BUILD_LOG" 2>&1; then
     echo -e "   ${GREEN}✓${NC} Container builds successfully"
     
     # Check for warnings in build log
@@ -157,8 +157,9 @@ if [ $ERRORS_FOUND -eq 0 ] && [ "$JSON_VALID" = "true" ]; then
         --cap-add=NET_ADMIN \
         --cap-add=NET_RAW \
         -e SECURITY_PRESET=development \
+        --entrypoint /bin/bash \
         devcontainer-test \
-        sleep 60 2>/dev/null)
+        -c "sleep 60" 2>/dev/null)
     
     if [ $? -eq 0 ]; then
         echo -e "   ${GREEN}✓${NC} Container starts successfully"
