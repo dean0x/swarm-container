@@ -84,6 +84,19 @@ cp .devcontainer/.env.enterprise .env     # For corporate environments
 cp .devcontainer/.env.paranoid .env       # For maximum security
 ```
 
+#### Optional: Configure for Multiple Claude Code Instances
+By default, the container is configured for 6 Claude Code instances. To customize:
+
+```bash
+# Run BEFORE opening in VS Code (from your project root)
+./.devcontainer/scripts/configure-for-instances.sh
+
+# Or manually edit .env:
+echo "CLAUDE_CODE_INSTANCES=10" >> .env
+```
+
+**Note**: Resource configuration must be done BEFORE opening in VS Code. Changes require rebuilding the container.
+
 ### Set Up Authentication
 
 You have two options for Claude authentication:
@@ -150,7 +163,12 @@ claude mcp list
 
 # Check security preset
 echo $SECURITY_PRESET
+
+# See current instance configuration
+echo "Instances: $CLAUDE_CODE_INSTANCES"
 ```
+
+**To change instance count**: Exit container → Run `./scripts/configure-for-instances.sh` → Rebuild container
 
 ## 🌐 Remote Development Option
 

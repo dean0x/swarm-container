@@ -49,23 +49,48 @@ This repository provides a VS Code development container for running Claude Code
 
 ## Multi-Instance Configuration
 
-The container automatically scales resources based on how many Claude Code instances you plan to run:
+The container automatically scales resources based on how many Claude Code instances you plan to run.
+
+### When to Configure
+
+1. **Before first use**: Run configuration tool before opening in VS Code
+2. **Changing instances**: Exit container → Configure → Rebuild
+3. **Manual setup**: Edit `.env` file directly
+
+### Configuration Steps
 
 ```bash
-# Default: 6 instances (5GB RAM, 2 CPUs, 74% heap)
-# Set in your .env file:
+# Method 1: Interactive tool (recommended)
+# Run from project root BEFORE opening in VS Code
+./scripts/configure-for-instances.sh
+
+# Method 2: Manual configuration
+# Edit .env file:
 CLAUDE_CODE_INSTANCES=10
 
-# Or use the interactive configuration tool:
-./scripts/configure-for-instances.sh
+# Method 3: Quick one-liner
+echo "CLAUDE_CODE_INSTANCES=10" >> .env
 ```
 
-Resource scaling examples:
+### Resource Scaling
+
+The system automatically calculates:
+- **Memory**: (instances × 600MB) + 2GB overhead
+- **CPUs**: max(2, instances ÷ 3)
+- **Heap %**: 80 - instances (bounded 40-75%)
+
+Examples:
 - **1 instance**: 3GB RAM, 2 CPUs, 75% heap (single user)
 - **6 instances**: 5GB RAM, 2 CPUs, 74% heap (default)
 - **10 instances**: 8GB RAM, 4 CPUs, 70% heap (team usage)
 - **25 instances**: 17GB RAM, 8 CPUs, 55% heap (power user)
 - **50 instances**: 32GB RAM, 16 CPUs, 40% heap (workstation)
+
+### Important Notes
+
+- Configuration must be done **OUTSIDE** the container
+- Changes require container rebuild in VS Code
+- Default is 6 instances if not specified
 
 ## Common Commands
 
