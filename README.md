@@ -11,7 +11,8 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 ## ✨ Highlights
 
 - **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while working with AI
-- **🧠 Dynamic Memory Allocation** - Automatically sets Node.js heap to 75% of container memory, prevents OOM errors across all security presets
+- **🤖 Multi-Instance Ready** - Run 1-100+ Claude Code instances with automatic resource scaling (default: 6 instances)
+- **🧠 Dynamic Resource Allocation** - Automatically calculates memory, CPU, and heap settings based on instance count
 - **⚡ Zero-Latency MCP** - Local MCP servers for enhanced Claude Code capabilities
 - **🔧 Auto-Updating MCP Config** - Live configuration updates with file watcher - modify `.mcp.config` and changes apply instantly
 - **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)

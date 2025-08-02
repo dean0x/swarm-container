@@ -13,9 +13,13 @@ primary_region = "iad"
   NODE_ENV = "development"
   DEVCONTAINER = "true"
   
-  # Memory settings (matching local development)
-  CONTAINER_MEMORY = "8g"
-  CONTAINER_CPUS = "4"
+  # Multi-instance configuration
+  CLAUDE_CODE_INSTANCES = "6"
+  
+  # Memory settings (automatically calculated from instances)
+  # These will be set by the deployment script based on CLAUDE_CODE_INSTANCES
+  CONTAINER_MEMORY = "5g"
+  CONTAINER_CPUS = "2"
   
   # Security preset for remote development
   SECURITY_PRESET = "development"

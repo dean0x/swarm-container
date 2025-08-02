@@ -7,7 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This repository provides a VS Code development container for running Claude Code in a secure, isolated environment. It's designed to provide a safe, pre-configured development environment with intelligent resource management and customizable security levels.
 
 ### Key Features
-- **🧠 Dynamic Memory Allocation**: Auto-detects container memory and sets Node.js heap to 75%
+- **🧠 Dynamic Memory Allocation**: Auto-scales resources based on number of Claude Code instances
+- **🤖 Multi-Instance Support**: Run 1-100+ Claude Code instances with automatic resource calculation
 - **🛡️ Three Security Presets**: Paranoid, Enterprise, and Development modes
 - **🔧 MCP Server Support**: Pre-configured Model Context Protocol servers
 - **📦 Auto-updating MCP Config**: Live configuration updates with file watcher
@@ -45,6 +46,26 @@ This repository provides a VS Code development container for running Claude Code
 - `.env.paranoid` - Maximum security configuration
 - `.env.enterprise` - Corporate environment settings
 - `.env.development` - Relaxed local development settings (default)
+
+## Multi-Instance Configuration
+
+The container automatically scales resources based on how many Claude Code instances you plan to run:
+
+```bash
+# Default: 6 instances (5GB RAM, 2 CPUs, 74% heap)
+# Set in your .env file:
+CLAUDE_CODE_INSTANCES=10
+
+# Or use the interactive configuration tool:
+./scripts/configure-for-instances.sh
+```
+
+Resource scaling examples:
+- **1 instance**: 3GB RAM, 2 CPUs, 75% heap (single user)
+- **6 instances**: 5GB RAM, 2 CPUs, 74% heap (default)
+- **10 instances**: 8GB RAM, 4 CPUs, 70% heap (team usage)
+- **25 instances**: 17GB RAM, 8 CPUs, 55% heap (power user)
+- **50 instances**: 32GB RAM, 16 CPUs, 40% heap (workstation)
 
 ## Common Commands
 

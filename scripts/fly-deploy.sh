@@ -231,12 +231,31 @@ EOF
 deploy() {
     print_header
     
+    # Calculate resources if not manually set
+    if [ -z "${FLY_VM_MEMORY:-}" ] || [ -z "${FLY_VM_SIZE:-}" ]; then
+        # Source the resource calculator
+        INSTANCES=${CLAUDE_CODE_INSTANCES:-6}
+        source "${SCRIPT_DIR}/hooks/calculate-resources.sh" $INSTANCES >/dev/null 2>&1
+        
+        # Set defaults if not manually specified
+        FLY_VM_MEMORY=${FLY_VM_MEMORY:-$RECOMMENDED_MEMORY}
+        
+        # Map CPU count to Fly.io VM size
+        case ${RECOMMENDED_CPUS} in
+            1|2) FLY_VM_SIZE=${FLY_VM_SIZE:-"shared-cpu-2x"} ;;
+            3|4) FLY_VM_SIZE=${FLY_VM_SIZE:-"shared-cpu-4x"} ;;
+            5|6|7|8) FLY_VM_SIZE=${FLY_VM_SIZE:-"shared-cpu-8x"} ;;
+            *) FLY_VM_SIZE=${FLY_VM_SIZE:-"shared-cpu-8x"} ;;
+        esac
+    fi
+    
     # Show configuration
     echo "📋 Deployment Configuration:"
     echo "   App Name: $FLY_APP_NAME"
     echo "   Region: $FLY_REGION"
-    echo "   VM Size: ${FLY_VM_SIZE:-shared-cpu-1x}"
-    echo "   Memory: ${FLY_VM_MEMORY:-1gb}"
+    echo "   Claude Instances: ${CLAUDE_CODE_INSTANCES:-6}"
+    echo "   VM Size: ${FLY_VM_SIZE}"
+    echo "   Memory: ${FLY_VM_MEMORY}"
     echo "   Volume: ${FLY_VOLUME_SIZE:-30}GB"
     echo "   Security: ${SECURITY_PRESET:-development}"
     echo

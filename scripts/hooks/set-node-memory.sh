@@ -36,8 +36,26 @@ bytes_to_mb() {
 MEMORY_BYTES=$(get_container_memory)
 MEMORY_MB=$(bytes_to_mb $MEMORY_BYTES)
 
-# Calculate 75% for heap (leaving 25% for system, buffers, etc.)
-HEAP_MB=$((MEMORY_MB * 75 / 100))
+# Check if running multiple Claude Code instances
+INSTANCES=${CLAUDE_CODE_INSTANCES:-6}
+
+# Calculate heap percentage based on number of instances
+if [ $INSTANCES -gt 1 ]; then
+    # Dynamic heap percentage: 80 - instances, bounded between 40-75%
+    HEAP_PERCENTAGE=$((80 - INSTANCES))
+    if [ $HEAP_PERCENTAGE -gt 75 ]; then
+        HEAP_PERCENTAGE=75
+    elif [ $HEAP_PERCENTAGE -lt 40 ]; then
+        HEAP_PERCENTAGE=40
+    fi
+    echo "🔢 Configuring for $INSTANCES Claude Code instances"
+else
+    # Default 75% for single instance
+    HEAP_PERCENTAGE=75
+fi
+
+# Calculate heap size based on percentage
+HEAP_MB=$((MEMORY_MB * HEAP_PERCENTAGE / 100))
 
 # Ensure minimum heap size of 512MB
 if [ $HEAP_MB -lt 512 ]; then
@@ -48,5 +66,5 @@ fi
 export NODE_OPTIONS="--max-old-space-size=$HEAP_MB"
 
 echo "🧠 Container memory detected: ${MEMORY_MB}MB"
-echo "📊 Node.js heap size set to: ${HEAP_MB}MB (75% of container memory)"
+echo "📊 Node.js heap size set to: ${HEAP_MB}MB (${HEAP_PERCENTAGE}% of container memory)"
 echo "🔧 NODE_OPTIONS=$NODE_OPTIONS"
