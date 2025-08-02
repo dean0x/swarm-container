@@ -135,6 +135,22 @@ claude --dangerously-skip-permissions
 # Click the link and log in with your Claude account
 ```
 
+### 💡 Container Tips
+
+```bash
+# Update Claude Code to latest version
+update-claude
+
+# Check memory allocation
+echo $NODE_OPTIONS
+
+# View MCP server status
+claude mcp list
+
+# Check security preset
+echo $SECURITY_PRESET
+```
+
 ## 🌐 Remote Development Option
 
 Want to access your development environment from anywhere? SwarmContainer now supports deployment to [Fly.io](https://fly.io) for cloud-based development.

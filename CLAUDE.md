@@ -104,8 +104,10 @@ mcp-watcher-logs
 
 ### Development
 ```bash
-# Update Claude Code
-npm update -g @anthropic-ai/claude-code
+# Update Claude Code (use special wrapper for permissions)
+update-claude
+# Or use the full command:
+npm-global-update update -g @anthropic-ai/claude-code
 
 # Check container logs
 docker logs <container-name>
@@ -148,6 +150,12 @@ When adding new npm packages that require network access:
    ```bash
    which claude
    npm list -g @anthropic-ai/claude-code
+   ```
+
+4. **Update Claude Code** (if permissions error):
+   ```bash
+   # Use the special wrapper that handles permissions
+   update-claude
    ```
 
 ### MCP Server Issues

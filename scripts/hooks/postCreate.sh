@@ -30,6 +30,7 @@ run_module() {
 # Run setup modules in order
 run_module "setup-permissions.sh"    # Set permissions first
 run_module "init-npm.sh"            # Configure NPM
+run_module "setup-npm-permissions.sh" # Setup npm global update permissions
 run_module "init-claude-code.sh"    # Initialize Claude Code
 run_module "setup-mcp.sh"           # Configure MCP servers
 run_module "setup-workspace.sh"     # Setup workspace structure
