@@ -1,36 +1,14 @@
 #!/bin/bash
 # Module: Workspace Setup
-# Purpose: Create workspace structure and manage .gitignore
+# Purpose: Ensure workspace has proper permissions
 
-echo "📁 Setting up workspace structure..."
+echo "📁 Setting up workspace..."
 
 # Ensure we're in the workspace directory
 cd /workspace
 
-
-# Only create .gitignore if it doesn't exist
-if [ ! -f "/workspace/.gitignore" ]; then
-    echo "📝 Creating default .gitignore (none found)..."
-    cat > /workspace/.gitignore << 'EOF'
-# Dependencies
-node_modules/
-
-# Logs
-*.log
-
-# Environment
-.env
-.env.*
-
-# IDE
-.vscode/
-.idea/
-EOF
-else
-    echo "✓ Existing .gitignore found, preserving it"
-fi
-
 # Set proper permissions for workspace
+# This handles edge cases where permissions might need adjustment
 chown -R node:node /workspace 2>/dev/null || true
 
-echo "✅ Workspace structure configured"
+echo "✅ Workspace configured"

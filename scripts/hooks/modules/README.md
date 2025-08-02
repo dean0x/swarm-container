@@ -25,9 +25,8 @@ This directory contains modular scripts that are called by the main `postCreate.
 - Substitutes environment variables for API keys
 
 ### setup-workspace.sh
-- Creates workspace directory structure
-- Manages .gitignore file creation/updates
 - Sets proper permissions for workspace
+- Ensures workspace is accessible to the node user
 
 ### setup-shell.sh
 - Installs Oh My Zsh plugins (autosuggestions, syntax highlighting)
