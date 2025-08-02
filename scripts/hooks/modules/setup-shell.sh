@@ -108,4 +108,89 @@ alias mcp-update='bash /workspace/.devcontainer/scripts/hooks/modules/setup-mcp.
 EOF
 fi
 
-echo "✅ Shell environment configured"
+# Add productivity tool aliases and initializations
+echo "🚀 Configuring productivity tools..."
+
+# Add productivity tool aliases to bashrc
+if ! grep -q "# Productivity Tool Aliases" ~/.bashrc 2>/dev/null; then
+    cat >> ~/.bashrc << 'EOF'
+
+# Productivity Tool Aliases
+alias ls='eza --icons --git'
+alias ll='eza -l --icons --git'
+alias la='eza -la --icons --git'
+alias tree='eza --tree --icons'
+alias cat='bat'
+alias top='btm'
+alias htop='btm'
+alias du='dust'
+alias ping='gping'
+alias http='http --style=native'
+alias help='tldr'
+alias lg='lazygit'
+alias lzd='lazydocker'
+
+# Initialize zoxide (smarter cd)
+eval "$(zoxide init bash)"
+
+# Initialize mcfly (neural network powered shell history)
+eval "$(mcfly init bash)"
+EOF
+fi
+
+# Add productivity tool aliases to zshrc
+if ! grep -q "# Productivity Tool Aliases" ~/.zshrc 2>/dev/null; then
+    cat >> ~/.zshrc << 'EOF'
+
+# Productivity Tool Aliases
+alias ls='eza --icons --git'
+alias ll='eza -l --icons --git'
+alias la='eza -la --icons --git'
+alias tree='eza --tree --icons'
+alias cat='bat'
+alias top='btm'
+alias htop='btm'
+alias du='dust'
+alias ping='gping'
+alias http='http --style=native'
+alias help='tldr'
+alias lg='lazygit'
+alias lzd='lazydocker'
+
+# Initialize zoxide (smarter cd)
+eval "$(zoxide init zsh)"
+
+# Initialize mcfly (neural network powered shell history)
+eval "$(mcfly init zsh)"
+EOF
+fi
+
+# Create config directories
+mkdir -p ~/.config/lazygit
+mkdir -p ~/.config/bottom
+
+# Create basic lazygit config
+if [ ! -f ~/.config/lazygit/config.yml ]; then
+    cat > ~/.config/lazygit/config.yml << 'EOF'
+gui:
+  # Use delta for diffs
+  pager: delta
+  sidePanelWidth: 0.3333
+  theme:
+    selectedLineBgColor:
+      - reverse
+git:
+  paging:
+    colorArg: always
+    useConfig: true
+os:
+  editCommand: 'code'
+  editCommandTemplate: '{{editor}} {{filename}}'
+EOF
+fi
+
+# Update tldr cache
+echo "📚 Updating tldr cache..."
+tldr --update 2>/dev/null || true
+
+echo "✅ Shell environment and productivity tools configured"

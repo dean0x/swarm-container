@@ -19,7 +19,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     bat \
     fzf \
     zsh \
-    htop \
     net-tools \
     dnsutils \
     iputils-ping \
@@ -63,6 +62,35 @@ RUN npm install -g \
 
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
+
+# Install productivity CLI tools via apt
+RUN apt-get update && apt-get install -y \
+    jq \
+    httpie \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust for cargo-based tools (if not already present)
+RUN if ! command -v cargo &> /dev/null; then \
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+        . $HOME/.cargo/env; \
+    fi
+
+# Add cargo to PATH for this RUN command
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Rust-based productivity tools
+RUN cargo install zoxide --locked && \
+    cargo install tokei --locked && \
+    cargo install mcfly --locked
+
+# Install productivity tools via npm
+RUN npm install -g tldr
+
+# Copy and run architecture-aware binary installation script
+COPY scripts/install-productivity-tools.sh /tmp/install-productivity-tools.sh
+RUN chmod +x /tmp/install-productivity-tools.sh && \
+    /tmp/install-productivity-tools.sh && \
+    rm /tmp/install-productivity-tools.sh
 
 # Create workspace directory and ensure node user has proper shell
 RUN mkdir -p /workspace && chown -R node:node /workspace \

@@ -88,6 +88,22 @@ if [ $? -eq 0 ]; then
     test_tool "git"
     test_tool "zsh"
     
+    # Test productivity tools
+    echo ""
+    echo "   Testing productivity tools..."
+    test_tool "lazygit"
+    test_tool "lazydocker"
+    test_tool "eza"
+    test_tool "zoxide"
+    test_tool "btm"
+    test_tool "dust"
+    test_tool "tokei"
+    test_tool "gping"
+    test_tool "jq"
+    test_tool "tldr"
+    test_tool "http"
+    test_tool "mcfly"
+    
     # Test 7: Check NODE_OPTIONS is set correctly
     echo ""
     echo "7️⃣ Testing dynamic memory allocation..."

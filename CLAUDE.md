@@ -92,6 +92,36 @@ Examples:
 - Changes require container rebuild in VS Code
 - Default is 6 instances if not specified
 
+## Productivity Tools
+
+The container includes modern CLI tools to supercharge your development workflow:
+
+### Git & Docker Management
+- **`lg` (lazygit)** - Visual git interface for commits, branches, and merges
+- **`lzd` (lazydocker)** - Monitor and manage Docker containers visually
+
+### Enhanced File Navigation
+- **`ls/ll/la`** - Enhanced file listing with icons and Git status (via eza)
+- **`tree`** - Visual directory tree with icons
+- **`cd`** - Smart directory jumping that learns your habits (via zoxide)
+  - Example: After visiting `/workspace/src/components` once, just type `cd components`
+
+### System Monitoring
+- **`top/htop`** - Modern system monitor with graphs (via bottom)
+- **`du`** - Visual disk usage analyzer (via dust)
+- **`ping`** - Ping with real-time graphs (via gping)
+
+### Development Utilities
+- **`cat`** - Syntax-highlighted file viewer (via bat)
+- **`tokei`** - Fast code statistics by language
+- **`jq`** - JSON processing and querying
+- **`http`** - User-friendly HTTP client (HTTPie)
+- **`help <command>`** - Simplified man pages (via tldr)
+
+### Shell History
+- **Ctrl+R** - Neural network powered history search (via mcfly)
+- History syncs across sessions and learns from your usage patterns
+
 ## Common Commands
 
 ### Claude Code Setup
