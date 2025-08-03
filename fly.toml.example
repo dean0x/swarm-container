@@ -1,0 +1,74 @@
+# Fly.io configuration for SwarmContainer Remote Development
+app = "my-swarm-dev"
+primary_region = "iad"
+
+# Build configuration
+[build]
+  dockerfile = "Dockerfile"
+  target = "remote"
+
+# Environment variables
+[env]
+  # Public environment variables
+  NODE_ENV = "development"
+  DEVCONTAINER = "true"
+  
+  # Multi-instance configuration
+  CLAUDE_CODE_INSTANCES = "6"
+  
+  # Memory settings (automatically calculated from instances)
+  # These will be set by the deployment script based on CLAUDE_CODE_INSTANCES
+  CONTAINER_MEMORY = "5g"
+  CONTAINER_CPUS = "2"
+  
+  # Security preset for remote development
+  SECURITY_PRESET = "development"
+
+# Process groups
+[processes]
+  app = "/fly-entrypoint.sh /usr/sbin/sshd -D"
+
+# Services configuration
+[[services]]
+  # SSH service configuration
+  processes = ["app"]
+  internal_port = 22
+  protocol = "tcp"
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+  # Concurrency settings
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+  # Public port mapping
+  [[services.ports]]
+    port = 10022  # Non-standard SSH port for security
+
+# Persistent storage
+# Note: Fly.io only supports one volume mount per machine
+# We'll mount a single volume at root of persistent data
+[[mounts]]
+  source = "swarm_data"
+  destination = "/data"
+
+# Machine configuration
+[experimental]
+  # Use Fly Machines v2
+  auto_rollback = true
+
+# Health checks
+[[services.tcp_checks]]
+  interval = "15s"
+  timeout = "2s"
+  grace_period = "5s"
+
+# Resource allocation
+[[vm]]
+  # Default to shared CPU for cost efficiency
+  cpu_kind = "shared"
+  cpus = 2
+  memory_mb = 2048

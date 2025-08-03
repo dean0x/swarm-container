@@ -1,4 +1,9 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:20-bullseye
+# Multi-stage Dockerfile for SwarmContainer
+# - base: Common setup for all deployments
+# - local: VS Code Dev Container (default)
+# - remote: Fly.io SSH deployment (future)
+
+FROM mcr.microsoft.com/devcontainers/javascript-node:20-bullseye AS base
 
 # Install essential tools and security utilities
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -14,7 +19,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     bat \
     fzf \
     zsh \
-    htop \
     net-tools \
     dnsutils \
     iputils-ping \
@@ -59,6 +63,43 @@ RUN npm install -g \
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
+# Install productivity CLI tools via apt
+RUN apt-get update && apt-get install -y \
+    jq \
+    httpie \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install GitHub CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install gh -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust for cargo-based tools (if not already present)
+RUN if ! command -v cargo &> /dev/null; then \
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+        . $HOME/.cargo/env; \
+    fi
+
+# Add cargo to PATH for this RUN command
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Rust-based productivity tools
+RUN cargo install zoxide --locked && \
+    cargo install tokei --locked && \
+    cargo install mcfly --locked
+
+# Install productivity tools via npm
+RUN npm install -g tldr
+
+# Copy and run architecture-aware binary installation script
+COPY scripts/install-productivity-tools.sh /tmp/install-productivity-tools.sh
+RUN chmod +x /tmp/install-productivity-tools.sh && \
+    /tmp/install-productivity-tools.sh && \
+    rm /tmp/install-productivity-tools.sh
+
 # Create workspace directory and ensure node user has proper shell
 RUN mkdir -p /workspace && chown -R node:node /workspace \
     && usermod -s /bin/bash node || true
@@ -96,3 +137,76 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/bin/bash"]
 
 # Note: USER directive removed - the entrypoint handles user switching
+
+# Local development stage - preserves current functionality
+FROM base AS local
+# No additional changes needed - inherits everything from base
+
+# Remote development stage for Fly.io
+FROM base AS remote
+
+# Install tini for proper init system
+ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini /tini
+RUN chmod +x /tini
+
+# Install SSH server, sudo, and supervisor
+RUN apt-get update && apt-get install -y \
+    openssh-server \
+    sudo \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /run/sshd \
+    && mkdir -p /var/log/supervisor
+
+# Add passwordless sudo for node user
+RUN echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Configure SSH for security
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config \
+    && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
+    && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
+    && echo "AllowUsers node" >> /etc/ssh/sshd_config
+
+# Enhanced SSH security configuration
+RUN echo "# Security hardening" >> /etc/ssh/sshd_config \
+    && echo "Protocol 2" >> /etc/ssh/sshd_config \
+    && echo "ClientAliveInterval 300" >> /etc/ssh/sshd_config \
+    && echo "ClientAliveCountMax 2" >> /etc/ssh/sshd_config \
+    && echo "MaxAuthTries 3" >> /etc/ssh/sshd_config \
+    && echo "MaxSessions 10" >> /etc/ssh/sshd_config \
+    && echo "TCPKeepAlive yes" >> /etc/ssh/sshd_config \
+    && echo "X11Forwarding no" >> /etc/ssh/sshd_config \
+    && echo "AllowAgentForwarding yes" >> /etc/ssh/sshd_config \
+    && echo "PermitTunnel no" >> /etc/ssh/sshd_config \
+    && echo "Banner /etc/ssh/banner" >> /etc/ssh/sshd_config
+
+# Create login banner
+RUN echo "****************************************************" > /etc/ssh/banner \
+    && echo "* SwarmContainer Development Environment           *" >> /etc/ssh/banner \
+    && echo "* Authorized access only. All actions logged.     *" >> /etc/ssh/banner \
+    && echo "****************************************************" >> /etc/ssh/banner
+
+# Create .ssh directory for node user
+RUN mkdir -p /home/node/.ssh && \
+    chown -R node:node /home/node/.ssh && \
+    chmod 700 /home/node/.ssh
+
+# Copy Fly.io specific files
+COPY scripts/fly/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY scripts/fly/fly-init.sh /fly-init.sh
+RUN chmod +x /fly-init.sh
+
+# Copy devcontainer files to container root for first-run setup
+COPY . /.devcontainer/
+
+# SSH runs on port 22
+EXPOSE 22
+
+# Create required directories
+RUN mkdir -p /var/run/sshd /var/log/supervisor
+
+# Use tini as PID 1 to handle signals properly
+ENTRYPOINT ["/tini", "--"]
+
+# Start supervisor which manages all our processes
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

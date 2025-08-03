@@ -3,6 +3,7 @@
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".",
+    "target": "local",
     "args": {
       "SECURITY_PRESET": "${localEnv:SECURITY_PRESET:development}"
     }
@@ -48,9 +49,9 @@
     "--cap-add=NET_RAW",
     "--security-opt", "seccomp=unconfined",
     "--security-opt", "no-new-privileges:${localEnv:NO_NEW_PRIVILEGES:true}",
-    "--memory=${localEnv:CONTAINER_MEMORY:8g}",
-    "--memory-swap=${localEnv:CONTAINER_MEMORY:8g}",
-    "--cpus=${localEnv:CONTAINER_CPUS:4}",
+    "--memory=${localEnv:CONTAINER_MEMORY:5g}",
+    "--memory-swap=${localEnv:CONTAINER_MEMORY:5g}",
+    "--cpus=${localEnv:CONTAINER_CPUS:2}",
     "--shm-size=2g",
     "--restart=unless-stopped"
   ],
@@ -62,7 +63,8 @@
     "CUSTOM_ALLOWED_DOMAINS": "${localEnv:CUSTOM_ALLOWED_DOMAINS:}",
     "NODE_ENV": "development",
     "ENABLE_MCP_WATCHER": "${localEnv:ENABLE_MCP_WATCHER:false}",
-    "TAVILY_API_KEY": "${localEnv:TAVILY_API_KEY:}"
+    "TAVILY_API_KEY": "${localEnv:TAVILY_API_KEY:}",
+    "CLAUDE_CODE_INSTANCES": "${localEnv:CLAUDE_CODE_INSTANCES:6}"
   },
   "overrideCommand": true,
   "shutdownAction": "stopContainer",

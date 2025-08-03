@@ -1,44 +1,68 @@
 # Version Information
 
-This document tracks the current working versions of the core components in the Swarm Container.
-
 ## Core Components
 
-| Component | Version | Source | Notes |
-|-----------|---------|--------|-------|
-| **Claude Code** | v1.0.56 | npm: `@anthropic-ai/claude-code` | Installed globally via npm |
+| Component | Version | Last Tested | Notes |
+|-----------|---------|-------------|-------|
+| **Claude Code** | v1.0.56 | January 2025 | Installed via npm |
+| **Node.js** | 20.x | January 2025 | LTS version |
+| **VS Code Dev Containers** | Latest | January 2025 | Extension required |
 
 ## Container Base
 
 - **Base Image**: `mcr.microsoft.com/devcontainers/javascript-node:20-bullseye`
-- **Node.js**: 20.x
-- **npm**: Latest (comes with Node.js 20)
+- **Operating System**: Debian 11 (Bullseye)
+- **Architecture Support**: amd64, arm64
 
-## Key Dependencies
+## Productivity Tools
 
-### Security & System Tools
-- iptables (for container-level firewall)
-- auditd (security auditing)
-- apparmor (application security)
+| Tool | Purpose | Installation |
+|------|---------|--------------|
+| **lazygit** | Git UI | Binary download |
+| **lazydocker** | Docker UI | Binary download |
+| **eza** | Modern ls | Binary download |
+| **bat** | Syntax highlighting | apt |
+| **bottom** | System monitor | Binary download |
+| **dust** | Disk usage | Binary download |
+| **zoxide** | Smart cd | Cargo |
+| **tokei** | Code statistics | Cargo |
+| **gping** | Visual ping | Binary download |
+| **jq** | JSON processor | apt |
+| **httpie** | HTTP client | apt |
+| **tldr** | Simplified man pages | npm |
+| **mcfly** | Smart shell history | Cargo |
+| **gh** | GitHub CLI | apt |
 
-### Development Tools
-- ripgrep (fast searching)
-- fzf (fuzzy finder)
-- bat (better cat)
-- git-delta (better diffs)
-- zsh with Oh My Zsh
-- set-node-memory.sh (dynamic memory allocation script)
+## Security Tools
+
+- **iptables** - Container firewall
+- **auditd** - Security auditing
+- **apparmor** - Application security
+- **ipset** - IP set management
 
 ## Updating Components
 
 ### Claude Code
 ```bash
-npm update -g @anthropic-ai/claude-code
+# Inside container
+update-claude  # Wrapper script with proper permissions
 ```
 
+### Container Image
+```bash
+# Outside container
+cd .devcontainer && git pull origin main
+# Then rebuild container in VS Code
+```
 
-## Version Compatibility
+## Compatibility Requirements
 
-- Claude Code requires Node.js 14.0.0 or higher
+- **Docker Desktop**: 4.0+ with 8GB+ memory allocated
+- **VS Code**: 1.60+
+- **Claude Code**: Requires Node.js 14.0.0+
 
-Last updated: July 2025
+## Version History
+
+- **January 2025**: Initial release with Claude Code v1.0.56
+- **January 2025**: Added productivity tools and Fly.io support
+- **January 2025**: Dynamic resource allocation for multi-instance support

@@ -7,7 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This repository provides a VS Code development container for running Claude Code in a secure, isolated environment. It's designed to provide a safe, pre-configured development environment with intelligent resource management and customizable security levels.
 
 ### Key Features
-- **🧠 Dynamic Memory Allocation**: Auto-detects container memory and sets Node.js heap to 75%
+- **🧠 Dynamic Memory Allocation**: Auto-scales resources based on number of Claude Code instances
+- **🤖 Multi-Instance Support**: Run 1-100+ Claude Code instances with automatic resource calculation
 - **🛡️ Three Security Presets**: Paranoid, Enterprise, and Development modes
 - **🔧 MCP Server Support**: Pre-configured Model Context Protocol servers
 - **📦 Auto-updating MCP Config**: Live configuration updates with file watcher
@@ -45,6 +46,85 @@ This repository provides a VS Code development container for running Claude Code
 - `.env.paranoid` - Maximum security configuration
 - `.env.enterprise` - Corporate environment settings
 - `.env.development` - Relaxed local development settings (default)
+
+## Multi-Instance Configuration
+
+The container automatically scales resources based on how many Claude Code instances you plan to run.
+
+### When to Configure
+
+1. **Before first use**: Run configuration tool before opening in VS Code
+2. **Changing instances**: Exit container → Configure → Rebuild
+3. **Manual setup**: Edit `.env` file directly
+
+### Configuration Steps
+
+```bash
+# Method 1: Interactive tool (recommended)
+# Run from project root BEFORE opening in VS Code
+./scripts/configure-for-instances.sh
+
+# Method 2: Manual configuration
+# Edit .env file:
+CLAUDE_CODE_INSTANCES=10
+
+# Method 3: Quick one-liner
+echo "CLAUDE_CODE_INSTANCES=10" >> .env
+```
+
+### Resource Scaling
+
+The system automatically calculates:
+- **Memory**: (instances × 600MB) + 2GB overhead
+- **CPUs**: max(2, instances ÷ 3)
+- **Heap %**: 80 - instances (bounded 40-75%)
+
+Examples:
+- **1 instance**: 3GB RAM, 2 CPUs, 75% heap (single user)
+- **6 instances**: 5GB RAM, 2 CPUs, 74% heap (default)
+- **10 instances**: 8GB RAM, 4 CPUs, 70% heap (team usage)
+- **25 instances**: 17GB RAM, 8 CPUs, 55% heap (power user)
+- **50 instances**: 32GB RAM, 16 CPUs, 40% heap (workstation)
+
+### Important Notes
+
+- Configuration must be done **OUTSIDE** the container
+- Changes require container rebuild in VS Code
+- Default is 6 instances if not specified
+
+## Productivity Tools
+
+The container includes modern CLI tools to supercharge your development workflow:
+
+### Git & Docker Management
+- **`lg` (lazygit)** - Visual git interface for commits, branches, and merges
+- **`lzd` (lazydocker)** - Monitor and manage Docker containers visually
+
+### Enhanced File Navigation
+- **`lsf/llf/laf`** - Enhanced file listing with icons and Git status (via eza)
+- **`treef`** - Visual directory tree with icons
+- **`z <dir>`** - Smart directory jumping that learns your habits (via zoxide)
+  - Example: After visiting `/workspace/src/components` once, just type `z components`
+
+### System Monitoring
+- **`btm`** - Modern system monitor with graphs (via bottom)
+- **`duf`** - Visual disk usage analyzer (via dust)
+- **`gping`** - Ping with real-time graphs
+
+### Development Utilities
+- **`catf`** - Syntax-highlighted file viewer (via bat)
+- **`tokei`** - Fast code statistics by language
+- **`jq`** - JSON processing and querying
+- **`http`** - User-friendly HTTP client (HTTPie)
+- **`gh`** - GitHub CLI for PRs, issues, and releases
+- **`help <command>`** - Simplified man pages (via tldr)
+
+### Shell History
+- **Ctrl+R** - Neural network powered history search (via mcfly)
+- History syncs across sessions and learns from your usage patterns
+
+### Using Tools in Your Projects
+To help Claude Code use these tools effectively in your project, add instructions to your project's CLAUDE.md file. See [docs/CLAUDE_MD_TEMPLATE.md](docs/CLAUDE_MD_TEMPLATE.md) for a ready-to-use template section.
 
 ## Common Commands
 
@@ -104,8 +184,10 @@ mcp-watcher-logs
 
 ### Development
 ```bash
-# Update Claude Code
-npm update -g @anthropic-ai/claude-code
+# Update Claude Code (use special wrapper for permissions)
+update-claude
+# Or use the full command:
+npm-global-update update -g @anthropic-ai/claude-code
 
 # Check container logs
 docker logs <container-name>
@@ -148,6 +230,12 @@ When adding new npm packages that require network access:
    ```bash
    which claude
    npm list -g @anthropic-ai/claude-code
+   ```
+
+4. **Update Claude Code** (if permissions error):
+   ```bash
+   # Use the special wrapper that handles permissions
+   update-claude
    ```
 
 ### MCP Server Issues

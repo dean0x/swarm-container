@@ -108,4 +108,117 @@ alias mcp-update='bash /workspace/.devcontainer/scripts/hooks/modules/setup-mcp.
 EOF
 fi
 
-echo "✅ Shell environment configured"
+# Add productivity tool aliases and initializations
+echo "🚀 Configuring productivity tools..."
+
+# Add productivity tool aliases to bashrc
+if ! grep -q "# Productivity Tool Aliases" ~/.bashrc 2>/dev/null; then
+    cat >> ~/.bashrc << 'EOF'
+
+# Productivity Tool Aliases (non-conflicting)
+# Enhanced listings (keeping original ls/ll/la for compatibility)
+alias lsf='eza --icons --git'              # ls fancy
+alias llf='eza -l --icons --git'           # ll fancy
+alias laf='eza -la --icons --git'          # la fancy
+alias treef='eza --tree --icons'           # tree fancy
+
+# File viewing
+alias catf='bat'                           # cat fancy (with syntax highlighting)
+alias less='bat --paging=always'           # Use bat for paging
+
+# System monitoring (original top/htop still work)
+alias btm='btm'                            # bottom system monitor
+alias btop='btm'                           # alternative name
+
+# Disk usage (original du still works)
+alias duf='dust'                           # du fancy
+
+# Network (original ping still works)
+alias gping='gping'                        # graphical ping
+
+# Development shortcuts
+alias lg='lazygit'                         # git UI
+alias lzd='lazydocker'                     # docker UI
+alias help='tldr'                          # simplified man pages
+
+# HTTP client
+alias http='http --style=native'           # HTTPie with native style
+
+# Initialize zoxide (smarter cd)
+eval "$(zoxide init bash)"
+
+# Initialize mcfly (neural network powered shell history)
+eval "$(mcfly init bash)"
+EOF
+fi
+
+# Add productivity tool aliases to zshrc
+if ! grep -q "# Productivity Tool Aliases" ~/.zshrc 2>/dev/null; then
+    cat >> ~/.zshrc << 'EOF'
+
+# Productivity Tool Aliases (non-conflicting)
+# Enhanced listings (keeping original ls/ll/la for compatibility)
+alias lsf='eza --icons --git'              # ls fancy
+alias llf='eza -l --icons --git'           # ll fancy
+alias laf='eza -la --icons --git'          # la fancy
+alias treef='eza --tree --icons'           # tree fancy
+
+# File viewing
+alias catf='bat'                           # cat fancy (with syntax highlighting)
+alias less='bat --paging=always'           # Use bat for paging
+
+# System monitoring (original top/htop still work)
+alias btm='btm'                            # bottom system monitor
+alias btop='btm'                           # alternative name
+
+# Disk usage (original du still works)
+alias duf='dust'                           # du fancy
+
+# Network (original ping still works)
+alias gping='gping'                        # graphical ping
+
+# Development shortcuts
+alias lg='lazygit'                         # git UI
+alias lzd='lazydocker'                     # docker UI
+alias help='tldr'                          # simplified man pages
+
+# HTTP client
+alias http='http --style=native'           # HTTPie with native style
+
+# Initialize zoxide (smarter cd)
+eval "$(zoxide init zsh)"
+
+# Initialize mcfly (neural network powered shell history)
+eval "$(mcfly init zsh)"
+EOF
+fi
+
+# Create config directories
+mkdir -p ~/.config/lazygit
+mkdir -p ~/.config/bottom
+
+# Create basic lazygit config
+if [ ! -f ~/.config/lazygit/config.yml ]; then
+    cat > ~/.config/lazygit/config.yml << 'EOF'
+gui:
+  # Use delta for diffs
+  pager: delta
+  sidePanelWidth: 0.3333
+  theme:
+    selectedLineBgColor:
+      - reverse
+git:
+  paging:
+    colorArg: always
+    useConfig: true
+os:
+  editCommand: 'code'
+  editCommandTemplate: '{{editor}} {{filename}}'
+EOF
+fi
+
+# Update tldr cache
+echo "📚 Updating tldr cache..."
+tldr --update 2>/dev/null || true
+
+echo "✅ Shell environment and productivity tools configured"
