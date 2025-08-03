@@ -2,7 +2,7 @@
 # Install productivity CLI tools for SwarmContainer
 # This script handles architecture-aware installation of modern CLI tools
 
-set -euo pipefail
+set -eo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -111,19 +111,40 @@ fi
 # Install gping
 if [ "$ARCH" = "amd64" ]; then
     echo -e "${BLUE}Installing gping...${NC}"
-    wget -q "https://github.com/orf/gping/releases/download/gping-v1.16.1/gping-Linux-x86_64.tar.gz" -O gping.tar.gz
-    tar -xzf gping.tar.gz
-    mv gping /usr/local/bin/
-    chmod +x /usr/local/bin/gping
-    echo -e "${GREEN}✓ gping installed${NC}"
+    if wget -q "https://github.com/orf/gping/releases/download/gping-v1.16.1/gping-Linux-x86_64.tar.gz" -O gping.tar.gz; then
+        if tar -xzf gping.tar.gz 2>/dev/null; then
+            if [ -f gping ]; then
+                mv gping /usr/local/bin/
+                chmod +x /usr/local/bin/gping
+                echo -e "${GREEN}✓ gping installed${NC}"
+            else
+                echo -e "${RED}✗ gping binary not found in archive${NC}"
+            fi
+        else
+            echo -e "${RED}✗ Failed to extract gping${NC}"
+        fi
+    else
+        echo -e "${RED}✗ Failed to download gping${NC}"
+    fi
 elif [ "$ARCH" = "arm64" ]; then
     echo -e "${BLUE}Installing gping...${NC}"
-    wget -q "https://github.com/orf/gping/releases/download/gping-v1.16.1/gping-Linux-aarch64.tar.gz" -O gping.tar.gz
-    tar -xzf gping.tar.gz
-    mv gping /usr/local/bin/
-    chmod +x /usr/local/bin/gping
-    echo -e "${GREEN}✓ gping installed${NC}"
+    if wget -q "https://github.com/orf/gping/releases/download/gping-v1.16.1/gping-Linux-aarch64.tar.gz" -O gping.tar.gz; then
+        if tar -xzf gping.tar.gz 2>/dev/null; then
+            if [ -f gping ]; then
+                mv gping /usr/local/bin/
+                chmod +x /usr/local/bin/gping
+                echo -e "${GREEN}✓ gping installed${NC}"
+            else
+                echo -e "${RED}✗ gping binary not found in archive${NC}"
+            fi
+        else
+            echo -e "${RED}✗ Failed to extract gping${NC}"
+        fi
+    else
+        echo -e "${RED}✗ Failed to download gping${NC}"
+    fi
 fi
+rm -f gping.tar.gz
 
 # Cleanup
 cd /
