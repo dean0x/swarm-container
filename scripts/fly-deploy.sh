@@ -192,7 +192,7 @@ primary_region = "${PRIMARY_REGION:-$FLY_REGION}"
   SECURITY_PRESET = "${SECURITY_PRESET:-development}"
 
 [processes]
-  app = "/fly-entrypoint.sh /usr/sbin/sshd -D"
+  app = ""
 
 [[services]]
   processes = ["app"]

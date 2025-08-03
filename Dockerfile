@@ -145,12 +145,18 @@ FROM base AS local
 # Remote development stage for Fly.io
 FROM base AS remote
 
-# Install SSH server and sudo
+# Install tini for proper init system
+ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini /tini
+RUN chmod +x /tini
+
+# Install SSH server, sudo, and supervisor
 RUN apt-get update && apt-get install -y \
     openssh-server \
     sudo \
+    supervisor \
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /run/sshd
+    && mkdir -p /run/sshd \
+    && mkdir -p /var/log/supervisor
 
 # Add passwordless sudo for node user
 RUN echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -180,24 +186,27 @@ RUN echo "****************************************************" > /etc/ssh/banne
     && echo "* Authorized access only. All actions logged.     *" >> /etc/ssh/banner \
     && echo "****************************************************" >> /etc/ssh/banner
 
-# Generate SSH host keys during build
-RUN ssh-keygen -A
-
 # Create .ssh directory for node user
 RUN mkdir -p /home/node/.ssh && \
     chown -R node:node /home/node/.ssh && \
     chmod 700 /home/node/.ssh
 
-# Will be overridden by fly-entrypoint.sh
-COPY --chown=node:node fly-entrypoint.sh /fly-entrypoint.sh
-RUN chmod +x /fly-entrypoint.sh
+# Copy Fly.io specific files
+COPY scripts/fly/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY scripts/fly/fly-init.sh /fly-init.sh
+RUN chmod +x /fly-init.sh
 
-# Switch to node user
-USER node
-WORKDIR /workspace
+# Copy devcontainer files to container root for first-run setup
+COPY . /.devcontainer/
 
 # SSH runs on port 22
 EXPOSE 22
 
-ENTRYPOINT ["/fly-entrypoint.sh"]
-CMD ["/usr/sbin/sshd", "-D"]
+# Create required directories
+RUN mkdir -p /var/run/sshd /var/log/supervisor
+
+# Use tini as PID 1 to handle signals properly
+ENTRYPOINT ["/tini", "--"]
+
+# Start supervisor which manages all our processes
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

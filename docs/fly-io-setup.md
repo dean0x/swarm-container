@@ -347,6 +347,33 @@ Control when your container stops to save costs:
    flyctl apps destroy unused-app-name
    ```
 
+## Architecture Details
+
+### How It Works
+
+1. **Multi-stage Dockerfile**: The Dockerfile has a `remote` target that includes SSH server
+2. **Init System**: Uses `tini` as PID 1 and `supervisor` to manage processes properly
+3. **SSH Key Management**: Keys are generated once and stored persistently in `/data/ssh`
+4. **Persistent Volume**: Single `/data` volume stores all persistent data with symlinks
+5. **SSH Security**: Key-based authentication only, no passwords, restricted to `node` user
+6. **Auto-stop**: Container stops when idle to save costs, restarts on SSH connection
+7. **Resource Scaling**: Automatically calculates resources based on Claude Code instances
+
+### Process Management
+
+The Fly.io deployment uses a robust process management system:
+
+- **Tini**: Lightweight init system that properly handles signals and reaps zombie processes
+- **Supervisor**: Manages the SSH daemon and initialization scripts
+- **SSH Keys**: Generated on first run and persisted to survive container restarts
+- **Workspace**: Fully persistent with all user data stored in `/data` volume
+
+This architecture ensures:
+- SSH keys don't regenerate on every restart
+- Proper process cleanup and signal handling
+- Reliable SSH connectivity
+- No zombie processes
+
 ## Advanced Features
 
 ### Multiple Environments
