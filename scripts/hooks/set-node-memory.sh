@@ -4,10 +4,32 @@
 
 # Get container memory limit in bytes
 get_container_memory() {
+    # Check if CONTAINER_MEMORY env var is set (e.g., "4gb", "2GB", "1024mb")
+    if [ -n "$CONTAINER_MEMORY" ]; then
+        # Convert to bytes
+        local mem_value=$(echo "$CONTAINER_MEMORY" | sed 's/[^0-9]*//g')
+        local mem_unit=$(echo "$CONTAINER_MEMORY" | sed 's/[0-9]*//g' | tr '[:lower:]' '[:upper:]')
+        
+        case "$mem_unit" in
+            "GB"|"G")
+                echo $((mem_value * 1024 * 1024 * 1024))
+                return
+                ;;
+            "MB"|"M")
+                echo $((mem_value * 1024 * 1024))
+                return
+                ;;
+            "KB"|"K")
+                echo $((mem_value * 1024))
+                return
+                ;;
+        esac
+    fi
+    
     # Try to read from cgroup v2 first
     if [ -f /sys/fs/cgroup/memory.max ]; then
         MEM_LIMIT=$(cat /sys/fs/cgroup/memory.max 2>/dev/null)
-        if [ "$MEM_LIMIT" != "max" ] && [ -n "$MEM_LIMIT" ]; then
+        if [ "$MEM_LIMIT" != "max" ] && [ -n "$MEM_LIMIT" ] && [ "$MEM_LIMIT" -gt 0 ]; then
             echo "$MEM_LIMIT"
             return
         fi
@@ -17,7 +39,7 @@ get_container_memory() {
     if [ -f /sys/fs/cgroup/memory/memory.limit_in_bytes ]; then
         MEM_LIMIT=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes 2>/dev/null)
         # Check if it's not the default unlimited value
-        if [ "$MEM_LIMIT" -lt 9223372036854775807 ] && [ -n "$MEM_LIMIT" ]; then
+        if [ "$MEM_LIMIT" -lt 9223372036854775807 ] && [ "$MEM_LIMIT" -gt 0 ] && [ -n "$MEM_LIMIT" ]; then
             echo "$MEM_LIMIT"
             return
         fi
@@ -35,6 +57,12 @@ bytes_to_mb() {
 # Main logic
 MEMORY_BYTES=$(get_container_memory)
 MEMORY_MB=$(bytes_to_mb $MEMORY_BYTES)
+
+# Sanity check - if memory seems unreasonably high, default to 4GB
+if [ $MEMORY_MB -gt 65536 ]; then  # More than 64GB seems wrong
+    echo "⚠️  Detected unrealistic memory value (${MEMORY_MB}MB), defaulting to 4GB"
+    MEMORY_MB=4096
+fi
 
 # Check if running multiple Claude Code instances
 INSTANCES=${CLAUDE_CODE_INSTANCES:-6}
