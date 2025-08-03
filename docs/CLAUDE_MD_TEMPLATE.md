@@ -1,83 +1,41 @@
-# CLAUDE.md Template Section for Productivity Tools
+# CLAUDE.md Template - Productivity Tools
 
-Add this section to your project's CLAUDE.md file to help Claude Code use the productivity tools effectively:
+Add this minimal section to your project's CLAUDE.md file:
 
 ---
 
-## Development Tools Usage
+## Available CLI Tools
 
-When working in this codebase, use these modern CLI tools instead of traditional commands:
+This environment includes modern CLI tools. Use them when appropriate:
 
-### File Navigation and Exploration
-- **Use `eza` instead of `ls`** for file listings:
-  - `eza --tree --level=2` - Show project structure
-  - `eza -la --git` - Show files with git status
-  - `eza --tree --git-ignore` - Show structure respecting .gitignore
+### Development Tools
+- **lazygit** (`lg`) - Interactive git UI for complex operations (rebase, merge conflicts)
+- **gh** - GitHub CLI for PRs, issues, releases (`gh pr create`, `gh issue list`)
+- **tokei** - Fast code statistics (`tokei`, `tokei src/`)
+- **jq** - JSON processor (`cat file.json | jq '.key'`)
 
-- **Use `zoxide` for navigation** - After visiting a directory once, jump directly:
-  - `z components` - Jump to any components directory previously visited
-  - `zi` - Interactive directory selection
+### File Tools  
+- **eza** - Modern ls with git status (`eza --tree`, `eza -la --git`)
+- **bat** - Syntax highlighting (`bat file.py`)
+- **ripgrep** (`rg`) - Fast code search (already using)
+- **fd** - Fast file finder (already using)
 
-### Code Analysis
-- **Use `tokei`** to analyze codebase:
-  - `tokei` - Show lines of code by language
-  - `tokei src/` - Analyze specific directories
-  - `tokei --sort lines` - Sort by line count
+### System Tools
+- **bottom** (`btm`) - System monitor when investigating performance
+- **dust** - Disk usage visualization (`dust -d 2`)
+- **lazydocker** (`lzd`) - Docker container UI
 
-- **Use `bat` instead of `cat`** for viewing files:
-  - `bat README.md` - Syntax highlighted viewing
-  - `bat -A file.txt` - Show non-printable characters
+### Navigation
+- **zoxide** (`z`) - Smart cd that learns (`z project`, `z docs`)
 
-### Git Operations
-- **Use `lazygit` for complex git operations**:
-  - `lg` - Open visual git interface
-  - Use for: interactive rebasing, conflict resolution, commit history exploration
-  - Still use regular git commands for simple operations
+### Network Tools
+- **httpie** (`http`) - User-friendly HTTP client (`http GET api.example.com`)
+- **gping** - Visual ping (`gping google.com`)
 
-### System and Performance
-- **Use `btm` instead of `top/htop`** for system monitoring:
-  - `btm` - Interactive system monitor
-  - Check when builds are slow or container is unresponsive
-
-- **Use `dust` instead of `du`** for disk usage:
-  - `dust` - Visual disk usage in current directory
-  - `dust -d 3` - Limit depth to 3 levels
-  - Use when checking why builds are large
-
-### Network and APIs
-- **Use `gping` for network diagnostics**:
-  - `gping google.com` - Visual ping with graphs
-  - Use when debugging network issues
-
-- **Use `http` for API testing**:
-  - `http GET api.example.com/users` - Test GET requests
-  - `http POST api.example.com/users name=John` - Test POST with data
-  - Use instead of curl for better readability
-
-### Quick Help
-- **Use `tldr` for command help**:
-  - `tldr git` - Quick git examples
-  - `tldr docker` - Quick docker examples
-  - Use instead of man pages for common tasks
-
-### Docker Management
-- **Use `lazydocker` for container management**:
-  - `lzd` - Open Docker UI
-  - Use for: viewing logs, monitoring resources, managing containers
-
-### JSON Processing
-- **Use `jq` for JSON manipulation**:
-  - `cat package.json | jq '.dependencies'` - Extract dependencies
-  - `http GET api.example.com | jq '.data[]'` - Parse API responses
-
-## Best Practices
-
-1. **For file exploration**: Start with `eza --tree` to understand structure
-2. **For git history**: Use `lg` when you need to understand complex branch history
-3. **For performance issues**: Run `btm` to check resource usage
-4. **For large repos**: Use `tokei` to get quick statistics
-5. **For debugging**: Combine tools (e.g., `http GET api | jq '.error'`)
-
-Remember: These tools are faster and more informative than traditional Unix commands. Use them to provide better answers and work more efficiently.
+### Aliases Available
+- `lsf`, `llf`, `laf` - Fancy file listings with icons
+- `catf` - Fancy cat with syntax highlighting  
+- `duf` - Fancy disk usage
+- `help` - Simplified man pages (tldr)
 
 ---

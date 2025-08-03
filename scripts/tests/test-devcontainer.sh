@@ -103,6 +103,7 @@ if [ $? -eq 0 ]; then
     test_tool "tldr"
     test_tool "http"
     test_tool "mcfly"
+    test_tool "gh"
     
     # Test 7: Check NODE_OPTIONS is set correctly
     echo ""

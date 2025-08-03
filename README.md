@@ -170,9 +170,14 @@ echo "Instances: $CLAUDE_CODE_INSTANCES"
 
 # Quick productivity tools
 lg          # Visual git management (lazygit)
-lzd         # Docker container management
-tokei       # Code statistics
-help git    # Simplified man pages
+lzd         # Docker container management  
+lsf         # Fancy ls with icons (eza)
+catf        # Fancy cat with highlighting (bat)
+duf         # Visual disk usage (dust)
+btm         # System monitor (bottom)
+z docs      # Jump to docs directory (zoxide)
+gh pr list  # GitHub CLI
+help git    # Simplified man pages (tldr)
 ```
 
 **To change instance count**: Exit container → Run `./scripts/configure-for-instances.sh` → Rebuild container

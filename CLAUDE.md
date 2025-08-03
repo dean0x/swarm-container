@@ -101,21 +101,22 @@ The container includes modern CLI tools to supercharge your development workflow
 - **`lzd` (lazydocker)** - Monitor and manage Docker containers visually
 
 ### Enhanced File Navigation
-- **`ls/ll/la`** - Enhanced file listing with icons and Git status (via eza)
-- **`tree`** - Visual directory tree with icons
-- **`cd`** - Smart directory jumping that learns your habits (via zoxide)
-  - Example: After visiting `/workspace/src/components` once, just type `cd components`
+- **`lsf/llf/laf`** - Enhanced file listing with icons and Git status (via eza)
+- **`treef`** - Visual directory tree with icons
+- **`z <dir>`** - Smart directory jumping that learns your habits (via zoxide)
+  - Example: After visiting `/workspace/src/components` once, just type `z components`
 
 ### System Monitoring
-- **`top/htop`** - Modern system monitor with graphs (via bottom)
-- **`du`** - Visual disk usage analyzer (via dust)
-- **`ping`** - Ping with real-time graphs (via gping)
+- **`btm`** - Modern system monitor with graphs (via bottom)
+- **`duf`** - Visual disk usage analyzer (via dust)
+- **`gping`** - Ping with real-time graphs
 
 ### Development Utilities
-- **`cat`** - Syntax-highlighted file viewer (via bat)
+- **`catf`** - Syntax-highlighted file viewer (via bat)
 - **`tokei`** - Fast code statistics by language
 - **`jq`** - JSON processing and querying
 - **`http`** - User-friendly HTTP client (HTTPie)
+- **`gh`** - GitHub CLI for PRs, issues, and releases
 - **`help <command>`** - Simplified man pages (via tldr)
 
 ### Shell History

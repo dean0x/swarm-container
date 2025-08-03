@@ -115,20 +115,34 @@ echo "🚀 Configuring productivity tools..."
 if ! grep -q "# Productivity Tool Aliases" ~/.bashrc 2>/dev/null; then
     cat >> ~/.bashrc << 'EOF'
 
-# Productivity Tool Aliases
-alias ls='eza --icons --git'
-alias ll='eza -l --icons --git'
-alias la='eza -la --icons --git'
-alias tree='eza --tree --icons'
-alias cat='bat'
-alias top='btm'
-alias htop='btm'
-alias du='dust'
-alias ping='gping'
-alias http='http --style=native'
-alias help='tldr'
-alias lg='lazygit'
-alias lzd='lazydocker'
+# Productivity Tool Aliases (non-conflicting)
+# Enhanced listings (keeping original ls/ll/la for compatibility)
+alias lsf='eza --icons --git'              # ls fancy
+alias llf='eza -l --icons --git'           # ll fancy
+alias laf='eza -la --icons --git'          # la fancy
+alias treef='eza --tree --icons'           # tree fancy
+
+# File viewing
+alias catf='bat'                           # cat fancy (with syntax highlighting)
+alias less='bat --paging=always'           # Use bat for paging
+
+# System monitoring (original top/htop still work)
+alias btm='btm'                            # bottom system monitor
+alias btop='btm'                           # alternative name
+
+# Disk usage (original du still works)
+alias duf='dust'                           # du fancy
+
+# Network (original ping still works)
+alias gping='gping'                        # graphical ping
+
+# Development shortcuts
+alias lg='lazygit'                         # git UI
+alias lzd='lazydocker'                     # docker UI
+alias help='tldr'                          # simplified man pages
+
+# HTTP client
+alias http='http --style=native'           # HTTPie with native style
 
 # Initialize zoxide (smarter cd)
 eval "$(zoxide init bash)"
@@ -142,20 +156,34 @@ fi
 if ! grep -q "# Productivity Tool Aliases" ~/.zshrc 2>/dev/null; then
     cat >> ~/.zshrc << 'EOF'
 
-# Productivity Tool Aliases
-alias ls='eza --icons --git'
-alias ll='eza -l --icons --git'
-alias la='eza -la --icons --git'
-alias tree='eza --tree --icons'
-alias cat='bat'
-alias top='btm'
-alias htop='btm'
-alias du='dust'
-alias ping='gping'
-alias http='http --style=native'
-alias help='tldr'
-alias lg='lazygit'
-alias lzd='lazydocker'
+# Productivity Tool Aliases (non-conflicting)
+# Enhanced listings (keeping original ls/ll/la for compatibility)
+alias lsf='eza --icons --git'              # ls fancy
+alias llf='eza -l --icons --git'           # ll fancy
+alias laf='eza -la --icons --git'          # la fancy
+alias treef='eza --tree --icons'           # tree fancy
+
+# File viewing
+alias catf='bat'                           # cat fancy (with syntax highlighting)
+alias less='bat --paging=always'           # Use bat for paging
+
+# System monitoring (original top/htop still work)
+alias btm='btm'                            # bottom system monitor
+alias btop='btm'                           # alternative name
+
+# Disk usage (original du still works)
+alias duf='dust'                           # du fancy
+
+# Network (original ping still works)
+alias gping='gping'                        # graphical ping
+
+# Development shortcuts
+alias lg='lazygit'                         # git UI
+alias lzd='lazydocker'                     # docker UI
+alias help='tldr'                          # simplified man pages
+
+# HTTP client
+alias http='http --style=native'           # HTTPie with native style
 
 # Initialize zoxide (smarter cd)
 eval "$(zoxide init zsh)"
