@@ -177,6 +177,8 @@ help git    # Simplified man pages
 
 **To change instance count**: Exit container → Run `./scripts/configure-for-instances.sh` → Rebuild container
 
+💡 **Pro tip**: Add productivity tool instructions to your project's CLAUDE.md file so Claude Code knows when to use them. See `.devcontainer/docs/CLAUDE_MD_TEMPLATE.md` for a ready-to-use template.
+
 ## 🌐 Remote Development Option
 
 Want to access your development environment from anywhere? SwarmContainer now supports deployment to [Fly.io](https://fly.io) for cloud-based development.
