@@ -124,7 +124,7 @@ The container includes modern CLI tools to supercharge your development workflow
 - History syncs across sessions and learns from your usage patterns
 
 ### Using Tools in Your Projects
-To help Claude Code use these tools effectively in your project, add instructions to your project's CLAUDE.md file. See [docs/CLAUDE_MD_TEMPLATE.md](../docs/CLAUDE_MD_TEMPLATE.md) for a ready-to-use template section.
+To help Claude Code use these tools effectively in your project, add instructions to your project's CLAUDE.md file. See [docs/CLAUDE_MD_TEMPLATE.md](docs/CLAUDE_MD_TEMPLATE.md) for a ready-to-use template section.
 
 ## Common Commands
 

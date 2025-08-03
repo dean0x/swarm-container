@@ -3,15 +3,32 @@ set -euo pipefail
 
 echo "🚀 Initializing SwarmContainer on Fly.io..."
 
-# Ensure SSH host keys exist (should be generated during build)
-if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
-    echo "⚠️  SSH host keys missing - they should have been generated during build"
-    # Try to generate if we have permissions
-    if [ -w /etc/ssh ]; then
-        ssh-keygen -A
+# Ensure SSH host keys exist
+# Store them in persistent volume so they survive restarts
+PERSISTENT_SSH_DIR="/data/ssh"
+if [ -d /data ]; then
+    # Create persistent SSH directory
+    sudo mkdir -p "$PERSISTENT_SSH_DIR"
+    
+    # Check if we have persistent keys
+    if [ -f "$PERSISTENT_SSH_DIR/ssh_host_rsa_key" ]; then
+        echo "📂 Restoring SSH host keys from persistent storage..."
+        sudo cp "$PERSISTENT_SSH_DIR"/ssh_host_* /etc/ssh/
+        sudo chmod 600 /etc/ssh/ssh_host_*
+        sudo chmod 644 /etc/ssh/ssh_host_*.pub
     else
-        echo "❌ Cannot generate SSH host keys - no write permission to /etc/ssh"
-        exit 1
+        echo "⚠️  SSH host keys missing - generating now..."
+        sudo ssh-keygen -A
+        # Copy to persistent storage
+        sudo cp /etc/ssh/ssh_host_* "$PERSISTENT_SSH_DIR/"
+        echo "✅ SSH host keys generated and saved to persistent storage"
+    fi
+else
+    # No persistent storage, generate keys normally
+    if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
+        echo "⚠️  SSH host keys missing - generating now..."
+        sudo ssh-keygen -A
+        echo "✅ SSH host keys generated"
     fi
 fi
 

@@ -1,29 +1,28 @@
-# SwarmContainer on Fly.io Setup Guide
+# Fly.io Remote Development Guide
 
-Deploy your SwarmContainer development environment to the cloud with Fly.io for remote access from anywhere.
+Deploy SwarmContainer to the cloud for remote development from anywhere.
 
-## Quick Start (New Deployment System)
+## 🚀 Quick Start (5 minutes)
 
 ### 1. First-Time Setup
 
-Run the interactive setup assistant:
 ```bash
 ./scripts/fly-setup.sh
 ```
 
-This will:
-- Install flyctl (if needed)
-- Configure SSH keys
-- Set up your Fly.io account
-- Create initial configuration file
+This interactive assistant will:
+- ✓ Install flyctl CLI (if needed)
+- ✓ Configure SSH keys
+- ✓ Set up your Fly.io account
+- ✓ Create initial configuration
 
-### 2. Deploy Your Environment
+### 2. Deploy
 
 ```bash
-# Option A: Using configuration file (recommended)
+# Using configuration file (recommended)
 ./scripts/fly-deploy.sh deploy
 
-# Option B: Quick deployment with arguments
+# Or quick deployment with arguments
 ./scripts/fly-deploy.sh deploy my-app-name iad
 ```
 
@@ -33,31 +32,84 @@ This will:
 # SSH directly
 ssh node@my-app-name.fly.dev -p 10022
 
+# Or use VS Code Remote-SSH (auto-configured)
+```
+
+## 📋 Configuration
+
+### Basic Setup
+
+```bash
+cp .env.fly.example .env.fly
+# Edit with your preferences
+```
+
+Key settings:
+- `FLY_APP_NAME`: Unique app identifier
+- `FLY_REGION`: Deployment region ([see regions](https://fly.io/docs/reference/regions/))
+- `FLY_VM_SIZE`: Machine size (shared-cpu-1x to 8x)
+- `FLY_VM_MEMORY`: RAM allocation (256mb to 8gb)
+- `AUTO_STOP_MACHINES`: Auto-stop when idle (saves costs)
+
+### Recommended Configurations
+
+| Use Case | VM Size | Memory | Est. Cost/mo |
+|----------|---------|--------|--------------|
+| Light Dev | shared-cpu-1x | 512mb | $2-5 |
+| Standard | shared-cpu-2x | 2gb | $5-10 |
+| Heavy Dev | shared-cpu-4x | 4gb | $10-20 |
+| Team/Power | shared-cpu-8x | 8gb | $20-40 |
+
+## 🛠️ Management Commands
+
+```bash
 # Check status
 ./scripts/fly-deploy.sh status
 
-# Destroy when done
+# Stop (keeps data)
+./scripts/fly-deploy.sh stop
+
+# Start again
+./scripts/fly-deploy.sh start
+
+# Destroy (removes everything)
 ./scripts/fly-deploy.sh destroy
+
+# Interactive management menu
+./scripts/fly-manage.sh my-app-name
 ```
 
-## Configuration
+## 💰 Cost Management
 
-Create your configuration from the template:
+### Auto-Stop Configuration
+Machines automatically stop after 5 minutes of inactivity:
+```toml
+# fly.toml
+[[services]]
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+```
+
+### Monitor Costs
 ```bash
-cp .env.fly.example .env.fly
-# Edit with your settings
+# Check current configuration and estimates
+./scripts/fly-cost-monitor.sh your-app-name
+
+# Track actual usage
+./scripts/fly-usage-tracker.sh your-app-name report
+
+# Set budget alerts
+./scripts/fly-budget-alert.sh your-app-name 15  # $15/month
 ```
 
-Key settings in `.env.fly`:
-- `FLY_APP_NAME`: Your unique app name
-- `FLY_REGION`: Deployment region (iad, lhr, etc.)
-- `FLY_VM_SIZE`: Machine size (shared-cpu-1x to 8x)
-- `FLY_VM_MEMORY`: Memory allocation
-- `AUTO_STOP_MACHINES`: Enable cost-saving auto-stop
+### Typical Monthly Costs
+- **Occasional use** (<50hr): $2-5
+- **Regular use** (100hr): $5-10
+- **Heavy use** (200hr): $10-20
+- **Always-on**: $30-60
 
-## Advanced Deployment (Legacy Scripts)
-
-For fine-grained control, use the scripts in `scripts/fly-advanced/`:
+## 🔧 Advanced Features
 
 #### 1. Initialize Fly.io App
 

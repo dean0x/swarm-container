@@ -4,22 +4,52 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/github/v/release/dean0x/swarm-container)](https://github.com/dean0x/swarm-container/releases)
 
-A drop-in VS Code development container for running Claude Code in a secure, isolated environment.
+A drop-in VS Code development container for running Claude Code in a secure, isolated environment with customizable security presets.
 
-🔒 **Features multiple security presets**: Paranoid, Enterprise, and Development modes to match your security requirements.
+> ⚠️ **Security Note**: This container runs AI agents with elevated permissions. See [Security Disclaimer](#-security-disclaimer) for important safety information.
 
-## ✨ Highlights
+## ✨ Features
 
-- **🛡️ Isolated Security** - Container-level firewall and network isolation keeps your host system safe while working with AI
-- **🤖 Multi-Instance Ready** - Run 1-100+ Claude Code instances with automatic resource scaling (default: 6 instances)
-- **🧠 Dynamic Resource Allocation** - Automatically calculates memory, CPU, and heap settings based on instance count
-- **🚀 Modern CLI Tools** - Pre-installed productivity tools: lazygit, lazydocker, eza, zoxide, bottom, and more
+- **🛡️ Isolated Security** - Container-level firewall and network isolation
+- **🤖 Multi-Instance Support** - Run 1-100+ Claude Code instances with automatic resource scaling
+- **🚀 Modern CLI Tools** - Pre-installed: lazygit, lazydocker, eza, zoxide, bottom, and more
 - **⚡ Zero-Latency MCP** - Local MCP servers for enhanced Claude Code capabilities
-- **🔧 Auto-Updating MCP Config** - Live configuration updates with file watcher - modify `.mcp.config` and changes apply instantly
-- **📦 Smart Fallbacks** - Multiple installation strategies ensure everything works on your machine (ARM, x86, Mac, Linux)
-- **🧪 Battle-Tested** - Comprehensive test suite validates your setup before you even start coding
-- **🌐 Cloud Ready** - Optional deployment to Fly.io for remote development from anywhere
+- **🔧 Auto-Configuration** - Smart resource allocation and live config updates
+- **🌐 Cloud Ready** - Optional Fly.io deployment for remote development
 
+## 🚀 Quick Start (5 minutes)
+
+### 1. Add to Your Project
+
+```bash
+cd your-project
+git submodule add https://github.com/dean0x/swarm-container.git .devcontainer
+git commit -m "Add swarm-container devcontainer"
+```
+
+### 2. Configure Environment
+
+```bash
+# Use the default development preset
+cp .devcontainer/.env.development .env
+```
+
+### 3. Open in VS Code
+
+```bash
+code .
+# When prompted: Click "Reopen in Container"
+# Or press F1 → "Dev Containers: Reopen in Container"
+```
+
+Once the container is ready (3-5 minutes first time), activate Claude Code:
+
+```bash
+claude --dangerously-skip-permissions
+# If no API key is set, use /login to authenticate via browser
+```
+
+That's it! You're ready to use Claude Code in a secure environment. 🎉
 
 
 ## Prerequisites
@@ -32,21 +62,13 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 - [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
 - Either an [Anthropic API key](https://console.anthropic.com/account/keys) OR a [Claude Pro/Max subscription](https://claude.ai/subscription)
 
-### Tested Versions
+## 📖 Detailed Setup Guide
 
-This container has been tested with the following versions:
+### Integration Methods
 
-| Component | Version | Last Updated |
-|-----------|---------|--------------|
-| **Claude Code** | v1.0.56 | July 2025 |
+<details>
+<summary><strong>Git Submodule (Recommended)</strong> - Easy updates</summary>
 
-For detailed version information and update instructions, see [VERSIONS.md](VERSIONS.md).
-
-## 🚀 Quick Start
-
-### Integration Options
-
-#### Option 1: Git Submodule (Recommended - Easy Updates)
 ```bash
 cd your-project
 git submodule add https://github.com/dean0x/swarm-container.git .devcontainer
@@ -56,8 +78,11 @@ git commit -m "Add swarm-container devcontainer"
 cd .devcontainer && git pull origin main
 cd .. && git add .devcontainer && git commit -m "Update devcontainer"
 ```
+</details>
 
-#### Option 2: Git Subtree (Cleaner History)
+<details>
+<summary><strong>Git Subtree</strong> - Cleaner history</summary>
+
 ```bash
 cd your-project
 git subtree add --prefix=.devcontainer https://github.com/dean0x/swarm-container.git main --squash
@@ -65,526 +90,187 @@ git subtree add --prefix=.devcontainer https://github.com/dean0x/swarm-container
 # To update later:
 git subtree pull --prefix=.devcontainer https://github.com/dean0x/swarm-container.git main --squash
 ```
+</details>
 
-#### Option 3: Simple Clone (No Update Tracking)
+<details>
+<summary><strong>Simple Clone</strong> - No update tracking</summary>
+
 ```bash
 cd your-project
 git clone https://github.com/dean0x/swarm-container.git .devcontainer
 rm -rf .devcontainer/.git
 git add .devcontainer && git commit -m "Add devcontainer"
 ```
+</details>
 
-### Configure Your Environment
-
-```bash
-# Copy the appropriate environment file
-cp .devcontainer/.env.development .env    # For local development (recommended)
-# OR
-cp .devcontainer/.env.enterprise .env     # For corporate environments
-# OR
-cp .devcontainer/.env.paranoid .env       # For maximum security
-```
-
-#### Optional: Configure for Multiple Claude Code Instances
-By default, the container is configured for 6 Claude Code instances. To customize:
-
-```bash
-# Run BEFORE opening in VS Code (from your project root)
-./.devcontainer/scripts/configure-for-instances.sh
-
-# Or manually edit .env:
-echo "CLAUDE_CODE_INSTANCES=10" >> .env
-```
-
-**Note**: Resource configuration must be done BEFORE opening in VS Code. Changes require rebuilding the container.
-
-### Set Up Authentication
-
-You have two options for Claude authentication:
+### Authentication Options
 
 #### Option A: Claude Pro/Max Subscription (Recommended)
-```bash
-# No configuration needed! You'll log in via browser when you start Claude Code
-# Just leave the .env file as is (no API key required)
-```
+No configuration needed! You'll log in via browser when you start Claude Code.
 
 #### Option B: Anthropic API Key
+Add to your `.env` file:
 ```bash
-# Edit .env and add your API key
 echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
-
-# Or manually edit .env and add:
-# ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
-### Open in VS Code
+### Advanced Configuration
 
+#### Security Presets
+Choose your security level by copying the appropriate template:
 ```bash
-# Open VS Code in your project directory
-code .
+cp .devcontainer/.env.development .env    # Default - for local development
+cp .devcontainer/.env.enterprise .env     # Balanced - for corporate use
+cp .devcontainer/.env.paranoid .env       # Maximum - for sensitive work
 ```
 
-**Then:**
-1. VS Code will detect the `.devcontainer` folder
-2. Click **"Reopen in Container"** when prompted
-3. Or use Command Palette (F1/Cmd+Shift+P): "Dev Containers: Reopen in Container"
-
-**First-time setup will:**
-- Download the base Docker image
-- Install all dependencies
-- Configure MCP servers
-- Set up your development environment
-
-⏱️ **This takes 3-5 minutes on first run**
-
-### 4. Start Using Claude Code
-
-Once the container is ready:
-
+#### Multiple Claude Code Instances
+Configure resources for concurrent Claude Code instances:
 ```bash
-# Activate Claude Code
-claude --dangerously-skip-permissions
+# Interactive configuration (run BEFORE opening VS Code)
+./.devcontainer/scripts/configure-for-instances.sh
 
-# If using Option A (Claude Pro/Max), you'll see:
-# "Please visit: https://[...] to authenticate"
-# Click the link and log in with your Claude account
+# Or manually set in .env:
+CLAUDE_CODE_INSTANCES=10  # Adjust based on your needs
 ```
 
-### 💡 Container Tips
+Resource scaling examples:
+- **1 instance**: 3GB RAM, 2 CPUs (single user)
+- **6 instances**: 5GB RAM, 2 CPUs (default)
+- **10 instances**: 8GB RAM, 4 CPUs (team)
+- **25 instances**: 17GB RAM, 8 CPUs (power user)
+
+## 💡 Using the Container
+
+### Essential Commands
 
 ```bash
-# Update Claude Code to latest version
-update-claude
+# Claude Code
+claude --dangerously-skip-permissions  # Start Claude Code
+update-claude                          # Update to latest version
 
-# Check memory allocation
-echo $NODE_OPTIONS
-
-# View MCP server status
-claude mcp list
-
-# Check security preset
-echo $SECURITY_PRESET
-
-# See current instance configuration
-echo "Instances: $CLAUDE_CODE_INSTANCES"
-
-# Quick productivity tools
-lg          # Visual git management (lazygit)
-lzd         # Docker container management  
-lsf         # Fancy ls with icons (eza)
-catf        # Fancy cat with highlighting (bat)
-duf         # Visual disk usage (dust)
-btm         # System monitor (bottom)
-z docs      # Jump to docs directory (zoxide)
-gh pr list  # GitHub CLI
-help git    # Simplified man pages (tldr)
+# Container Info
+echo $SECURITY_PRESET                  # Check security level
+echo $NODE_OPTIONS                     # View memory allocation
+claude mcp list                        # List MCP servers
 ```
 
-**To change instance count**: Exit container → Run `./scripts/configure-for-instances.sh` → Rebuild container
+### Productivity Tools
 
-💡 **Pro tip**: Add productivity tool instructions to your project's CLAUDE.md file so Claude Code knows when to use them. See `.devcontainer/docs/CLAUDE_MD_TEMPLATE.md` for a ready-to-use template.
+| Command | Description | Tool |
+|---------|-------------|------|
+| `lg` | Visual git interface | lazygit |
+| `lzd` | Docker container manager | lazydocker |
+| `lsf`/`llf`/`laf` | Enhanced file listings | eza |
+| `catf` | Syntax-highlighted viewer | bat |
+| `btm` | System monitor | bottom |
+| `duf` | Disk usage analyzer | dust |
+| `z <dir>` | Smart directory jumping | zoxide |
+| `gh` | GitHub CLI | gh |
+| `help <cmd>` | Simplified man pages | tldr |
 
-## 🌐 Remote Development Option
+💡 **Pro tip**: Add these tools to your project's CLAUDE.md file. See [docs/CLAUDE_MD_TEMPLATE.md](.devcontainer/docs/CLAUDE_MD_TEMPLATE.md) for a template.
 
-Want to access your development environment from anywhere? SwarmContainer now supports deployment to [Fly.io](https://fly.io) for cloud-based development.
+## 🛡️ Security & Configuration
 
-### Benefits
-- 🌍 **Access from anywhere** - Work from any device with SSH
-- 💪 **Scalable resources** - Need more power? Scale up instantly  
-- 👥 **Team collaboration** - Share environments with your team
-- 💰 **Cost effective** - Pay only for what you use (~$5-20/month)
+### Security Presets
 
-### Quick Start
-```bash
-# Set up in under 5 minutes
-flyctl auth login
-./scripts/fly-volume-setup.sh
-./scripts/fly-ssh-setup.sh  
-flyctl deploy
-```
+| Preset | Use Case | Network | Resources |
+|--------|----------|---------|-----------|
+| **development** | Local development (default) | Permissive - blocklist | 8GB RAM, 4 CPUs |
+| **enterprise** | Corporate environments | Allowlist + common services | 12GB RAM, 6 CPUs |
+| **paranoid** | Untrusted code | Strict allowlist only | 6GB RAM, 2 CPUs |
 
-**[Full Fly.io Setup Guide →](docs/fly-io-setup.md)**
+See [SECURITY.md](SECURITY.md) for detailed configuration.
 
-> **Note**: Remote development is completely optional. All existing local features work exactly as before.
+### Environment Variables
 
-### 📋 Configuration Options
-
-#### Security Presets Explained
-
-| Preset | Network Access | Use Case | Firewall Rules | Memory | CPUs |
-|--------|---------------|----------|----------------|---------|------|
-| **development** | Most permissive | Local development, learning | Blocks only known malicious | 8GB | 4 |
-| **enterprise** | Balanced | Corporate environments | Allows dev tools, blocks risky | 12GB | 6 |
-| **paranoid** | Highly restricted | Untrusted code, sensitive data | Explicit allowlist only | 6GB | 2 |
-
-📄 **See [security-config.json](.devcontainer/scripts/security/security-config.json) for detailed preset definitions**
-
-#### Resource Requirements
-
-The container now **dynamically allocates Node.js heap memory** based on container memory (75% of total):
-
-| Container Memory | Node.js Heap | Use Case |
-|-----------------|--------------|-----------|
-| 4GB | 3GB | Basic Claude Code operations |
-| 6GB | 4.5GB | Paranoid mode with limited resources |
-| 8GB | 6GB | Standard development (default) |
-| 12GB | 9GB | Enterprise development workloads |
-| 16GB+ | 12GB+ | Large-scale development operations |
-
-**Minimum Requirements**:
-- Single Claude Code instance: 4GB memory, 2 CPUs
-- Multiple concurrent tasks: 8GB memory, 4 CPUs  
-- Heavy development workloads: 12GB memory, 6 CPUs
-- Large-scale operations: 16GB+ memory, 8+ CPUs
-
-#### Environment Variables
-
-Create or edit `.env` to customize:
+Key settings in `.env`:
 
 ```bash
-# Authentication (choose one)
-ANTHROPIC_API_KEY=sk-ant-...          # For API key auth
-# OR leave empty for browser auth
+# Authentication
+ANTHROPIC_API_KEY=sk-ant-...          # Optional - or use /login
 
 # Security
-SECURITY_PRESET=development            # Options: development, enterprise, paranoid
-                                      # Default set in: .devcontainer/devcontainer.json
-CUSTOM_ALLOWED_DOMAINS=api.myco.com    # Additional allowed domains (comma-separated)
+SECURITY_PRESET=development            # Choose preset
+CUSTOM_ALLOWED_DOMAINS=api.company.com # Add allowed domains
 
-# Resources (optional, defaults shown for development preset)
-CONTAINER_MEMORY=8g                    # Container memory limit
-CONTAINER_CPUS=4                       # CPU core limit
-# Note: Node.js heap is automatically set to 75% of container memory
-
-# Advanced (optional)
-NO_NEW_PRIVILEGES=true                 # Security: prevent privilege escalation
+# Resources (auto-calculated based on instances)
+CLAUDE_CODE_INSTANCES=6                # Number of Claude instances
 ```
 
-### 🔧 Advanced Configuration
+## 🌐 Remote Development (Optional)
 
-#### Custom Domain Allowlist
-For `enterprise` or `paranoid` modes, add custom domains:
+Deploy to Fly.io for cloud-based development:
 
 ```bash
-# In .env
-CUSTOM_ALLOWED_DOMAINS=api.company.com,npm.company.com,registry.company.com
+# Quick setup (5 minutes)
+./scripts/fly-setup.sh         # One-time setup
+./scripts/fly-deploy.sh deploy # Deploy your environment
+
+# Connect
+ssh node@your-app.fly.dev -p 10022
 ```
 
-#### Workspace Persistence
-Your project files are mounted at `/workspace` in the container:
-- All your project files persist between container restarts
-- Dependencies installed in the container are cached in Docker volumes
-- Command history is preserved
+**Benefits**: Access from anywhere, scalable resources, team collaboration, ~$5-20/month
 
-#### Shell Customization
-The container includes:
-- Zsh with Oh My Zsh
-- Auto-suggestions and syntax highlighting
-- Pre-loaded command history
-- Versioned command history system
+📚 [Full Fly.io Setup Guide →](docs/fly-io-setup.md)
 
-📚 **For detailed security configuration, see [SECURITY.md](SECURITY.md)**
+## 📦 What's Included
 
-## What's Included
+- **Claude Code** v1.0.56 with MCP server support
+- **Node.js 20** with dynamic memory management
+- **Security presets** for different trust levels
+- **Modern CLI tools** for enhanced productivity
+- **Zsh** with autosuggestions and syntax highlighting
+- **Auto-updating** MCP configuration
+- **Comprehensive test suite** for validation
 
-### 🧰 Development Environment
-- **Node.js 20** with npm for modern JavaScript development
-- **Zsh with Oh My Zsh** - Enhanced terminal with autosuggestions and syntax highlighting
-- **Modern CLI tools** - ripgrep, fzf, bat, delta for better development experience
-- **VS Code extensions** - ESLint, Prettier, GitLens, and more pre-configured
+See [VERSIONS.md](VERSIONS.md) for component details.
 
-### 🤖 Claude Development Tools
-- **Claude Code** - Latest version installed globally from npm
-- **MCP Servers** - Configurable Model Context Protocol servers
-  - Browser automation tools
-  - Web search capabilities
-  - Custom integrations via `.mcp.config`
+## 🛠️ Troubleshooting
 
-### 🛡️ Security Features
-- **Three security presets** - Paranoid, Enterprise, and Development modes
-- **Container-level firewall** - Network isolation without affecting your host
-- **Domain allowlisting** - Controlled access to external services
-- **Process isolation** - Safe execution environment
+Having issues? Check our comprehensive [Troubleshooting Guide](docs/troubleshooting.md) which covers:
+- Container build and startup issues
+- Claude Code authentication problems
+- Memory and performance optimization
+- Network connectivity troubleshooting
+- Common warnings and their meanings
 
-### 💡 Developer Benefits
-- **🔧 Customizable MCP servers** - Configure your own AI tools
-- **🚀 Fast MCP connections** - Local servers reduce latency
-- **📚 Full documentation** - CLAUDE.md, README.md, and SECURITY.md included
-- **🎯 Pre-configured** - Ready to use with Claude Code
-
-## Environment Variables
-
-Available environment variables:
-
-- `ANTHROPIC_API_KEY` - Your API key (only needed if using API key authentication)
-- `SECURITY_PRESET` - Security level: `paranoid`, `enterprise`, or `development` (default)
-- `DEVCONTAINER=true` - Automatically set in the container
-- `NODE_ENV=development` - Automatically set in the container
-
-## Workspace Structure
-
-When you open your project in the container:
-- `/workspace` - Your project root (mounted from your local machine)
-
-**For cloud deployment**: The same structure is maintained with persistent volumes. See [Fly.io Setup Guide](docs/fly-io-setup.md) for details.
-
-## Security Features
-
-This devcontainer provides comprehensive protection:
-
-### 🛡️ Two-Layer Security Model
-
-1. **Local Machine Protection**
-   - Container runs with restricted privileges
-   - Filesystem access limited to workspace
-   - No access to host system or personal files
-   - Process isolation prevents malware installation
-
-2. **Network Protection**
-   - **Container-level firewall rules** (not affecting host)
-   - Configurable security presets (never skipped)
-   - Domain allowlisting/blocklisting
-   - Prevents data exfiltration
-   - Protects against supply chain attacks
-
-### 🎚️ Security Presets
-
-Security is **always applied** but with different levels of strictness:
-
-- **Paranoid**: Maximum isolation - explicit allowlist only
-- **Enterprise**: Balanced security - common dev services allowed  
-- **Development**: Permissive - blocklist for known malicious sites (default)
-
-The firewall runs at container startup with root privileges, ensuring rules cannot be bypassed.
-
-See [SECURITY.md](SECURITY.md) for detailed configuration options.
-
-## Troubleshooting
-
-### Container Build Issues
-If the container fails to build:
-```bash
-# Clean rebuild without cache
-docker system prune -a
-# Then reopen in VS Code
-```
-
-### "iptables: Permission denied" 
-This is expected behavior - the container shows this message but continues without network isolation. The security rules are applied at container startup when running with proper privileges. This does not affect functionality.
-
-### "chown: Operation not permitted" on node_modules
-This is normal - node_modules is a Docker volume and ownership is managed by Docker. This warning can be ignored.
-
-### Network connectivity issues
-Check your security preset:
-```bash
-echo $SECURITY_PRESET
-```
-- **Paranoid/Enterprise**: Only allowed domains work. Add custom domains to `.env`:
-  ```bash
-  CUSTOM_ALLOWED_DOMAINS=api.mycompany.com,npm.mycompany.com
-  ```
-- **Development**: Most connections allowed, only known malicious sites blocked
-
-### VS Code doesn't show "Reopen in Container"
-1. Ensure Remote-Containers extension is installed
-2. Check Docker is running: `docker ps`
-3. Try Command Palette (Cmd/Ctrl+Shift+P): "Remote-Containers: Reopen in Container"
-
-### "No space left on device" during container build
-If you encounter disk space errors during build:
-
-1. **Clean up Docker space**:
-   ```bash
-   # Remove unused containers, images, and volumes
-   docker system prune -a --volumes
-   
-   # Check Docker disk usage
-   docker system df
-   ```
-
-2. **Clear Docker build cache**:
-   ```bash
-   docker builder prune
-   ```
-
-3. **Check your disk space**:
-   ```bash
-   # On macOS/Linux
-   df -h
-   ```
-
-4. **If using Docker Desktop**, increase the disk image size:
-   - Open Docker Desktop
-   - Go to Settings/Preferences → Resources
-   - Increase the "Disk image size" slider
-   - Apply & Restart
-
-
-### Node.js Out of Memory Errors
-If you encounter "JavaScript heap out of memory" errors:
-
-1. **Increase memory in .env**:
-   ```bash
-   CONTAINER_MEMORY=12g  # Increase from default 8g
-   ```
-
-2. **Check current memory usage**:
-   ```bash
-   # Inside container
-   echo "Container Memory: $(cat /sys/fs/cgroup/memory.max 2>/dev/null || echo 'unlimited')"
-   echo "Node.js Heap: $NODE_OPTIONS"
-   # Current memory settings will be displayed
-   ```
-
-3. **Temporary fix for current session**:
-   ```bash
-   export NODE_OPTIONS="--max-old-space-size=8192"  # 8GB
-   ```
-
-4. **Rebuild container** after changing memory settings
-
-### Container Disconnection Issues
-If your container suddenly disconnects:
-
-1. **Check Docker Desktop resources**:
-   - Go to Docker Desktop → Settings → Resources
-   - Ensure Docker has enough memory (16GB+ recommended)
-   - Increase CPU limit if needed
-
-2. **Add to .env for stability**:
-   ```bash
-   CONTAINER_MEMORY=10g
-   CONTAINER_CPUS=6
-   ```
-
-3. **Monitor container health**:
-   ```bash
-   # Check logs
-   docker logs $(docker ps -q -f name=SwarmContainer)
-   
-   # Check resource usage
-   docker stats
-   ```
-
-4. **Common causes**:
-   - Docker Desktop memory limits
-   - System running out of resources
-   - Network interruptions
-   - Heavy development operations consuming resources
-
-## Remote Development (Cloud Deployment)
-
-SwarmContainer supports deployment to cloud platforms for remote development. This enables:
-- 🌍 Access your development environment from anywhere
-- 💻 Consistent environment across devices
-- 🚀 More powerful cloud resources
-- 👥 Shared environments for teams
-
-### Quick Start with Fly.io
-
-#### 1. Initial Setup (One-time)
-```bash
-# Run the setup assistant
-./scripts/fly-setup.sh
-
-# This will:
-# - Install flyctl CLI
-# - Set up SSH keys
-# - Configure your Fly.io account
-# - Create initial configuration
-```
-
-#### 2. Deploy Your Environment
-```bash
-# Option A: Interactive deployment with configuration file
-./scripts/fly-deploy.sh deploy
-
-# Option B: Quick deployment with command-line args
-./scripts/fly-deploy.sh deploy my-dev-env iad
-```
-
-#### 3. Connect to Your Environment
-```bash
-# SSH directly
-ssh node@my-dev-env.fly.dev -p 10022
-
-# Or use VS Code Remote-SSH
-# The deploy script generates SSH config automatically
-```
-
-### Configuration
-
-Create `.env.fly` from the example:
-```bash
-cp .env.fly.example .env.fly
-# Edit with your preferences
-```
-
-Key settings:
-- `FLY_APP_NAME`: Your unique app identifier
-- `FLY_REGION`: Deployment region (iad, lhr, etc.)
-- `FLY_VM_SIZE`: Machine size (shared-cpu-1x to 8x)
-- `FLY_VM_MEMORY`: RAM allocation (256mb to 8gb)
-- `AUTO_STOP_MACHINES`: Save costs by auto-stopping when idle
-
-### Cost Management
-
-- **Auto-stop enabled**: Machines stop after 5 minutes idle
-- **Typical costs**: $2-5/month with auto-stop
-- **Monitor usage**: `./scripts/fly-deploy.sh status`
-- **Destroy when done**: `./scripts/fly-deploy.sh destroy`
-
-### Learn More
-
-- [Detailed Fly.io Setup Guide](docs/fly-io-setup.md)
-- [Remote Development Alternatives](docs/remote-development-alternatives.md)
-- [Orchestration Guide](docs/swarm-orchestration-implementation-plan.md)
-
-## Testing
+## 🧪 Testing
 
 Run automated tests to verify your setup:
 ```bash
-# From your project root (after adding the devcontainer)
+# From your project root
 ./.devcontainer/scripts/tests/test-devcontainer.sh
-
-# Tests check for:
-# - Valid JSON configuration
-# - Successful container build
-# - Proper tool installation
-# - Container persistence
-# - Security initialization
-# - Common configuration errors
 ```
+
+Tests validate: JSON configs, container build, tool installation, persistence, and security.
 
 ## ⚠️ Security Disclaimer
 
-**USE AT YOUR OWN RISK**
+This container runs AI agents with elevated permissions (`--dangerously-skip-permissions`). 
 
-This container runs AI agents with elevated permissions (`--dangerously-skip-permissions`) which poses inherent security risks:
+**Risks include**: Code exposure, prompt injection, security bypass, data exfiltration, resource exhaustion, unintended actions.
 
-### Potential Risks Include:
-- **🔓 Code Exposure** - AI agents can read and potentially expose your source code
-- **💉 Prompt Injection** - Malicious prompts could manipulate agent behavior
-- **🚨 Security Bypass** - Agents may circumvent security measures if instructed
-- **📤 Data Exfiltration** - Despite network controls, data could be leaked through allowed channels
-- **🔥 Resource Exhaustion** - Runaway agents could consume system resources
-- **🐛 Unintended Actions** - AI hallucinations could lead to destructive operations
+**Mitigations**: Use appropriate security presets, never store production credentials, review generated code, run in isolated environments, maintain backups.
 
-### Recommended Precautions:
-- ✅ Use **Paranoid** mode for untrusted code or sensitive projects
-- ✅ Never store production credentials or secrets in the container
-- ✅ Regularly review agent actions and generated code
-- ✅ Run in isolated environments when possible
-- ✅ Monitor container resource usage
-- ✅ Keep backups of important work
+By using this container, you acknowledge these risks and accept full responsibility. This software is provided "AS IS" without warranty.
 
-**By using this container, you acknowledge these risks and accept full responsibility for any consequences. This software is provided "AS IS" without warranty of any kind.**
+## 📚 Additional Resources
 
+### Documentation
+- [Quick Start Guide](docs/quick-start.md) - Get started in 5 minutes
+- [Troubleshooting Guide](docs/troubleshooting.md) - Common issues and solutions
+- [Security Configuration](SECURITY.md) - Detailed security presets
+- [Version Information](VERSIONS.md) - Component versions and updates
+- [Contributing Guidelines](CONTRIBUTING.md) - How to contribute
 
-## Resources
-
+### External Links
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
 - [VS Code DevContainers](https://code.visualstudio.com/docs/devcontainers/containers)
-- [Fly.io Remote Development Guide](docs/fly-io-setup.md)
-- [Development Team Agents Guide](docs/development-team-agents-guide.md)
+- [Fly.io Regions](https://fly.io/docs/reference/regions/) - For remote deployment
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
