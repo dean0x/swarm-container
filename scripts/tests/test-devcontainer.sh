@@ -98,7 +98,6 @@ if [ $? -eq 0 ]; then
     test_tool "btm"
     test_tool "dust"
     test_tool "tokei"
-    test_tool "gping"
     test_tool "jq"
     test_tool "tldr"
     test_tool "http"

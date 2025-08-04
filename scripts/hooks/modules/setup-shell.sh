@@ -133,9 +133,6 @@ alias btop='btm'                           # alternative name
 # Disk usage (original du still works)
 alias duf='dust'                           # du fancy
 
-# Network (original ping still works)
-alias gping='gping'                        # graphical ping
-
 # Development shortcuts
 alias lg='lazygit'                         # git UI
 alias lzd='lazydocker'                     # docker UI
@@ -173,9 +170,6 @@ alias btop='btm'                           # alternative name
 
 # Disk usage (original du still works)
 alias duf='dust'                           # du fancy
-
-# Network (original ping still works)
-alias gping='gping'                        # graphical ping
 
 # Development shortcuts
 alias lg='lazygit'                         # git UI

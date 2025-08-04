@@ -109,7 +109,6 @@ The container includes modern CLI tools to supercharge your development workflow
 ### System Monitoring
 - **`btm`** - Modern system monitor with graphs (via bottom)
 - **`duf`** - Visual disk usage analyzer (via dust)
-- **`gping`** - Ping with real-time graphs
 
 ### Development Utilities
 - **`catf`** - Syntax-highlighted file viewer (via bat)

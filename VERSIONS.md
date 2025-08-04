@@ -26,7 +26,6 @@
 | **dust** | Disk usage | Binary download |
 | **zoxide** | Smart cd | Cargo |
 | **tokei** | Code statistics | Cargo |
-| **gping** | Visual ping | Binary download |
 | **jq** | JSON processor | apt |
 | **httpie** | HTTP client | apt |
 | **tldr** | Simplified man pages | npm |
