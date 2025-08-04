@@ -141,11 +141,15 @@ alias help='tldr'                          # simplified man pages
 # HTTP client
 alias http='http --style=native'           # HTTPie with native style
 
-# Initialize zoxide (smarter cd)
-eval "$(zoxide init bash)"
+# Initialize zoxide (smarter cd) if available
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init bash)"
+fi
 
-# Initialize mcfly (neural network powered shell history)
-eval "$(mcfly init bash)"
+# Initialize mcfly (neural network powered shell history) if available
+if command -v mcfly &> /dev/null; then
+    eval "$(mcfly init bash)"
+fi
 EOF
 fi
 
@@ -179,11 +183,15 @@ alias help='tldr'                          # simplified man pages
 # HTTP client
 alias http='http --style=native'           # HTTPie with native style
 
-# Initialize zoxide (smarter cd)
-eval "$(zoxide init zsh)"
+# Initialize zoxide (smarter cd) if available
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh)"
+fi
 
-# Initialize mcfly (neural network powered shell history)
-eval "$(mcfly init zsh)"
+# Initialize mcfly (neural network powered shell history) if available
+if command -v mcfly &> /dev/null; then
+    eval "$(mcfly init zsh)"
+fi
 EOF
 fi
 
