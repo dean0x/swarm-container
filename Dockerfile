@@ -60,6 +60,17 @@ RUN npm install -g \
     ts-node \
     nodemon
 
+# Set up npm global directory permissions for updates
+# Find the actual npm global directory and make it writable
+RUN NPM_GLOBAL=$(npm config get prefix) && \
+    echo "Setting up npm global directory: $NPM_GLOBAL" && \
+    # Make the lib/node_modules directory writable for package updates
+    chmod -R g+w "$NPM_GLOBAL/lib/node_modules" || true && \
+    # Make the bin directory writable for binary updates
+    chmod g+w "$NPM_GLOBAL/bin" || true && \
+    # Add node user to staff group (or create custom group)
+    usermod -a -G staff node || true
+
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
@@ -104,6 +115,10 @@ COPY scripts/install-productivity-tools.sh /tmp/install-productivity-tools.sh
 RUN chmod +x /tmp/install-productivity-tools.sh && \
     /tmp/install-productivity-tools.sh && \
     rm /tmp/install-productivity-tools.sh
+
+# Copy update-claude script
+COPY scripts/tools/update-claude.sh /usr/local/bin/update-claude
+RUN chmod +x /usr/local/bin/update-claude
 
 # Create workspace directory and ensure node user has proper shell
 RUN mkdir -p /workspace && chown -R node:node /workspace \

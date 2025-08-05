@@ -137,6 +137,9 @@ export ANTHROPIC_API_KEY='sk-ant-...'
 claude --dangerously-skip-permissions
 
 # If no API key is set, you'll be prompted to use /login
+
+# Update Claude Code to latest version
+update-claude
 ```
 
 ### Security Configuration
@@ -183,10 +186,8 @@ mcp-watcher-logs
 
 ### Development
 ```bash
-# Update Claude Code (use special wrapper for permissions)
+# Update Claude Code
 update-claude
-# Or use the full command:
-npm-global-update update -g @anthropic-ai/claude-code
 
 # Check container logs
 docker logs <container-name>
@@ -231,9 +232,8 @@ When adding new npm packages that require network access:
    npm list -g @anthropic-ai/claude-code
    ```
 
-4. **Update Claude Code** (if permissions error):
+4. **Update Claude Code**:
    ```bash
-   # Use the special wrapper that handles permissions
    update-claude
    ```
 
