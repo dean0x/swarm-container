@@ -1,24 +1,15 @@
 #!/bin/bash
 # Module: Workspace Setup
-# Purpose: Ensure workspace has proper permissions
+# Purpose: Verify workspace is accessible
 
-echo "📁 Setting up workspace..."
+echo "📁 Checking workspace..."
 
 # Ensure we're in the workspace directory
 cd /workspace
 
-# Only fix permissions for specific directories that need it
-# Avoid recursive chown on entire workspace as it can be slow with many files
-if [ -d ".devcontainer" ]; then
-    chown -R node:node .devcontainer 2>/dev/null || true
+# Just verify we can access the workspace
+if [ -w . ]; then
+    echo "✅ Workspace is accessible and writable"
+else
+    echo "⚠️  Workspace may have permission issues"
 fi
-
-# Create common directories if they don't exist
-for dir in .vscode .config; do
-    if [ ! -d "$dir" ]; then
-        mkdir -p "$dir"
-        chown node:node "$dir"
-    fi
-done
-
-echo "✅ Workspace configured"
