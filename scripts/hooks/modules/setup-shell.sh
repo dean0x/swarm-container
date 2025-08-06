@@ -141,8 +141,6 @@ alias help='tldr'                          # simplified man pages
 # HTTP client
 alias http='http --style=native'           # HTTPie with native style
 
-# Claude Code update
-alias update-claude='/usr/local/bin/update-claude'
 
 # Initialize zoxide (smarter cd) if available
 if command -v zoxide &> /dev/null; then
@@ -186,8 +184,6 @@ alias help='tldr'                          # simplified man pages
 # HTTP client
 alias http='http --style=native'           # HTTPie with native style
 
-# Claude Code update
-alias update-claude='/usr/local/bin/update-claude'
 
 # Initialize zoxide (smarter cd) if available
 if command -v zoxide &> /dev/null; then

@@ -139,7 +139,7 @@ claude --dangerously-skip-permissions
 # If no API key is set, you'll be prompted to use /login
 
 # Update Claude Code to latest version
-update-claude
+npm update -g @anthropic-ai/claude-code
 ```
 
 ### Security Configuration
@@ -187,7 +187,7 @@ mcp-watcher-logs
 ### Development
 ```bash
 # Update Claude Code
-update-claude
+npm update -g @anthropic-ai/claude-code
 
 # Check container logs
 docker logs <container-name>
@@ -234,7 +234,7 @@ When adding new npm packages that require network access:
 
 4. **Update Claude Code**:
    ```bash
-   update-claude
+   npm update -g @anthropic-ai/claude-code
    ```
 
 ### MCP Server Issues

@@ -52,7 +52,15 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
     && chown -R node:node /commandhistory \
     && echo "$SNIPPET" >> "/home/node/.zshrc"
 
-# Install global npm packages
+# Configure npm to use a user-writable global directory
+# This allows npm install -g to work without sudo for the node user
+USER node
+RUN mkdir -p ~/.npm-global && \
+    npm config set prefix '~/.npm-global' && \
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc && \
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+
+# Install global npm packages as node user
 RUN npm install -g \
     @anthropic-ai/claude-code \
     npm-check-updates \
@@ -60,16 +68,8 @@ RUN npm install -g \
     ts-node \
     nodemon
 
-# Set up npm global directory permissions for updates
-# This allows the node user to update packages without sudo
-RUN NPM_GLOBAL=$(npm config get prefix) && \
-    echo "Setting up npm global directory: $NPM_GLOBAL" && \
-    # Change ownership of npm global directories to node user
-    chown -R node:node "$NPM_GLOBAL/lib/node_modules" && \
-    chown -R node:node "$NPM_GLOBAL/bin" && \
-    # Ensure node user can write to these directories
-    chmod -R 755 "$NPM_GLOBAL/lib/node_modules" && \
-    chmod 755 "$NPM_GLOBAL/bin"
+# Switch back to root for remaining setup
+USER root
 
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
@@ -116,9 +116,6 @@ RUN chmod +x /tmp/install-productivity-tools.sh && \
     /tmp/install-productivity-tools.sh && \
     rm /tmp/install-productivity-tools.sh
 
-# Copy update-claude script
-COPY scripts/tools/update-claude.sh /usr/local/bin/update-claude
-RUN chmod +x /usr/local/bin/update-claude
 
 # Create workspace directory and ensure node user has proper shell
 RUN mkdir -p /workspace && chown -R node:node /workspace \
