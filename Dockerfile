@@ -61,15 +61,15 @@ RUN npm install -g \
     nodemon
 
 # Set up npm global directory permissions for updates
-# Find the actual npm global directory and make it writable
+# This allows the node user to update packages without sudo
 RUN NPM_GLOBAL=$(npm config get prefix) && \
     echo "Setting up npm global directory: $NPM_GLOBAL" && \
-    # Make the lib/node_modules directory writable for package updates
-    chmod -R g+w "$NPM_GLOBAL/lib/node_modules" || true && \
-    # Make the bin directory writable for binary updates
-    chmod g+w "$NPM_GLOBAL/bin" || true && \
-    # Add node user to staff group (or create custom group)
-    usermod -a -G staff node || true
+    # Change ownership of npm global directories to node user
+    chown -R node:node "$NPM_GLOBAL/lib/node_modules" && \
+    chown -R node:node "$NPM_GLOBAL/bin" && \
+    # Ensure node user can write to these directories
+    chmod -R 755 "$NPM_GLOBAL/lib/node_modules" && \
+    chmod 755 "$NPM_GLOBAL/bin"
 
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
