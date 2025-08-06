@@ -6,17 +6,17 @@ echo "🎨 Setting up shell environment..."
 
 # Install oh-my-zsh if not already installed
 if [ ! -d ~/.oh-my-zsh ]; then
-    echo "📦 Installing oh-my-zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || {
-        echo "⚠️  Failed to install oh-my-zsh, continuing without it..."
+    echo "📦 Installing oh-my-zsh (with 30s timeout)..."
+    timeout 30 sh -c "$(curl -fsSL --connect-timeout 10 --max-time 30 https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || {
+        echo "⚠️  Failed to install oh-my-zsh (possibly network timeout), continuing without it..."
     }
 fi
 
 # Install Oh My Zsh plugins (only if oh-my-zsh exists)
 if [ -d ~/.oh-my-zsh ]; then
-    echo "🎨 Installing Zsh plugins..."
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true
+    echo "🎨 Installing Zsh plugins (with timeout)..."
+    timeout 20 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
+    timeout 20 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true
 
     # Update .zshrc to include plugins
     if [ -f ~/.zshrc ]; then
