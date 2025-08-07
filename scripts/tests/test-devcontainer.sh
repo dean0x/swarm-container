@@ -84,7 +84,12 @@ if [ $? -eq 0 ]; then
     }
     test_tool "node"
     test_tool "npm"
-    test_tool "claude"
+    # Claude is now installed in user's npm-global directory
+    if docker exec --user node "$CONTAINER_ID" bash -c 'test -f ~/.npm-global/bin/claude' > /dev/null 2>&1; then
+        echo -e "   ${GREEN}✓${NC} claude installed"
+    else
+        echo -e "   ${RED}✗${NC} claude not found"
+    fi
     test_tool "git"
     test_tool "zsh"
     
@@ -98,7 +103,6 @@ if [ $? -eq 0 ]; then
     test_tool "btm"
     test_tool "dust"
     test_tool "tokei"
-    test_tool "gping"
     test_tool "jq"
     test_tool "tldr"
     test_tool "http"

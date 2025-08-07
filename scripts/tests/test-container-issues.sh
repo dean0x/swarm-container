@@ -19,11 +19,13 @@ echo "   Checking for proper entrypoint configuration..."
 if grep -q "ENTRYPOINT.*docker-entrypoint.sh" Dockerfile; then
     echo -e "   ${GREEN}✓${NC} Entrypoint script configured"
     
-    # Check if entrypoint script is copied before USER directive
-    if awk '/COPY.*docker-entrypoint.sh/{found=1} /USER node/{if(found) exit 0; else exit 1}' Dockerfile; then
-        echo -e "   ${GREEN}✓${NC} Entrypoint created with correct permissions"
+    # Check if entrypoint script is copied while running as root
+    # Get the last USER directive before ENTRYPOINT
+    LAST_USER_BEFORE_ENTRYPOINT=$(awk '/USER/{user=$2} /ENTRYPOINT.*docker-entrypoint.sh/{print user; exit}' Dockerfile)
+    if [ "$LAST_USER_BEFORE_ENTRYPOINT" = "root" ] || [ -z "$LAST_USER_BEFORE_ENTRYPOINT" ]; then
+        echo -e "   ${GREEN}✓${NC} Entrypoint created with correct permissions (as root)"
     else
-        echo -e "   ${RED}✗${NC} ERROR: Entrypoint script created after USER directive"
+        echo -e "   ${RED}✗${NC} ERROR: Entrypoint script created while USER is $LAST_USER_BEFORE_ENTRYPOINT"
         echo "      This will cause permission denied errors!"
         ((ERRORS_FOUND++))
     fi

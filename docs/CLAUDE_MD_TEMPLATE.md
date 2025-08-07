@@ -30,7 +30,6 @@ This environment includes modern CLI tools. Use them when appropriate:
 
 ### Network Tools
 - **httpie** (`http`) - User-friendly HTTP client (`http GET api.example.com`)
-- **gping** - Visual ping (`gping google.com`)
 
 ### Aliases Available
 - `lsf`, `llf`, `laf` - Fancy file listings with icons

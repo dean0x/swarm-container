@@ -2,7 +2,7 @@
 # Install productivity CLI tools for SwarmContainer
 # This script handles architecture-aware installation of modern CLI tools
 
-set -euo pipefail
+set -eo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -108,22 +108,6 @@ elif [ "$ARCH" = "arm64" ]; then
         "dust-v0.8.6-aarch64-unknown-linux-gnu/dust"
 fi
 
-# Install gping
-if [ "$ARCH" = "amd64" ]; then
-    echo -e "${BLUE}Installing gping...${NC}"
-    wget -q "https://github.com/orf/gping/releases/download/gping-v1.16.1/gping-Linux-x86_64.tar.gz" -O gping.tar.gz
-    tar -xzf gping.tar.gz
-    mv gping /usr/local/bin/
-    chmod +x /usr/local/bin/gping
-    echo -e "${GREEN}✓ gping installed${NC}"
-elif [ "$ARCH" = "arm64" ]; then
-    echo -e "${BLUE}Installing gping...${NC}"
-    wget -q "https://github.com/orf/gping/releases/download/gping-v1.16.1/gping-Linux-aarch64.tar.gz" -O gping.tar.gz
-    tar -xzf gping.tar.gz
-    mv gping /usr/local/bin/
-    chmod +x /usr/local/bin/gping
-    echo -e "${GREEN}✓ gping installed${NC}"
-fi
 
 # Cleanup
 cd /

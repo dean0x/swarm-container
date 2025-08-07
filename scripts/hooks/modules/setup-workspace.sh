@@ -1,14 +1,15 @@
 #!/bin/bash
 # Module: Workspace Setup
-# Purpose: Ensure workspace has proper permissions
+# Purpose: Verify workspace is accessible
 
-echo "📁 Setting up workspace..."
+echo "📁 Checking workspace..."
 
 # Ensure we're in the workspace directory
 cd /workspace
 
-# Set proper permissions for workspace
-# This handles edge cases where permissions might need adjustment
-chown -R node:node /workspace 2>/dev/null || true
-
-echo "✅ Workspace configured"
+# Just verify we can access the workspace
+if [ -w . ]; then
+    echo "✅ Workspace is accessible and writable"
+else
+    echo "⚠️  Workspace may have permission issues"
+fi

@@ -52,13 +52,24 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
     && chown -R node:node /commandhistory \
     && echo "$SNIPPET" >> "/home/node/.zshrc"
 
-# Install global npm packages
+# Configure npm to use a user-writable global directory
+# This allows npm install -g to work without sudo for the node user
+USER node
+RUN mkdir -p ~/.npm-global && \
+    npm config set prefix '~/.npm-global' && \
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc && \
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+
+# Install global npm packages as node user
 RUN npm install -g \
     @anthropic-ai/claude-code \
     npm-check-updates \
     typescript \
     ts-node \
     nodemon
+
+# Switch back to root for remaining setup
+USER root
 
 # Install gosu for privilege dropping (su-exec not in Debian repos)
 RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
@@ -89,7 +100,12 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Install Rust-based productivity tools
 RUN cargo install zoxide --locked && \
     cargo install tokei --locked && \
-    cargo install mcfly --locked
+    cargo install mcfly --locked && \
+    # Move binaries to system-wide location
+    mv /root/.cargo/bin/zoxide /usr/local/bin/ && \
+    mv /root/.cargo/bin/tokei /usr/local/bin/ && \
+    mv /root/.cargo/bin/mcfly /usr/local/bin/ && \
+    chmod +x /usr/local/bin/zoxide /usr/local/bin/tokei /usr/local/bin/mcfly
 
 # Install productivity tools via npm
 RUN npm install -g tldr
@@ -99,6 +115,7 @@ COPY scripts/install-productivity-tools.sh /tmp/install-productivity-tools.sh
 RUN chmod +x /tmp/install-productivity-tools.sh && \
     /tmp/install-productivity-tools.sh && \
     rm /tmp/install-productivity-tools.sh
+
 
 # Create workspace directory and ensure node user has proper shell
 RUN mkdir -p /workspace && chown -R node:node /workspace \

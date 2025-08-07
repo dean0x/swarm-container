@@ -109,7 +109,6 @@ The container includes modern CLI tools to supercharge your development workflow
 ### System Monitoring
 - **`btm`** - Modern system monitor with graphs (via bottom)
 - **`duf`** - Visual disk usage analyzer (via dust)
-- **`gping`** - Ping with real-time graphs
 
 ### Development Utilities
 - **`catf`** - Syntax-highlighted file viewer (via bat)
@@ -138,6 +137,9 @@ export ANTHROPIC_API_KEY='sk-ant-...'
 claude --dangerously-skip-permissions
 
 # If no API key is set, you'll be prompted to use /login
+
+# Update Claude Code to latest version
+npm update -g @anthropic-ai/claude-code
 ```
 
 ### Security Configuration
@@ -184,10 +186,8 @@ mcp-watcher-logs
 
 ### Development
 ```bash
-# Update Claude Code (use special wrapper for permissions)
-update-claude
-# Or use the full command:
-npm-global-update update -g @anthropic-ai/claude-code
+# Update Claude Code
+npm update -g @anthropic-ai/claude-code
 
 # Check container logs
 docker logs <container-name>
@@ -232,10 +232,9 @@ When adding new npm packages that require network access:
    npm list -g @anthropic-ai/claude-code
    ```
 
-4. **Update Claude Code** (if permissions error):
+4. **Update Claude Code**:
    ```bash
-   # Use the special wrapper that handles permissions
-   update-claude
+   npm update -g @anthropic-ai/claude-code
    ```
 
 ### MCP Server Issues

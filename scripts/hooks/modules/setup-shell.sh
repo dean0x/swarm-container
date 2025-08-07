@@ -6,17 +6,17 @@ echo "🎨 Setting up shell environment..."
 
 # Install oh-my-zsh if not already installed
 if [ ! -d ~/.oh-my-zsh ]; then
-    echo "📦 Installing oh-my-zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || {
-        echo "⚠️  Failed to install oh-my-zsh, continuing without it..."
+    echo "📦 Installing oh-my-zsh (with 30s timeout)..."
+    timeout 30 sh -c "$(curl -fsSL --connect-timeout 10 --max-time 30 https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || {
+        echo "⚠️  Failed to install oh-my-zsh (possibly network timeout), continuing without it..."
     }
 fi
 
 # Install Oh My Zsh plugins (only if oh-my-zsh exists)
 if [ -d ~/.oh-my-zsh ]; then
-    echo "🎨 Installing Zsh plugins..."
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true
+    echo "🎨 Installing Zsh plugins (with timeout)..."
+    timeout 20 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
+    timeout 20 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true
 
     # Update .zshrc to include plugins
     if [ -f ~/.zshrc ]; then
@@ -30,28 +30,36 @@ cat > ~/.swarm_history_init << 'EOF'
 #!/bin/bash
 # Add useful commands to shell history on first run
 # Use versioned guard file to handle command updates
-HISTORY_VERSION="v4"  # Increment when commands change
+HISTORY_VERSION="v5"  # Increment when commands change
 if [ ! -f ~/.swarm_history_${HISTORY_VERSION} ]; then
     # For zsh
     if [ -n "$ZSH_VERSION" ]; then
         # Add to current session history (in order: oldest to newest)
+        # First add the update command (will be second when pressing ↑)
+        print -s "npm update -g @anthropic-ai/claude-code"
+        # Then add the claude command (will be first when pressing ↑)
         print -s "claude --dangerously-skip-permissions"
         
         # Also add to history file
+        echo ": $(date +%s):0;npm update -g @anthropic-ai/claude-code" >> ~/.zsh_history
         echo ": $(date +%s):0;claude --dangerously-skip-permissions" >> ~/.zsh_history
     fi
     
     # For bash
     if [ -n "$BASH_VERSION" ]; then
         # Add to history (in order: oldest to newest)
+        # First add the update command (will be second when pressing ↑)
+        history -s "npm update -g @anthropic-ai/claude-code"
+        # Then add the claude command (will be first when pressing ↑)
         history -s "claude --dangerously-skip-permissions"
         
         # Also add to history file
+        echo "npm update -g @anthropic-ai/claude-code" >> ~/.bash_history
         echo "claude --dangerously-skip-permissions" >> ~/.bash_history
     fi
     
     # Clean up old guard files and mark current version as added
-    rm -f ~/.swarm_history_added ~/.swarm_history_v1 ~/.swarm_history_v2 ~/.swarm_history_v3 2>/dev/null || true
+    rm -f ~/.swarm_history_added ~/.swarm_history_v1 ~/.swarm_history_v2 ~/.swarm_history_v3 ~/.swarm_history_v4 2>/dev/null || true
     touch ~/.swarm_history_${HISTORY_VERSION}
     echo "✅ Quick commands added to history (${HISTORY_VERSION}) - press ↑ to access them!"
 fi
@@ -133,9 +141,6 @@ alias btop='btm'                           # alternative name
 # Disk usage (original du still works)
 alias duf='dust'                           # du fancy
 
-# Network (original ping still works)
-alias gping='gping'                        # graphical ping
-
 # Development shortcuts
 alias lg='lazygit'                         # git UI
 alias lzd='lazydocker'                     # docker UI
@@ -144,11 +149,16 @@ alias help='tldr'                          # simplified man pages
 # HTTP client
 alias http='http --style=native'           # HTTPie with native style
 
-# Initialize zoxide (smarter cd)
-eval "$(zoxide init bash)"
 
-# Initialize mcfly (neural network powered shell history)
-eval "$(mcfly init bash)"
+# Initialize zoxide (smarter cd) if available
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init bash)"
+fi
+
+# Initialize mcfly (neural network powered shell history) if available
+if command -v mcfly &> /dev/null; then
+    eval "$(mcfly init bash)"
+fi
 EOF
 fi
 
@@ -174,9 +184,6 @@ alias btop='btm'                           # alternative name
 # Disk usage (original du still works)
 alias duf='dust'                           # du fancy
 
-# Network (original ping still works)
-alias gping='gping'                        # graphical ping
-
 # Development shortcuts
 alias lg='lazygit'                         # git UI
 alias lzd='lazydocker'                     # docker UI
@@ -185,11 +192,16 @@ alias help='tldr'                          # simplified man pages
 # HTTP client
 alias http='http --style=native'           # HTTPie with native style
 
-# Initialize zoxide (smarter cd)
-eval "$(zoxide init zsh)"
 
-# Initialize mcfly (neural network powered shell history)
-eval "$(mcfly init zsh)"
+# Initialize zoxide (smarter cd) if available
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh)"
+fi
+
+# Initialize mcfly (neural network powered shell history) if available
+if command -v mcfly &> /dev/null; then
+    eval "$(mcfly init zsh)"
+fi
 EOF
 fi
 
