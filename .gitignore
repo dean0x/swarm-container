@@ -45,10 +45,4 @@ test-tmp/
 
 # Development/Internal Documentation
 # These files exist in git history but should be ignored in future commits
-docs/*-plan.md
-docs/*-implementation*.md
-docs/feature-requests.md
-docs/prompts/
-features/
-*.dev.md
-*.internal.md
+docs/development
