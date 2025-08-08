@@ -42,3 +42,7 @@ config/.mcp.config.local
 
 # Test directories
 test-tmp/
+
+# Development/Internal Documentation
+# These files exist in git history but should be ignored in future commits
+docs/development
