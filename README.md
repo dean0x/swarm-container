@@ -8,6 +8,8 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 
 > ⚠️ **Security Note**: This container runs AI agents with elevated permissions. See [Security Disclaimer](#-security-disclaimer) for important safety information.
 
+> 📊 **Resource Configuration**: By default, the container is configured for 6 Claude Code instances (5GB RAM, 2 CPUs). You can adjust this based on your needs - from 1 instance (3GB RAM) to 50+ instances (32GB+ RAM). See [Multi-Instance Configuration](CLAUDE.md#multi-instance-configuration) for details.
+
 ## ✨ Features
 
 - **🛡️ Isolated Security** - Container-level firewall and network isolation
@@ -16,6 +18,16 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 - **⚡ Zero-Latency MCP** - Local MCP servers for enhanced Claude Code capabilities
 - **🔧 Auto-Configuration** - Smart resource allocation and live config updates
 - **🌐 Cloud Ready** - Optional Fly.io deployment for remote development
+
+## Prerequisites
+
+- [VS Code](https://code.visualstudio.com/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  - **Windows**: Requires WSL2 backend
+  - **macOS**: Intel or Apple Silicon
+  - **Linux**: Native Docker
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
+- Either an [Anthropic API key](https://console.anthropic.com/account/keys) OR a [Claude Pro/Max subscription](https://claude.ai/subscription)
 
 ## 🚀 Quick Start (5 minutes)
 
@@ -50,17 +62,6 @@ claude --dangerously-skip-permissions
 ```
 
 That's it! You're ready to use Claude Code in a secure environment. 🎉
-
-
-## Prerequisites
-
-- [VS Code](https://code.visualstudio.com/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-  - **Windows**: Requires WSL2 backend
-  - **macOS**: Intel or Apple Silicon
-  - **Linux**: Native Docker
-- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
-- Either an [Anthropic API key](https://console.anthropic.com/account/keys) OR a [Claude Pro/Max subscription](https://claude.ai/subscription)
 
 ## 📖 Detailed Setup Guide
 
@@ -147,7 +148,7 @@ Resource scaling examples:
 ```bash
 # Claude Code
 claude --dangerously-skip-permissions  # Start Claude Code
-update-claude                          # Update to latest version
+npm update -g @anthropic-ai/claude-code # Update to latest version
 
 # Container Info
 echo $SECURITY_PRESET                  # Check security level
