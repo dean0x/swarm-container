@@ -36,21 +36,13 @@ To add or modify MCP servers:
 
 ### Default MCP Servers
 
-- **browser-tools**: Browser automation and web scraping
 - **playwright**: Web testing and automation
-- **tavily**: AI-powered search (requires TAVILY_API_KEY)
 - **browsermcp**: Browser interaction capabilities
 - **context7**: Context management and retrieval
 
 ### API Keys
 
-Some MCP servers require API keys. Set these as environment variables:
-
-```bash
-export TAVILY_API_KEY="your-api-key-here"
-```
-
-Or add them to your `.env` file if using docker-compose.
+If you add MCP servers that require API keys, set them as environment variables or add them to your `.env` file if using docker-compose.
 
 ## Automatic Configuration Updates
 
