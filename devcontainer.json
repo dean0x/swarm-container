@@ -1,5 +1,6 @@
 {
   "name": "SwarmContainer",
+  "initializeCommand": "test -f .devcontainer/.env || cp .devcontainer/.env.development .devcontainer/.env",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".",
