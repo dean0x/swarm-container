@@ -1,7 +1,6 @@
 # Multi-stage Dockerfile for SwarmContainer
 # - base: Common setup for all deployments
 # - local: VS Code Dev Container (default)
-# - remote: Fly.io SSH deployment (future)
 
 FROM mcr.microsoft.com/devcontainers/javascript-node:20-bullseye AS base
 
@@ -158,72 +157,3 @@ CMD ["/bin/bash"]
 # Local development stage - preserves current functionality
 FROM base AS local
 # No additional changes needed - inherits everything from base
-
-# Remote development stage for Fly.io
-FROM base AS remote
-
-# Install tini for proper init system
-ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini /tini
-RUN chmod +x /tini
-
-# Install SSH server, sudo, and supervisor
-RUN apt-get update && apt-get install -y \
-    openssh-server \
-    sudo \
-    supervisor \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /run/sshd \
-    && mkdir -p /var/log/supervisor
-
-# Add passwordless sudo for node user
-RUN echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# Configure SSH for security
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config \
-    && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
-    && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
-    && echo "AllowUsers node" >> /etc/ssh/sshd_config
-
-# Enhanced SSH security configuration
-RUN echo "# Security hardening" >> /etc/ssh/sshd_config \
-    && echo "Protocol 2" >> /etc/ssh/sshd_config \
-    && echo "ClientAliveInterval 300" >> /etc/ssh/sshd_config \
-    && echo "ClientAliveCountMax 2" >> /etc/ssh/sshd_config \
-    && echo "MaxAuthTries 3" >> /etc/ssh/sshd_config \
-    && echo "MaxSessions 10" >> /etc/ssh/sshd_config \
-    && echo "TCPKeepAlive yes" >> /etc/ssh/sshd_config \
-    && echo "X11Forwarding no" >> /etc/ssh/sshd_config \
-    && echo "AllowAgentForwarding yes" >> /etc/ssh/sshd_config \
-    && echo "PermitTunnel no" >> /etc/ssh/sshd_config \
-    && echo "Banner /etc/ssh/banner" >> /etc/ssh/sshd_config
-
-# Create login banner
-RUN echo "****************************************************" > /etc/ssh/banner \
-    && echo "* SwarmContainer Development Environment           *" >> /etc/ssh/banner \
-    && echo "* Authorized access only. All actions logged.     *" >> /etc/ssh/banner \
-    && echo "****************************************************" >> /etc/ssh/banner
-
-# Create .ssh directory for node user
-RUN mkdir -p /home/node/.ssh && \
-    chown -R node:node /home/node/.ssh && \
-    chmod 700 /home/node/.ssh
-
-# Copy Fly.io specific files
-COPY scripts/fly/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY scripts/fly/fly-init.sh /fly-init.sh
-RUN chmod +x /fly-init.sh
-
-# Copy devcontainer files to container root for first-run setup
-COPY . /.devcontainer/
-
-# SSH runs on port 22
-EXPOSE 22
-
-# Create required directories
-RUN mkdir -p /var/run/sshd /var/log/supervisor
-
-# Use tini as PID 1 to handle signals properly
-ENTRYPOINT ["/tini", "--"]
-
-# Start supervisor which manages all our processes
-CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

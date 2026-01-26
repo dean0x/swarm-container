@@ -172,7 +172,3 @@ Normal behavior - node_modules is a Docker volume managed by Docker.
 3. **Report issues**:
    - Claude Code issues: https://github.com/anthropics/claude-code/issues
    - Container issues: Create an issue in this repository
-
-## Fly.io Specific Issues
-
-See [Fly.io Troubleshooting Guide](fly-io-troubleshooting.md) for cloud deployment issues.

@@ -17,7 +17,6 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 - **🚀 Modern CLI Tools** - Pre-installed: lazygit, lazydocker, eza, zoxide, bottom, and more
 - **⚡ Zero-Latency MCP** - Local MCP servers for enhanced Claude Code capabilities
 - **🔧 Auto-Configuration** - Smart resource allocation and live config updates
-- **🌐 Cloud Ready** - Optional Fly.io deployment for remote development
 
 ## Prerequisites
 
@@ -200,23 +199,6 @@ CUSTOM_ALLOWED_DOMAINS=api.company.com # Add allowed domains
 CLAUDE_CODE_INSTANCES=6                # Number of Claude instances
 ```
 
-## 🌐 Remote Development (Optional)
-
-Deploy to Fly.io for cloud-based development:
-
-```bash
-# Quick setup (5 minutes)
-./scripts/fly-setup.sh         # One-time setup
-./scripts/fly-deploy.sh deploy # Deploy your environment
-
-# Connect
-ssh node@your-app.fly.dev -p 10022
-```
-
-**Benefits**: Access from anywhere, scalable resources, team collaboration, ~$5-20/month
-
-📚 [Full Fly.io Setup Guide →](docs/fly-io-setup.md)
-
 ## 📦 What's Included
 
 - **Claude Code** v1.0.56 with MCP server support
@@ -270,7 +252,6 @@ By using this container, you acknowledge these risks and accept full responsibil
 ### External Links
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
 - [VS Code DevContainers](https://code.visualstudio.com/docs/devcontainers/containers)
-- [Fly.io Regions](https://fly.io/docs/reference/regions/) - For remote deployment
 
 ## 📄 License
 

@@ -63,5 +63,5 @@ cd .devcontainer && git pull origin main
 ## Version History
 
 - **January 2025**: Initial release with Claude Code v1.0.56
-- **January 2025**: Added productivity tools and Fly.io support
+- **January 2025**: Added productivity tools
 - **January 2025**: Dynamic resource allocation for multi-instance support
