@@ -68,5 +68,9 @@
   "overrideCommand": true,
   "shutdownAction": "stopContainer",
   "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "mounts": [
+    "source=swarm-commandhistory,target=/commandhistory,type=volume",
+    "source=swarm-claude-config,target=/home/node/.claude,type=volume"
+  ]
 }
