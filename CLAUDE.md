@@ -80,9 +80,8 @@ The system automatically calculates:
 - **Heap %**: 80 - instances (bounded 40-75%)
 
 Examples:
-- **1 instance**: 3GB RAM, 2 CPUs, 75% heap (single user)
-- **6 instances**: 5GB RAM, 2 CPUs, 74% heap (default)
-- **10 instances**: 8GB RAM, 4 CPUs, 70% heap (team usage)
+- **Minimal**: 3GB RAM, 2 CPUs, 75% heap (single instance)
+- **Default**: 8GB RAM, 4 CPUs, 70% heap
 - **25 instances**: 17GB RAM, 8 CPUs, 55% heap (power user)
 - **50 instances**: 32GB RAM, 16 CPUs, 40% heap (workstation)
 
@@ -90,7 +89,7 @@ Examples:
 
 - Configuration must be done **OUTSIDE** the container
 - Changes require container rebuild in VS Code
-- Default is 6 instances if not specified
+- Default is 8GB RAM, 4 CPUs if not specified
 
 ## Productivity Tools
 

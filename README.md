@@ -8,7 +8,7 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 
 > ⚠️ **Security Note**: This container runs AI agents with elevated permissions. See [Security Disclaimer](#-security-disclaimer) for important safety information.
 
-> 📊 **Resource Configuration**: By default, the container is configured for 6 Claude Code instances (5GB RAM, 2 CPUs). You can adjust this based on your needs - from 1 instance (3GB RAM) to 50+ instances (32GB+ RAM). See [Multi-Instance Configuration](CLAUDE.md#multi-instance-configuration) for details.
+> 📊 **Resource Configuration**: By default, the container is configured with 8GB RAM and 4 CPUs. You can adjust this based on your needs - from 3GB RAM (minimal) to 32GB+ RAM (power user). See [Multi-Instance Configuration](CLAUDE.md#multi-instance-configuration) for details.
 
 ## ✨ Features
 
@@ -135,8 +135,8 @@ CLAUDE_CODE_INSTANCES=10  # Adjust based on your needs
 ```
 
 Resource scaling examples:
-- **1 instance**: 3GB RAM, 2 CPUs (single user)
-- **6 instances**: 5GB RAM, 2 CPUs (default)
+- **Minimal**: 3GB RAM, 2 CPUs (single instance)
+- **Default**: 8GB RAM, 4 CPUs
 - **10 instances**: 8GB RAM, 4 CPUs (team)
 - **25 instances**: 17GB RAM, 8 CPUs (power user)
 
