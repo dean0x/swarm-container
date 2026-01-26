@@ -48,10 +48,6 @@ echo ""
 echo "3. Checking shell history init:"
 docker exec -u node "$CONTAINER_ID" ls -la ~/.swarm_history_* 2>/dev/null || echo "No history files yet"
 
-echo ""
-echo "4. Checking MCP configuration:"
-docker exec -u node "$CONTAINER_ID" ls -la ~/.claude.json 2>/dev/null || echo "MCP config not created yet"
-
 # Cleanup
 docker stop "$CONTAINER_ID" >/dev/null
 docker rm "$CONTAINER_ID" >/dev/null

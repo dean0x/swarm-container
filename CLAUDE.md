@@ -10,8 +10,7 @@ This repository provides a VS Code development container for running Claude Code
 - **🧠 Dynamic Memory Allocation**: Auto-scales resources based on number of Claude Code instances
 - **🤖 Multi-Instance Support**: Run 1-100+ Claude Code instances with automatic resource calculation
 - **🛡️ Three Security Presets**: Paranoid, Enterprise, and Development modes
-- **🔧 MCP Server Support**: Pre-configured Model Context Protocol servers
-- **📦 Auto-updating MCP Config**: Live configuration updates with file watcher
+- **🔧 MCP Server Support**: Model Context Protocol servers via native `claude mcp` commands
 - **🧪 Comprehensive Testing**: Full test suite validates container configuration
 
 ## Key Components
@@ -27,12 +26,6 @@ This repository provides a VS Code development container for running Claude Code
   - `hooks/postCreate.sh` - Post-creation setup (Claude Code, MCP servers)
   - `hooks/set-node-memory.sh` - Dynamic Node.js memory allocation based on container limits
   - `tests/` - Comprehensive test suite for container validation
-
-### MCP Configuration
-- Default MCP servers configured in `config/.mcp.config`
-- Automatic merging into user's `.claude.json`
-- Support for environment variable substitution
-- Optional file watcher for live updates
 
 ### Security Architecture
 - **Presets**: Paranoid (6GB/2CPU), Enterprise (12GB/6CPU), Development (8GB/4CPU) modes
@@ -173,14 +166,11 @@ dmesg | grep "BLOCKED-OUT:"
 # List configured MCP servers
 claude mcp list
 
-# Update MCP configuration
-mcp-update  # Alias for manual update
+# Add an MCP server
+claude mcp add <server-name>
 
-# MCP watcher commands (if enabled)
-mcp-watcher-status
-mcp-watcher-start
-mcp-watcher-stop
-mcp-watcher-logs
+# Remove an MCP server
+claude mcp remove <server-name>
 ```
 
 ### Development
@@ -237,20 +227,20 @@ When adding new npm packages that require network access:
    ```
 
 ### MCP Server Issues
-1. **Check MCP configuration**:
+1. **List configured servers**:
    ```bash
-   cat ~/.claude.json
    claude mcp list
    ```
 
-2. **Manually update MCP config**:
+2. **Add or remove servers**:
    ```bash
-   mcp-update
+   claude mcp add <server-name>
+   claude mcp remove <server-name>
    ```
 
-3. **Check MCP config file**:
+3. **Check configuration**:
    ```bash
-   cat /workspace/config/.mcp.config
+   cat ~/.claude.json
    ```
 
 ### Memory Issues
@@ -293,8 +283,6 @@ When adding new npm packages that require network access:
 
 ### Configuration Files
 ```
-├── config/
-│   └── .mcp.config       # Default MCP server configuration
 ├── scripts/
 │   ├── security/         # Security-related scripts
 │   ├── hooks/           # Container lifecycle hooks

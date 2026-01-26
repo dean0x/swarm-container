@@ -32,19 +32,8 @@ run_module "setup-permissions.sh"    # Set permissions first
 run_module "init-npm.sh"            # Configure NPM
 run_module "setup-npm-permissions.sh" # Setup npm global update permissions
 run_module "init-claude-code.sh"    # Initialize Claude Code
-run_module "setup-mcp.sh"           # Configure MCP servers
 run_module "setup-workspace.sh"     # Setup workspace structure
 run_module "setup-shell.sh"         # Configure shell environment
-
-# Start MCP config watcher if enabled
-if [ "${ENABLE_MCP_WATCHER:-false}" = "true" ]; then
-    echo ""
-    echo "🔄 Starting MCP config watcher..."
-    if /workspace/.devcontainer/scripts/services/mcp-watcher-control.sh start; then
-        echo "   Use 'mcp-watcher-status' to check watcher status"
-        echo "   Use 'mcp-watcher-stop' to stop the watcher"
-    fi
-fi
 
 echo ""
 echo "✅ Development environment setup complete!"

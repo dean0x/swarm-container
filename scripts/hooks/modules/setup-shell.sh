@@ -85,37 +85,6 @@ if ! grep -q "swarm_history_init" ~/.bashrc 2>/dev/null; then
     echo "[ -f ~/.swarm_history_init ] && source ~/.swarm_history_init" >> ~/.bashrc
 fi
 
-# Add MCP watcher control aliases
-echo "🔧 Adding MCP watcher commands..."
-
-# Add to bashrc if not already there
-if ! grep -q "mcp-watcher-start" ~/.bashrc 2>/dev/null; then
-    cat >> ~/.bashrc << 'EOF'
-
-# MCP Config Watcher Commands
-alias mcp-watcher-start='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh start'
-alias mcp-watcher-stop='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh stop'
-alias mcp-watcher-restart='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh restart'
-alias mcp-watcher-status='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh status'
-alias mcp-watcher-logs='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh logs'
-alias mcp-update='bash /workspace/.devcontainer/scripts/hooks/modules/setup-mcp.sh'
-EOF
-fi
-
-# Also add to zshrc if not already there
-if ! grep -q "mcp-watcher-start" ~/.zshrc 2>/dev/null; then
-    cat >> ~/.zshrc << 'EOF'
-
-# MCP Config Watcher Commands
-alias mcp-watcher-start='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh start'
-alias mcp-watcher-stop='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh stop'
-alias mcp-watcher-restart='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh restart'
-alias mcp-watcher-status='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh status'
-alias mcp-watcher-logs='/workspace/.devcontainer/scripts/services/mcp-watcher-control.sh logs'
-alias mcp-update='bash /workspace/.devcontainer/scripts/hooks/modules/setup-mcp.sh'
-EOF
-fi
-
 # Add productivity tool aliases and initializations
 echo "🚀 Configuring productivity tools..."
 

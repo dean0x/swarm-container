@@ -15,8 +15,8 @@ A drop-in VS Code development container for running Claude Code in a secure, iso
 - **🛡️ Isolated Security** - Container-level firewall and network isolation
 - **🤖 Multi-Instance Support** - Run 1-100+ Claude Code instances with automatic resource scaling
 - **🚀 Modern CLI Tools** - Pre-installed: lazygit, lazydocker, eza, zoxide, bottom, and more
-- **⚡ Zero-Latency MCP** - Local MCP servers for enhanced Claude Code capabilities
-- **🔧 Auto-Configuration** - Smart resource allocation and live config updates
+- **🔧 MCP Compatible** - Full Model Context Protocol support via native `claude mcp` commands
+- **⚡ Auto-Configuration** - Smart resource allocation based on instance count
 
 ## Prerequisites
 
@@ -206,7 +206,6 @@ CLAUDE_CODE_INSTANCES=6                # Number of Claude instances
 - **Security presets** for different trust levels
 - **Modern CLI tools** for enhanced productivity
 - **Zsh** with autosuggestions and syntax highlighting
-- **Auto-updating** MCP configuration
 - **Comprehensive test suite** for validation
 
 See [VERSIONS.md](VERSIONS.md) for component details.

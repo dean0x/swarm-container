@@ -13,16 +13,14 @@ This directory contains modular scripts that are called by the main `postCreate.
 - Configures npm registry settings
 - Sets up npm cache and prefix paths (if needed)
 
+### setup-npm-permissions.sh
+- Checks npm global package permissions
+- Verifies write access to global node_modules
+
 ### init-claude-code.sh
 - Checks for ANTHROPIC_API_KEY
 - Initializes Claude Code if API key is present
 - Provides instructions for authentication options
-
-### setup-mcp.sh
-- Reads MCP configuration from /workspace/.devcontainer/config/.mcp.config
-- Merges mcpServers into /home/node/.claude.json
-- Preserves existing .claude.json properties
-- Substitutes environment variables for API keys
 
 ### setup-workspace.sh
 - Sets proper permissions for workspace
@@ -56,8 +54,8 @@ To add a new module:
 The modules are executed in this order:
 1. setup-permissions.sh (enables other scripts)
 2. init-npm.sh (npm configuration)
-3. init-claude-code.sh (Claude Code setup)
-4. setup-mcp.sh (MCP servers configuration)
+3. setup-npm-permissions.sh (npm global permissions)
+4. init-claude-code.sh (Claude Code setup)
 5. setup-workspace.sh (workspace structure)
 6. setup-shell.sh (shell environment)
 

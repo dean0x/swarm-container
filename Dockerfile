@@ -27,7 +27,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     apparmor \
     apparmor-utils \
     libcap2-bin \
-    inotify-tools \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Install git-delta for better diffs (handle both amd64 and arm64)

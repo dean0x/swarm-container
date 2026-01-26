@@ -67,20 +67,20 @@ docker system prune -a
    ```
 
 ### MCP Server Issues
-1. **Check MCP configuration**:
+1. **List configured servers**:
    ```bash
-   cat ~/.claude.json
    claude mcp list
    ```
 
-2. **Manually update MCP config**:
+2. **Add or remove servers**:
    ```bash
-   mcp-update
+   claude mcp add <server-name>
+   claude mcp remove <server-name>
    ```
 
-3. **Check MCP config file**:
+3. **Check configuration**:
    ```bash
-   cat /workspace/config/.mcp.config
+   cat ~/.claude.json
    ```
 
 ## Memory Issues

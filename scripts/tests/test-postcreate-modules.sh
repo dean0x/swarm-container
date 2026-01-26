@@ -137,7 +137,6 @@ safe_modules=(
     "init-npm.sh"
     "init-claude-code.sh"
     "setup-permissions.sh"
-    "setup-mcp.sh"
 )
 
 for module_name in "${safe_modules[@]}"; do
