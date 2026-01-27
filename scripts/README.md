@@ -32,7 +32,7 @@ scripts/
 
 ### Hook Scripts (`hooks/`)
 
-- **docker-entrypoint.sh**: Container entrypoint that runs security initialization as root, then switches to the node user.
+- **docker-entrypoint.sh**: Container entrypoint that runs security initialization and starts the container (runs as root).
 - **postCreate.sh**: Sets up the development environment after container creation (Claude Code, shell environment, etc.).
 
 ### Test Scripts (`tests/`)

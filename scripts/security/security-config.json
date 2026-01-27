@@ -35,7 +35,7 @@
       "description": "For corporate environments with specific allowed services",
       "filesystem": {
         "readonly_paths": ["/etc", "/usr", "/var/log"],
-        "writable_paths": ["/workspace", "/tmp", "/home/node"]
+        "writable_paths": ["/workspace", "/tmp", "/root"]
       },
       "network": {
         "allowed_domains": [
@@ -67,7 +67,7 @@
       "description": "For local development with more flexibility",
       "filesystem": {
         "readonly_paths": ["/etc/passwd", "/etc/shadow"],
-        "writable_paths": ["/workspace", "/tmp", "/home/node", "/opt"]
+        "writable_paths": ["/workspace", "/tmp", "/root", "/opt"]
       },
       "network": {
         "allowed_domains": [

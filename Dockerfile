@@ -47,18 +47,15 @@ RUN ARCH=$(dpkg --print-architecture) \
 RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.zsh_history" \
     && mkdir -p /commandhistory \
     && touch /commandhistory/.zsh_history \
-    && chown -R node:node /commandhistory \
-    && echo "$SNIPPET" >> "/home/node/.zshrc"
+    && echo "$SNIPPET" >> "/root/.zshrc"
 
-# Configure npm to use a user-writable global directory
-# This allows npm install -g to work without sudo for the node user
-USER node
-RUN mkdir -p ~/.npm-global && \
-    npm config set prefix '~/.npm-global' && \
-    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc && \
-    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+# Configure npm global directory (running as root)
+RUN mkdir -p /root/.npm-global && \
+    npm config set prefix '/root/.npm-global' && \
+    echo 'export PATH=/root/.npm-global/bin:$PATH' >> /root/.bashrc && \
+    echo 'export PATH=/root/.npm-global/bin:$PATH' >> /root/.zshrc
 
-# Install global npm packages as node user
+# Install global npm packages
 # Most versions pinned for reproducible builds; claude-code uses latest
 RUN npm install -g \
     @anthropic-ai/claude-code \
@@ -66,12 +63,6 @@ RUN npm install -g \
     typescript@5.3.3 \
     ts-node@10.9.2 \
     nodemon@3.0.3
-
-# Switch back to root for remaining setup
-USER root
-
-# Install gosu for privilege dropping (su-exec not in Debian repos)
-RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
 # Install productivity CLI tools via apt
 RUN apt-get update && apt-get install -y \
@@ -117,9 +108,8 @@ RUN chmod +x /tmp/install-productivity-tools.sh && \
     rm /tmp/install-productivity-tools.sh
 
 
-# Create workspace directory and ensure node user has proper shell
-RUN mkdir -p /workspace && chown -R node:node /workspace \
-    && usermod -s /bin/bash node || true
+# Create workspace directory
+RUN mkdir -p /workspace
 
 # Copy shared library scripts
 COPY scripts/lib/logging.sh /scripts/lib/logging.sh
@@ -142,7 +132,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.
 # Set working directory
 WORKDIR /workspace
 
-# Configure git to use delta (as root for now)
+# Configure git to use delta
 RUN git config --global core.pager "delta" \
     && git config --global interactive.diffFilter "delta --color-only" \
     && git config --global delta.navigate true \
@@ -155,11 +145,11 @@ ENV SHELL=/bin/zsh
 ENV NODE_ENV=development
 # NODE_OPTIONS will be set dynamically based on container memory
 
-# Set entrypoint - this runs as root since we haven't switched users yet
+# Set entrypoint - runs as root for security initialization
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/bin/bash"]
 
-# Note: USER directive removed - the entrypoint handles user switching
+# Running as root - no USER directive needed
 
 # Local development stage - preserves current functionality
 FROM base AS local

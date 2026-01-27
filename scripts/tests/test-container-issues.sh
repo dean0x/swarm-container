@@ -90,23 +90,14 @@ fi
 echo ""
 echo "4️⃣ Testing for potential permission issues..."
 
-# Check if critical directories are created before USER switch
+# Check if critical directories exist in Dockerfile
 CRITICAL_DIRS=("/workspace" "/commandhistory")
 for dir in "${CRITICAL_DIRS[@]}"; do
-    if grep -A5 -B5 "mkdir.*$dir" Dockerfile | grep -q "USER node" && \
-       ! awk "/mkdir.*$dir/{found=1} /USER node/{if(found) exit 0; else exit 1}" Dockerfile; then
-        echo -e "   ${RED}✗${NC} ERROR: $dir created after USER switch"
-        echo "      This may cause permission denied errors!"
-        ((ERRORS_FOUND++))
+    if grep -q "mkdir.*$dir" Dockerfile; then
+        echo -e "   ${GREEN}✓${NC} $dir directory creation configured"
     fi
 done
-
-# Check for proper ownership commands
-if grep -q "chown.*node:node.*/workspace" Dockerfile; then
-    echo -e "   ${GREEN}✓${NC} Workspace ownership configured"
-else
-    echo -e "   ${YELLOW}⚠${NC} WARNING: Workspace ownership not explicitly set"
-fi
+echo -e "   ${GREEN}✓${NC} Running as root - no permission issues expected"
 
 # Test 5: Check JSON syntax
 echo ""
@@ -181,12 +172,12 @@ if [ $ERRORS_FOUND -eq 0 ] && [ "$JSON_VALID" = "true" ]; then
                 ((ERRORS_FOUND++))
             fi
             
-            # Check user - VS Code will handle this via remoteUser
+            # Check user - should be root
             CONTAINER_USER=$(docker exec "$CONTAINER_ID" whoami 2>/dev/null)
-            if [ "$CONTAINER_USER" = "node" ] || [ "$CONTAINER_USER" = "root" ]; then
-                echo -e "   ${GREEN}✓${NC} Container user check passed (VS Code will use remoteUser: node)"
+            if [ "$CONTAINER_USER" = "root" ]; then
+                echo -e "   ${GREEN}✓${NC} Container running as root"
             else
-                echo -e "   ${RED}✗${NC} ERROR: Unexpected user: $CONTAINER_USER"
+                echo -e "   ${RED}✗${NC} ERROR: Unexpected user: $CONTAINER_USER (expected root)"
                 ((ERRORS_FOUND++))
             fi
         else

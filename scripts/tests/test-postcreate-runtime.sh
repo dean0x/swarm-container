@@ -18,10 +18,10 @@ CONTAINER_ID=$(docker run -d \
 echo "Container ID: $CONTAINER_ID"
 echo ""
 
-# Run postCreate as node user with timeout
+# Run postCreate with timeout
 echo "🚀 Running postCreate script (with 3-minute timeout)..."
 # Use timeout to prevent hanging on clone operations
-timeout 180 docker exec -u node "$CONTAINER_ID" bash /devcontainer-config/scripts/hooks/postCreate.sh
+timeout 180 docker exec "$CONTAINER_ID" bash /devcontainer-config/scripts/hooks/postCreate.sh
 
 # Check exit code
 EXIT_CODE=$?
@@ -38,15 +38,15 @@ fi
 echo ""
 echo "📋 Verifying results..."
 echo "1. Checking npm config:"
-docker exec -u node "$CONTAINER_ID" npm config get registry
+docker exec "$CONTAINER_ID" npm config get registry
 
 echo ""
 echo "2. Checking workspace structure:"
-docker exec -u node "$CONTAINER_ID" ls -la /workspace/.gitignore 2>/dev/null || echo ".gitignore not created"
+docker exec "$CONTAINER_ID" ls -la /workspace/.gitignore 2>/dev/null || echo ".gitignore not created"
 
 echo ""
 echo "3. Checking shell history init:"
-docker exec -u node "$CONTAINER_ID" ls -la ~/.swarm_history_* 2>/dev/null || echo "No history files yet"
+docker exec "$CONTAINER_ID" ls -la ~/.swarm_history_* 2>/dev/null || echo "No history files yet"
 
 # Cleanup
 docker stop "$CONTAINER_ID" >/dev/null

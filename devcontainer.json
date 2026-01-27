@@ -14,10 +14,7 @@
       "installZsh": true,
       "configureZshAsDefaultShell": true,
       "installOhMyZsh": true,
-      "upgradePackages": true,
-      "username": "node",
-      "userUid": "1000",
-      "userGid": "1000"
+      "upgradePackages": true
     },
     "ghcr.io/devcontainers/features/git:1": {
       "version": "latest",
@@ -61,7 +58,6 @@
     "--health-retries=3",
     "--health-start-period=30s"
   ],
-  "remoteUser": "node",
   "containerEnv": {
     "DEVCONTAINER": "true",
     "SHELL": "/bin/zsh",
@@ -76,6 +72,6 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "mounts": [
     "source=swarm-commandhistory,target=/commandhistory,type=volume",
-    "source=swarm-claude-config,target=/home/node/.claude,type=volume"
+    "source=swarm-claude-config,target=/root/.claude,type=volume"
   ]
 }

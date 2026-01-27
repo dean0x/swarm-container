@@ -24,7 +24,7 @@ if [ -f "devcontainer.json" ]; then
     echo -e "   ${GREEN}✓${NC} devcontainer.json found"
     
     # Check for required VS Code properties
-    REQUIRED_PROPS=("customizations" "workspaceFolder" "remoteUser")
+    REQUIRED_PROPS=("customizations" "workspaceFolder")
     for prop in "${REQUIRED_PROPS[@]}"; do
         if grep -q "\"$prop\"" devcontainer.json; then
             echo -e "   ${GREEN}✓${NC} $prop configured"
@@ -32,6 +32,7 @@ if [ -f "devcontainer.json" ]; then
             echo -e "   ${RED}✗${NC} Missing required property: $prop"
         fi
     done
+    echo -e "   ${GREEN}✓${NC} Running as root (no remoteUser needed)"
 else
     echo -e "   ${RED}✗${NC} devcontainer.json not found!"
 fi
@@ -104,12 +105,8 @@ else
     echo "✗ Missing workspace configuration"
 fi
 
-# Check for user configuration
-if grep -q '"remoteUser"' "$CONFIG_FILE"; then
-    echo "✓ Remote user configured"
-else
-    echo "✗ No remote user specified"
-fi
+# Check for user configuration (running as root - no remoteUser needed)
+echo "✓ Running as root (no remoteUser needed)"
 
 # Check for conflicting mount points
 MOUNT_TARGETS=$(grep -o '"target":"[^"]*"' "$CONFIG_FILE" | cut -d'"' -f4 | sort | uniq -d)

@@ -51,14 +51,14 @@ CONTAINER_ID=$(docker run -d \
 if [ $? -eq 0 ]; then
     echo -e "   ${GREEN}✓${NC} Container started successfully"
     
-    # Test 4: Check if user can run commands
+    # Test 4: Check if running as root
     echo ""
-    echo "4️⃣ Testing user permissions..."
-    # VS Code will use remoteUser setting, we just check the user exists
-    if docker exec "$CONTAINER_ID" id node >/dev/null 2>&1; then
-        echo -e "   ${GREEN}✓${NC} Node user exists and configured"
+    echo "4️⃣ Testing user context..."
+    CONTAINER_USER=$(docker exec "$CONTAINER_ID" whoami 2>/dev/null)
+    if [ "$CONTAINER_USER" = "root" ]; then
+        echo -e "   ${GREEN}✓${NC} Container running as root"
     else
-        echo -e "   ${RED}✗${NC} Node user not properly configured"
+        echo -e "   ${RED}✗${NC} Unexpected user: $CONTAINER_USER (expected root)"
     fi
     
     # Test 5: Check workspace access
@@ -84,8 +84,8 @@ if [ $? -eq 0 ]; then
     }
     test_tool "node"
     test_tool "npm"
-    # Claude is now installed in user's npm-global directory
-    if docker exec --user node "$CONTAINER_ID" bash -c 'test -f ~/.npm-global/bin/claude' > /dev/null 2>&1; then
+    # Claude is installed in root's npm-global directory
+    if docker exec "$CONTAINER_ID" bash -c 'test -f /root/.npm-global/bin/claude' > /dev/null 2>&1; then
         echo -e "   ${GREEN}✓${NC} claude installed"
     else
         echo -e "   ${RED}✗${NC} claude not found"

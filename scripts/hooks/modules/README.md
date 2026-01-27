@@ -24,7 +24,7 @@ This directory contains modular scripts that are called by the main `postCreate.
 
 ### setup-workspace.sh
 - Sets proper permissions for workspace
-- Ensures workspace is accessible to the node user
+- Ensures workspace is accessible
 
 ### setup-shell.sh
 - Installs Oh My Zsh plugins (autosuggestions, syntax highlighting)

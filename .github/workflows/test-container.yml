@@ -68,9 +68,9 @@ jobs:
           -c "sleep 300")
         
         echo "Testing quick module execution..."
-        
+
         # Test just the fast modules
-        docker exec -u node "$CONTAINER_ID" bash -c "
+        docker exec "$CONTAINER_ID" bash -c "
           cd /workspace
           bash /devcontainer-config/scripts/hooks/modules/setup-permissions.sh &&
           bash /devcontainer-config/scripts/hooks/modules/init-npm.sh &&

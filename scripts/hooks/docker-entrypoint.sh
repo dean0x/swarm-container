@@ -151,41 +151,11 @@ else
     echo -e "${YELLOW}Memory configuration script not found, using defaults${NC}"
 fi
 
-# Copy git config to node user
-if [ -f /root/.gitconfig ]; then
-    if cp /root/.gitconfig /home/node/.gitconfig 2>/dev/null; then
-        chown node:node /home/node/.gitconfig
-    else
-        log_warn "Failed to copy git config to node user"
-    fi
-fi
-
-# Fix ownership of mounted volumes that may have been created as root
-# The .claude directory is a volume mount for config persistence
-if [ -d /home/node/.claude ]; then
-    chown -R node:node /home/node/.claude
-    log_info "Fixed ownership of /home/node/.claude"
-fi
-
-# Ensure commandhistory volume is writable
-if [ -d /commandhistory ]; then
-    chown -R node:node /commandhistory
-fi
-
-# Now handle the command execution
+# Now handle the command execution (running as root, no user switching needed)
 if [ $# -eq 0 ]; then
-    # No command provided, run bash as the specified user
     echo -e "${GREEN}Security initialization complete, starting shell${NC}"
-    exec gosu node /bin/bash
+    exec /bin/bash
 else
-    # Command provided
-    if [ "$1" = "/bin/sh" ] && [ "$2" = "-c" ]; then
-        # VS Code command format, execute as node user
-        echo -e "${GREEN}Security initialization complete, executing VS Code command${NC}"
-        exec gosu node "$@"
-    else
-        # Other command, execute as-is
-        echo -e "${GREEN}Security initialization complete, executing command${NC}"
-        exec "$@"
-    fi
+    echo -e "${GREEN}Security initialization complete, executing command${NC}"
+    exec "$@"
 fi
