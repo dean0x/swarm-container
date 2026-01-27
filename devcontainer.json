@@ -42,6 +42,7 @@
     }
   },
   "postCreateCommand": "bash /workspace/.devcontainer/scripts/hooks/postCreate.sh || true",
+  "postStartCommand": "bash /scripts/hooks/postStart.sh || true",
   "runArgs": [
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",

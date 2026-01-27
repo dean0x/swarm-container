@@ -124,8 +124,9 @@ RUN chmod +x /scripts/security/init-security.sh /scripts/security/refresh-dns-ru
 # Copy hook scripts
 COPY scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY scripts/hooks/set-node-memory.sh /scripts/hooks/set-node-memory.sh
+COPY scripts/hooks/postStart.sh /scripts/hooks/postStart.sh
 COPY scripts/health-check.sh /scripts/health-check.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh /scripts/health-check.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh /scripts/hooks/postStart.sh /scripts/health-check.sh
 
 # Tmux removed - using VS Code pane splitting instead
 
