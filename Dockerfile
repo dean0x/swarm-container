@@ -59,12 +59,13 @@ RUN mkdir -p ~/.npm-global && \
     echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
 
 # Install global npm packages as node user
+# Most versions pinned for reproducible builds; claude-code uses latest
 RUN npm install -g \
     @anthropic-ai/claude-code \
-    npm-check-updates \
-    typescript \
-    ts-node \
-    nodemon
+    npm-check-updates@17.1.3 \
+    typescript@5.3.3 \
+    ts-node@10.9.2 \
+    nodemon@3.0.3
 
 # Switch back to root for remaining setup
 USER root
@@ -106,7 +107,8 @@ RUN cargo install zoxide --locked && \
     chmod +x /usr/local/bin/zoxide /usr/local/bin/tokei /usr/local/bin/mcfly
 
 # Install productivity tools via npm
-RUN npm install -g tldr
+# Pin tldr version for reproducible builds
+RUN npm install -g tldr@3.4.0
 
 # Copy and run architecture-aware binary installation script
 COPY scripts/install-productivity-tools.sh /tmp/install-productivity-tools.sh
@@ -119,15 +121,21 @@ RUN chmod +x /tmp/install-productivity-tools.sh && \
 RUN mkdir -p /workspace && chown -R node:node /workspace \
     && usermod -s /bin/bash node || true
 
+# Copy shared library scripts
+COPY scripts/lib/logging.sh /scripts/lib/logging.sh
+RUN chmod +x /scripts/lib/logging.sh
+
 # Copy security initialization scripts
 COPY scripts/security/init-security.sh /scripts/security/init-security.sh
 COPY scripts/security/security-config.json /scripts/security/security-config.json
-RUN chmod +x /scripts/security/init-security.sh
+COPY scripts/security/refresh-dns-rules.sh /scripts/security/refresh-dns-rules.sh
+RUN chmod +x /scripts/security/init-security.sh /scripts/security/refresh-dns-rules.sh
 
 # Copy hook scripts
 COPY scripts/hooks/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY scripts/hooks/set-node-memory.sh /scripts/hooks/set-node-memory.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh
+COPY scripts/health-check.sh /scripts/health-check.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /scripts/hooks/set-node-memory.sh /scripts/health-check.sh
 
 # Tmux removed - using VS Code pane splitting instead
 

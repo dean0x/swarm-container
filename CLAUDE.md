@@ -28,12 +28,15 @@ This repository provides a VS Code development container for running Claude Code
   - `tests/` - Comprehensive test suite for container validation
 
 ### Security Architecture
-- **Presets**: Paranoid (6GB/2CPU), Enterprise (12GB/6CPU), Development (8GB/4CPU) modes
+- **Presets**: Paranoid, Enterprise, and Development modes (resource recommendations in config, actual limits set via `.env`)
 - **Network**: Dynamic firewall with domain allowlisting/blocklisting
-- **Memory**: Dynamic Node.js heap allocation (75% of container memory)
-- **Filesystem**: Configurable read-only paths and workspace isolation
+- **Memory**: Dynamic Node.js heap allocation (formula: `80 - instances`, bounded 40-75% of container memory)
+- **Filesystem**: Configured via Docker volume mounts in devcontainer.json
 - **Process**: Capability dropping, resource limits, privilege restrictions
 - **Monitoring**: Security audit logging and integrity checking
+- **Fail-Secure**: Paranoid/Enterprise modes exit on security init failure (configurable via `SECURITY_FAIL_SECURE`)
+
+**Important DNS Limitation**: In paranoid/enterprise modes, firewall rules are based on DNS-resolved IPs at container startup. IPs are refreshed every 4 hours via cron, but services may become unreachable if their DNS records change between refreshes.
 
 ### Environment Files
 - `.env.paranoid` - Maximum security configuration
@@ -147,7 +150,16 @@ bash scripts/security/security-monitor.sh
 
 # View security logs
 tail -f security.log
+
+# Check security state (degraded mode indicator)
+cat /var/log/security-state.json
 ```
+
+**Fail-Secure Behavior:**
+- Paranoid/Enterprise modes default to `SECURITY_FAIL_SECURE=true`
+- Container exits if security initialization fails
+- Override with `SECURITY_FAIL_SECURE=false` in `.env` to allow degraded mode
+- Check `/var/log/security-state.json` for current security state
 
 ### Container Management
 ```bash
@@ -273,6 +285,12 @@ When adding new npm packages that require network access:
    dmesg | grep "BLOCKED"
    ```
 
+4. **DNS-based rules may be stale** (paranoid/enterprise modes):
+   - Firewall rules use IPs resolved at startup
+   - Auto-refresh runs every 4 hours via cron
+   - Manual refresh: `bash /scripts/security/refresh-dns-rules.sh`
+   - Check refresh log: `cat /var/log/dns-refresh.log`
+
 ## Container Structure
 
 ### Workspace Organization
@@ -309,7 +327,7 @@ Tests verify:
 8. Module functionality
 
 ## Known Working Versions
-- Claude Code: v1.0.56
+- Claude Code: Latest (installed at build time)
 - Node.js: 20.x
 - VS Code Dev Containers: Latest
 

@@ -54,7 +54,12 @@
     "--memory-swap=${localEnv:CONTAINER_MEMORY:8g}",
     "--cpus=${localEnv:CONTAINER_CPUS:4}",
     "--shm-size=2g",
-    "--restart=unless-stopped"
+    "--restart=unless-stopped",
+    "--health-cmd=/scripts/health-check.sh",
+    "--health-interval=60s",
+    "--health-timeout=10s",
+    "--health-retries=3",
+    "--health-start-period=30s"
   ],
   "remoteUser": "node",
   "containerEnv": {
