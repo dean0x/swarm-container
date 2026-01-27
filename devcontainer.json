@@ -66,6 +66,7 @@
     "NODE_ENV": "development",
     "CLAUDE_CODE_INSTANCES": "${localEnv:CLAUDE_CODE_INSTANCES:6}"
   },
+  "remoteUser": "root",
   "overrideCommand": true,
   "shutdownAction": "stopContainer",
   "workspaceFolder": "/workspace",
