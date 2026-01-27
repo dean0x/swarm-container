@@ -15,12 +15,19 @@ fi
 # Install Oh My Zsh plugins (only if oh-my-zsh exists)
 if [ -d ~/.oh-my-zsh ]; then
     echo "🎨 Installing Zsh plugins (with timeout)..."
-    timeout 20 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true
-    timeout 20 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true
+    ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-    # Update .zshrc to include plugins
+    timeout 20 git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM_DIR/plugins/zsh-autosuggestions" 2>/dev/null || true
+    timeout 20 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting" 2>/dev/null || true
+
+    # Build plugin list based on what actually exists
+    PLUGINS="git"
+    [ -d "$ZSH_CUSTOM_DIR/plugins/zsh-autosuggestions" ] && PLUGINS="$PLUGINS zsh-autosuggestions"
+    [ -d "$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting" ] && PLUGINS="$PLUGINS zsh-syntax-highlighting"
+
+    # Update .zshrc with available plugins only
     if [ -f ~/.zshrc ]; then
-        sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+        sed -i "s/plugins=(git)/plugins=($PLUGINS)/" ~/.zshrc
     fi
 fi
 
