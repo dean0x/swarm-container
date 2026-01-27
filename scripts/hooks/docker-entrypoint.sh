@@ -160,6 +160,18 @@ if [ -f /root/.gitconfig ]; then
     fi
 fi
 
+# Fix ownership of mounted volumes that may have been created as root
+# The .claude directory is a volume mount for config persistence
+if [ -d /home/node/.claude ]; then
+    chown -R node:node /home/node/.claude
+    log_info "Fixed ownership of /home/node/.claude"
+fi
+
+# Ensure commandhistory volume is writable
+if [ -d /commandhistory ]; then
+    chown -R node:node /commandhistory
+fi
+
 # Now handle the command execution
 if [ $# -eq 0 ]; then
     # No command provided, run bash as the specified user
