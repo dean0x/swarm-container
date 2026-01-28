@@ -66,7 +66,8 @@
     "CUSTOM_ALLOWED_DOMAINS": "${localEnv:CUSTOM_ALLOWED_DOMAINS:}",
     "NODE_ENV": "development",
     "CLAUDE_CODE_INSTANCES": "${localEnv:CLAUDE_CODE_INSTANCES:6}",
-    "PATH": "/root/.npm-global/bin:/root/.cargo/bin:/usr/local/share/nvm/current/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin"
+    "PATH": "/root/.npm-global/bin:/root/.cargo/bin:/usr/local/share/nvm/current/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin",
+    "IS_SANDBOX": "1"
   },
   "remoteUser": "root",
   "overrideCommand": true,
